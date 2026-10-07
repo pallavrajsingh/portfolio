@@ -710,6 +710,269 @@ body.cview .cring{width:48px;height:52px;opacity:.35;border-color:var(--violet);
 .ra-tags{display:flex;flex-wrap:wrap;gap:6px;}
 .ra-tag{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--w);background:rgba(124,111,255,.15);padding:5px 11px;border-radius:4px;border:1px solid rgba(124,111,255,.35);}
 
+/* Skills section — full-width left aligned, less right padding */
+#skills{
+  padding-right:80px;
+}
+
+/* ══ TOOL CAROUSEL (expertise section) ══ */
+.exp-carousel{
+  position:relative;
+  overflow:visible;
+  padding-bottom:0;
+  min-height:340px;
+  margin-top:24px;
+}
+
+/* Big numeric — prompt spec: text-[28rem] font-bold text-foreground/[0.03] -left-8 */
+.exc-bignum{
+  position:absolute;
+  left:-2rem;
+  top:0;
+  transform:none;
+  font-size:17rem;
+  font-weight:700;
+  color:#1A1A1C;
+  opacity:.85;
+  line-height:1;
+  letter-spacing:-.04em;
+  pointer-events:none;
+  user-select:none;
+  font-family:var(--sans);
+  white-space:nowrap;
+  z-index:0;             /* sits behind exc-inner (z-index:1) */
+  transition:opacity .6s cubic-bezier(.22,1,.36,1);
+}
+
+.exc-inner{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:stretch;
+  gap:0;
+}
+
+/* ── Main content ── */
+.exc-content{
+  flex:1;
+  padding:0 0 48px 0;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+
+/* Badge */
+.exc-badge-wrap{
+  margin-bottom:24px;
+  flex-shrink:0;
+}
+.exc-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--dim);
+  border:1px solid var(--bdr);
+  border-radius:100px;
+  padding:5px 14px;
+}
+.exc-badge-dot{
+  width:6px;height:6px;
+  border-radius:50%;
+  background:var(--violet);
+  box-shadow:0 0 6px var(--violet-glow);
+  flex-shrink:0;
+}
+
+/* Tool name headline */
+.exc-quote-wrap{
+  position:relative;
+  /* Fixed height so author row never shifts up into the name */
+  min-height:100px;
+  margin-bottom:28px;
+  perspective:800px;
+  overflow:visible;
+  flex-shrink:0;
+}
+.exc-tool-name{
+  font-size:clamp(32px,4.8vw,64px);
+  font-weight:800;
+  letter-spacing:-.04em;
+  line-height:1.1;
+  color:var(--w);
+}
+/* Each word animates individually */
+.exc-word{
+  display:inline-block;
+  margin-right:.22em;
+  will-change:transform,opacity;
+  transition:
+    opacity .45s cubic-bezier(.22,1,.36,1),
+    transform .45s cubic-bezier(.22,1,.36,1);
+}
+.exc-word.hidden{
+  opacity:0;
+  transform:translateY(22px) rotateX(80deg);
+}
+.exc-word.visible{
+  opacity:1;
+  transform:translateY(0) rotateX(0deg);
+}
+.exc-word.exit{
+  opacity:0;
+  transform:translateY(-12px);
+  transition:opacity .18s ease,transform .18s ease;
+}
+
+/* Author row — pinned at the bottom of flex column */
+.exc-author-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:auto;
+  padding-top:21px;
+  border-top:1px solid var(--bdr2);
+}
+.exc-author{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+.exc-author-line{
+  width:28px;height:1px;
+  background:var(--violet);
+  flex-shrink:0;
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .6s cubic-bezier(.22,1,.36,1) .25s;
+}
+.exc-author.show .exc-author-line{
+  transform:scaleX(1);
+}
+.exc-yrs{
+  font-family:var(--mono);
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:-.02em;
+  color:var(--violet);
+  line-height:1;
+}
+.exc-use{
+  font-size:12px;
+  line-height:1.6;
+  color:var(--dim);
+  margin-top:3px;
+  max-width:380px;
+}
+
+/* Scroll-driven outer container — tall enough for all slides */
+.skills-scroll-outer{
+  position:relative;
+  /* 100vh per slide so each scroll step = one tool */
+}
+.skills-sticky{
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  /* explicit containing block for the absolute ticker */
+  isolation:isolate;
+}
+/* Override .sec padding for sticky variant */
+.skills-sticky.sec{
+  padding-top:48px;
+  padding-bottom:0;
+}
+
+/* Scroll hint — animated chevron */
+.exc-scroll-hint{
+  position:absolute;
+  bottom:28px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  opacity:.35;
+  pointer-events:none;
+}
+.exc-scroll-hint span{
+  display:block;
+  width:1px;
+  height:32px;
+  background:var(--w);
+  animation:scrollPulse 1.6s ease-in-out infinite;
+}
+.exc-scroll-hint svg{
+  animation:scrollPulse 1.6s ease-in-out infinite .2s;
+}
+@keyframes scrollPulse{
+  0%,100%{opacity:.2; transform:translateY(-4px);}
+  50%{opacity:.7; transform:translateY(4px);}
+}
+
+/* Dots progress indicator */
+/* Bulletin — below Tools & Skills heading */
+.exc-ticker-wrap{
+  position:relative;
+  overflow:hidden;
+  height:52px;
+  display:flex;
+  align-items:center;
+  margin-top:-36px; /* pull up, overriding stitle's margin-bottom:52px */
+  margin-bottom:32px;
+  opacity:.05;
+  pointer-events:none;
+}
+.exc-ticker{
+  display:flex;
+  white-space:nowrap;
+  font-size:42px;
+  font-weight:900;
+  letter-spacing:-.04em;
+  color:var(--w);
+  will-change:transform;
+}
+
+/* ── Light mode overrides for expertise carousel ── */
+[data-theme="light"] .exc-tool-name,
+[data-theme="light"] .exc-word{
+  color:var(--w); /* dark ink — already correct via var */
+}
+[data-theme="light"] .exc-badge{
+  color:var(--dim);
+  border-color:var(--bdr);
+  background:rgba(255,255,255,0.7);
+}
+[data-theme="light"] .exc-yrs{
+  color:var(--violet);
+}
+[data-theme="light"] .exc-use{
+  color:var(--dim);
+}
+[data-theme="light"] .exc-author-row{
+  border-top-color:var(--bdr);
+}
+[data-theme="light"] .exc-bignum{
+  color:#c8c4d8;
+  opacity:.5;
+}
+[data-theme="light"] .exc-ticker{
+  color:var(--w);
+}
+
+/* Responsive */
+@media(max-width:768px){
+  .exc-content{padding:36px 0;}
+}
+
 /* ══ EXPERIENCE ══ */
 /* ── EXPERIENCE ── */
 .exp-timeline {
@@ -1394,10 +1657,13 @@ html[data-theme="dark"] body,
 [data-theme="light"] .ctsub { color: var(--violet); }
 
 /* ── HERO ── */
-[data-theme="light"] .hdesc { color: var(--dim); }
-[data-theme="light"] .htag  { color: var(--violet); }
+[data-theme="light"] #hero   { background: transparent; }
+[data-theme="light"] #c3d    { opacity: 1; }
+[data-theme="light"] .hdesc  { color: var(--dim); }
+[data-theme="light"] .htag   { color: var(--violet); }
 [data-theme="light"] .hscroll .stxt { color: var(--dimmer); }
-[data-theme="light"] h1 .char { color: var(--w); }
+[data-theme="light"] h1 .char      { color: var(--w); }
+[data-theme="light"] .violetw .char { color: var(--violet); }
 
 /* ── ABOUT ── */
 [data-theme="light"] .about-p { color: var(--dim); }
@@ -1714,33 +1980,59 @@ html[data-theme="dark"] body,
   </div>
 </section>
 
-<section id="skills" class="sec seclight">
+<div id="skills-scroll" class="skills-scroll-outer">
+<section id="skills" class="sec seclight skills-sticky">
   <div class="eb rv">Expertise</div>
   <h2 class="stitle rv">Tools &amp; Skills</h2>
-  <div class="skills-tabs-wrap rv">
-    <div class="tab-bar">
-      <button class="tab-btn active" data-tab="tools">Design Tools</button>
-      <button class="tab-btn" data-tab="soft">Soft Skills</button>
-    </div>
-    <!-- TOOLS TAB: cards left, radar right -->
-    <div class="tab-pane active" id="tab-tools">
-      <div class="cards-col tool-grid-inner" id="toolGrid"></div>
-      <div class="radar-side" id="radarSideTools">
-        <div class="radar-title">Capability Radar</div>
-        <div class="radar-canvas-wrap"><canvas id="radarCanvas" width="480" height="480"></canvas></div>
-        <div class="radar-active">
-          <div class="ra-name" id="raName">Figma</div>
-          <div class="ra-cat" id="raCat">Design Tool</div>
-          <div class="ra-tags" id="raTags"></div>
-        </div>
-      </div>
-    </div>
-    <!-- SOFT SKILLS TAB: cards left, radar right (same radar) -->
-    <div class="tab-pane" id="tab-soft">
-      <div class="cards-col soft-grid-inner" id="softGrid"></div>
-    </div>
+
+  <!-- Bulletin — directly below heading -->
+  <div class="exc-ticker-wrap">
+    <div class="exc-ticker" id="excTicker"></div>
   </div>
+
+  <!-- ── TOOL CAROUSEL (testimonial-style) ── -->
+  <div class="exp-carousel rv" id="expCarousel">
+
+    <!-- Big numeric watermark — behind everything, scoped to carousel -->
+    <div class="exc-bignum" id="excBignum">01</div>
+
+    <div class="exc-inner">
+
+      <!-- Main content -->
+      <div class="exc-content">
+
+        <!-- Category badge -->
+        <div class="exc-badge-wrap">
+          <span class="exc-badge" id="excBadge">
+            <span class="exc-badge-dot"></span>
+            <span id="excBadgeTxt">Design Tool</span>
+          </span>
+        </div>
+
+        <!-- Tool name — animated word-by-word -->
+        <div class="exc-quote-wrap">
+          <div class="exc-tool-name" id="excToolName"></div>
+        </div>
+
+        <!-- Author row: years + subtext -->
+        <div class="exc-author-row">
+          <div class="exc-author" id="excAuthor">
+
+            <div>
+              <div class="exc-yrs" id="excYrs"></div>
+              <div class="exc-use" id="excUse"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div><!-- /exc-content -->
+    </div><!-- /exc-inner -->
+
+  </div><!-- /exp-carousel -->
+
 </section>
+</div><!-- /skills-scroll-outer -->
 
 <section id="experience" class="sec secdark">
   <div class="eb rv">Career</div>
@@ -1881,14 +2173,18 @@ themeBtn.addEventListener('click', function(){
   html.setAttribute('data-theme', isDark ? 'dark' : 'light');
   themeBtn.textContent = isDark ? '🌙' : '☀️';
 
+  // Reset canvas opacity for new theme (scroll handler will adjust on next scroll)
+  var c3dEl = document.getElementById('c3d');
+  if(c3dEl) c3dEl.style.opacity = isDark ? '0.45' : '1';
+  // Also reset hero background
+  var heroEl = document.getElementById('hero');
+  if(heroEl) heroEl.style.background = isDark ? '' : 'transparent';
+
   // Update 3D scene background
   if(window._threeScene){
     window._threeScene.background = new THREE.Color(isDark ? 0x0c0b14 : 0xfaf8f2);
     window._threeScene.fog = new THREE.FogExp2(isDark ? 0x0c0b14 : 0xfaf8f2, 0.032);
   }
-
-  // Redraw bg-crosses for new theme
-  if(window._redrawCrosses) window._redrawCrosses();
 });
 
 
@@ -1906,7 +2202,7 @@ themeBtn.addEventListener('click', function(){
   parent.replaceChild(newCv, cv);
   cv = newCv;
 
-  var ctx = cv.getContext('2d', {alpha: false});
+  var ctx = cv.getContext('2d', {alpha: true});
   if(!ctx) return;
 
   // ── State ──
@@ -1965,24 +2261,24 @@ themeBtn.addEventListener('click', function(){
   resize();
   window.addEventListener('resize', resize, {passive:true});
 
-  // ── drawLatticeLink — exact match ──
+  // ── drawLatticeLink — theme aware ──
   function drawLink(n1, n2) {
     var dx = n1.x - n2.x;
     var dy = n1.y - n2.y;
     var dist = Math.sqrt(dx*dx + dy*dy);
     var stretch = Math.abs(dist - SPACING) / SPACING;
     var isTensioned = n1.tension > 0.05 || n2.tension > 0.05 || stretch > 0.1;
+    var lt = document.documentElement.getAttribute('data-theme') === 'light';
 
-    var _lnDark = document.documentElement.getAttribute('data-theme') !== 'light';
     if(isTensioned) {
       var glow = Math.max(n1.tension, n2.tension, stretch * 2);
-      ctx.strokeStyle = _lnDark
-        ? 'rgba(255,255,255,' + Math.min(1, 0.25 + glow * 0.75) + ')'
-        : 'rgba(26,20,32,' + Math.min(1, 0.22 + glow * 0.72) + ')';
-      ctx.lineWidth   = 0.8 + glow * 1.4;
+      ctx.strokeStyle = lt
+        ? 'rgba(26,20,32,' + Math.min(0.7, 0.3 + glow * 0.5) + ')'
+        : 'rgba(255,255,255,' + Math.min(1, 0.25 + glow * 0.75) + ')';
+      ctx.lineWidth = 0.8 + glow * 1.4;
     } else {
-      ctx.strokeStyle = _lnDark ? 'rgba(255,255,255,0.08)' : 'rgba(26,20,32,0.09)';
-      ctx.lineWidth   = 0.65;
+      ctx.strokeStyle = lt ? 'rgba(26,20,32,0.18)' : 'rgba(255,255,255,0.08)';
+      ctx.lineWidth   = lt ? 0.8 : 0.65;
     }
     ctx.beginPath();
     ctx.moveTo(n1.x, n1.y);
@@ -2012,10 +2308,14 @@ themeBtn.addEventListener('click', function(){
     var dt = Math.min((now - last) / 1000, 0.033);
     last = now;
 
-    // Background — theme-aware
-    var _isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-    ctx.fillStyle = _isDark ? '#06070a' : '#faf8f2';
-    ctx.fillRect(0, 0, W, H);
+    // Background — dark mode fills opaque, light mode clears to transparent
+    var isLightMode = document.documentElement.getAttribute('data-theme') === 'light';
+    if(isLightMode){
+      ctx.clearRect(0, 0, W, H);
+    } else {
+      ctx.fillStyle = '#06070a';
+      ctx.fillRect(0, 0, W, H);
+    }
 
     // Pointer velocity
     ptr.vx = (ptr.x - ptr.px) / (dt * 1000 || 1);
@@ -2112,7 +2412,13 @@ themeBtn.addEventListener('click', function(){
       }
     }
 
-    // 5. Render synaptic pulses — pure white #ffffff, r=2.0
+    var lt2 = document.documentElement.getAttribute('data-theme') === 'light';
+    var pulseCol  = lt2 ? '#4f35cc'              : '#ffffff';
+    var nodeBase  = lt2 ? '#4f35cc'              : 'rgba(255,255,255,0.28)';
+    var nodeActive= lt2 ? '#4f35cc'              : '#ffffff';
+    var haloBase  = lt2 ? 'rgba(79,53,204,'      : 'rgba(255,255,255,';
+
+    // 5. Render synaptic pulses
     for(var p = pulses.length-1; p >= 0; p--) {
       var pl = pulses[p];
       pl.t  += dt * pl.speed;
@@ -2125,13 +2431,13 @@ themeBtn.addEventListener('click', function(){
       }
       var px2 = pn1.x + (pn2.x - pn1.x) * pl.t;
       var py2 = pn1.y + (pn2.y - pn1.y) * pl.t;
-      ctx.fillStyle = document.documentElement.getAttribute('data-theme') !== 'light' ? '#ffffff' : '#1a1420';
+      ctx.fillStyle = pulseCol;
       ctx.beginPath();
       ctx.arc(px2, py2, 2.0, 0, Math.PI*2);
       ctx.fill();
     }
 
-    // 6. Render nodes — exact values from component
+    // 6. Render nodes
     for(var i2=0; i2<nodes.length; i2++) {
       var nd2 = nodes[i2];
       var ddx = ptr.x - nd2.x;
@@ -2139,26 +2445,21 @@ themeBtn.addEventListener('click', function(){
       var dd  = Math.sqrt(ddx*ddx + ddy*ddy);
       var isNear = dd < ptr.radius;
 
-      // currentRadius — exact formula
+      var baseR = lt2 ? nd2.radius * 1.6 : nd2.radius;
       var cr = isNear
-        ? nd2.radius * 2.2 + nd2.tension * 1.5
-        : nd2.radius + Math.sin(nd2.phase) * 0.25;
+        ? baseR * 2.2 + nd2.tension * 1.5
+        : baseR + Math.sin(nd2.phase) * 0.25;
 
-      // Glow halo — theme-aware
-      var _ndDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      // Glow halo
       if(isNear || nd2.tension > 0.1) {
-        ctx.fillStyle = _ndDark
-          ? 'rgba(255,255,255,' + Math.min(1, 0.25 + nd2.tension*0.65) + ')'
-          : 'rgba(79,53,204,' + Math.min(1, 0.18 + nd2.tension*0.55) + ')';
+        ctx.fillStyle = haloBase + Math.min(1, 0.25 + nd2.tension*0.65) + ')';
         ctx.beginPath();
         ctx.arc(nd2.x, nd2.y, cr * 2.2, 0, Math.PI*2);
         ctx.fill();
       }
 
       // Core dot
-      ctx.fillStyle = _ndDark
-        ? ((isNear || nd2.tension > 0.1) ? '#ffffff' : 'rgba(255,255,255,0.28)')
-        : ((isNear || nd2.tension > 0.1) ? '#4f35cc' : 'rgba(26,20,32,0.22)');
+      ctx.fillStyle = (isNear || nd2.tension > 0.1) ? nodeActive : nodeBase;
       ctx.beginPath();
       ctx.arc(nd2.x, nd2.y, Math.max(0.8, cr), 0, Math.PI*2);
       ctx.fill();
@@ -2170,7 +2471,8 @@ themeBtn.addEventListener('click', function(){
   // Scroll fade
   window.addEventListener('scroll', function(){
     var fade = Math.max(0, Math.min(1, (window.scrollY - window.innerHeight*0.3) / (window.innerHeight*0.5)));
-    cv.style.opacity = String(0.45 * (1 - fade));
+    var isLt = document.documentElement.getAttribute('data-theme') === 'light';
+    cv.style.opacity = String((isLt ? 1 : 0.45) * (1-fade));
   }, {passive:true});
 
   // Cleanup
@@ -2268,199 +2570,145 @@ requestAnimationFrame(function(){requestAnimationFrame(function(){
 });});
 
 // ══════════════════════════════════════════════════════
-// 5. SKILLS — tabs + radar
+// 5. EXPERTISE CAROUSEL (testimonial-style)
 // ══════════════════════════════════════════════════════
-document.querySelectorAll('.tab-btn').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
-    document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');});
-    btn.classList.add('active');
-    document.getElementById('tab-'+btn.getAttribute('data-tab')).classList.add('active');
-    // Redraw both radars after tab switch (canvas may have been hidden)
-    setTimeout(function(){ drawRadar('radarCanvas', TOOLS, 0); }, 30);
-  });
-});
+(function(){
+  var TOOLS=[
+    {name:'Figma',       cat:'UI Design',   proficiency:'Expert',        use:'UI design, prototyping, variables & design systems'},
+    {name:'Adobe XD',    cat:'Prototyping', proficiency:'Advanced',      use:'Interactive prototyping for client presentations'},
+    {name:'Photoshop',   cat:'Adobe Suite', proficiency:'Advanced',      use:'Photo editing, compositing & visual asset production'},
+    {name:'Illustrator', cat:'Adobe Suite', proficiency:'Advanced',      use:'Digital illustration, vector assets & branding'},
+    {name:'Fusion 360',  cat:'3D & Render', proficiency:'Intermediate',  use:'3D modeling & industrial product design'},
+    {name:'Keyshot',     cat:'3D & Render', proficiency:'Intermediate',  use:'Photorealistic rendering & product visualisation'},
+  ];
 
-function makeDots(level){
-  var h='<div class="tc-dots">';
-  for(var d=1;d<=5;d++) h+='<div class="tc-dot'+(d<=level?' filled':'')+'"></div>';
-  return h+'</div>';
-}
+  var active=0;
 
-var TOOLS=[
-  {name:'Figma',       cat:'Design Tool', level:5, yrs:5,  use:'UI design, prototyping, variables & design systems', tags:['UI Design','Prototyping','Auto Layout','Design Systems']},
-  {name:'Adobe XD',    cat:'Design Tool', level:4, yrs:6,  use:'Interactive prototyping for client presentations',   tags:['UI Design','Interaction Design','Sharing']},
-  {name:'Photoshop',   cat:'Adobe Suite', level:4, yrs:4,  use:'Photo editing, compositing & visual asset production',tags:['Photo Editing','Compositing','Retouching']},
-  {name:'Illustrator', cat:'Adobe Suite', level:4, yrs:5,  use:'Digital illustration, vector assets & branding',     tags:['Vector Art','Digital Illustration','Branding']},
-  {name:'Fusion 360',  cat:'3D & Render', level:3, yrs:3,  use:'3D modeling & industrial product design',            tags:['3D Modeling','Industrial Design','CAD']},
-  {name:'Keyshot',     cat:'3D & Render', level:3, yrs:3,  use:'Photorealistic rendering & product visualisation',   tags:['3D Rendering','Visualisation','Photorealism']},
-];
+  var elBignum  = document.getElementById('excBignum');
+  var elBadgeTxt= document.getElementById('excBadgeTxt');
+  var elToolName= document.getElementById('excToolName');
+  var elYrs     = document.getElementById('excYrs');
+  var elUse     = document.getElementById('excUse');
+  var elAuthor  = document.getElementById('excAuthor');
+  var elTicker  = document.getElementById('excTicker');
 
-var SOFT_DATA=[
-  {name:'Creativity',    cat:'Soft Skill', tags:['Ideation','Lateral Thinking','Concept Development','Storytelling'],        desc:'Concept-first thinking that turns constraints into distinctive outcomes.',
-   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="1.5" width="32" height="32"><path d="M12 2a7 7 0 0 1 7 7c0 3.5-2.5 5.5-3 7H8c-.5-1.5-3-3.5-3-7a7 7 0 0 1 7-7z"/><path d="M9 21h6M10 17v1M14 17v1"/></svg>'},
-  {name:'Communication', cat:'Soft Skill', tags:['Stakeholder Alignment','Design Critiques','Presentations','Documentation'], desc:'Translating complex design decisions into clear rationale for any audience.',
-   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="1.5" width="32" height="32"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'},
-  {name:'Leadership',    cat:'Soft Skill', tags:['Team Direction','Mentoring','Cross-functional','Quality Standards'],         desc:'Guiding teams from ambiguity to shipped product with clear design standards.',
-   svg:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="1.5" width="32" height="32"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>'},
-];
+  var scrollOuter = document.getElementById('skills-scroll');
 
-// Build tool cards
-var toolGrid=document.getElementById('toolGrid');
-if(toolGrid){
-  TOOLS.forEach(function(t,i){
-    var card=document.createElement('div');
-    card.className='tool-card';
-    card.innerHTML=
-       '<div class="tc-name">'+t.name+'</div>'
-      +'<div class="tc-yrs"><span class="tc-yrs-num">'+t.yrs+'</span><span class="tc-yrs-unit">yr</span></div>'
-      +makeDots(t.level)
-      +'<div class="tc-use">'+t.use+'</div>';
-    card.addEventListener('mouseenter',function(){
-      drawRadar('radarCanvas',TOOLS,i);
-      document.getElementById('raName').textContent=t.name;
-      document.getElementById('raCat').textContent=t.cat;
-      var rt=document.getElementById('raTags'); rt.innerHTML='';
-      t.tags.forEach(function(tg){var s=document.createElement('span');s.className='ra-tag';s.textContent=tg;rt.appendChild(s);});
+  if(!elToolName) return;
+
+  // Build ticker
+  var tickerContent = TOOLS.map(function(t){return t.name;}).join(' \u2022  ') + ' \u2022  ';
+  var tickerStr = '';
+  for(var ti=0;ti<8;ti++) tickerStr += tickerContent;
+  elTicker.textContent = tickerStr;
+
+  // Animate ticker
+  var tickX = 0;
+  var tickW = 0;
+  function tickLoop(){
+    tickX -= 0.6;
+    // reset when a full repetition has scrolled by
+    if(!tickW){
+      // measure a single repeat width lazily
+      elTicker.style.transform='translateX(0)';
+      tickW = elTicker.scrollWidth / 8;
+    }
+    if(Math.abs(tickX) >= tickW) tickX += tickW;
+    elTicker.style.transform = 'translateX('+tickX+'px)';
+    requestAnimationFrame(tickLoop);
+  }
+  requestAnimationFrame(tickLoop);
+
+  // Render a slide
+  function render(idx, dir){
+    var t = TOOLS[idx];
+    var total = TOOLS.length;
+
+    // Big numeric watermark
+    elBignum.style.opacity = '0';
+    setTimeout(function(){
+      elBignum.textContent = String(idx + 1).padStart(2, '0');
+      elBignum.style.transition = 'opacity .6s cubic-bezier(.22,1,.36,1)';
+      elBignum.style.opacity = '1';
+    }, 60);
+
+
+
+    // Badge
+    elBadgeTxt.style.opacity='0';
+    setTimeout(function(){
+      elBadgeTxt.textContent = t.cat;
+      elBadgeTxt.style.transition='opacity .35s ease';
+      elBadgeTxt.style.opacity='1';
+    }, 80);
+
+    // Tool name — exit old words
+    var oldWords = elToolName.querySelectorAll('.exc-word');
+    oldWords.forEach(function(w, wi){
+      w.style.transitionDelay = (wi * 0.025)+'s';
+      w.classList.remove('visible');
+      w.classList.add('exit');
     });
-    toolGrid.appendChild(card);
-  });
-}
 
-// Build soft skill cards
-var softGrid=document.getElementById('softGrid');
-if(softGrid){
-  SOFT_DATA.forEach(function(s,i){
-    var card=document.createElement('div');
-    card.className='soft-card';
-    var tagsHtml=s.tags.map(function(t){return '<span class="sc-tag">'+t+'</span>';}).join('');
-    card.innerHTML=
-      '<div class="sc-icon">'+s.svg+'</div>'
-      +'<div class="sc-name">'+s.name+'</div>'
-      +'<div class="sc-desc">'+s.desc+'</div>'
-      +'<div class="sc-tags">'+tagsHtml+'</div>';
-    card.addEventListener('mouseenter',function(){
-      // no radar for soft skills
-    });
-    softGrid.appendChild(card);
-  });
-}
+    setTimeout(function(){
+      // Build new words
+      elToolName.innerHTML = '';
+      t.name.split(' ').forEach(function(word, wi){
+        var span = document.createElement('span');
+        span.className = 'exc-word hidden';
+        span.textContent = word;
+        elToolName.appendChild(span);
+        // stagger reveal
+        setTimeout(function(){
+          span.classList.remove('hidden');
+          span.classList.add('visible');
+        }, 40 + wi * 60);
+      });
+    }, oldWords.length ? 220 : 0);
 
-// Draw radar — measures actual container for perfect fit
-function drawRadar(canvasId, data, hi){
-  var c=document.getElementById(canvasId); if(!c)return;
-  var wrap=c.parentElement;
-
-  // Use wrap width as the base size, cap at 280
-  var W=Math.max(wrap.offsetWidth||240, 120);
-  var S=Math.min(W, 280);
-
-  // Canvas is square — labels need 52px margin on every side
-  var MARGIN=52;
-  var dpr=devicePixelRatio||1;
-  c.width=S*dpr; c.height=S*dpr;
-  c.style.width=S+'px'; c.style.height=S+'px';
-
-  var ctx=c.getContext('2d'); ctx.scale(dpr,dpr);
-
-  var cx=S/2, cy=S/2;
-  var r=(S/2)-MARGIN;
-  var n=data.length;
-  ctx.clearRect(0,0,S,S);
-
-  var isDark=document.documentElement.getAttribute('data-theme')==='dark';
-
-  // Rings
-  for(var ring=1;ring<=4;ring++){
-    var rr=r*(ring/4);
-    ctx.beginPath();
-    data.forEach(function(_,k){
-      var a=(k/n)*Math.PI*2-Math.PI/2;
-      k===0?ctx.moveTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr)
-           :ctx.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr);
-    });
-    ctx.closePath();
-    ctx.strokeStyle=ring===4?'rgba(124,111,255,.42)':(isDark?'rgba(255,255,255,.08)':'rgba(0,0,0,.1)');
-    ctx.lineWidth=ring===4?1.5:.5;
-    ctx.stroke();
+    // Author (years + use)
+    elAuthor.classList.remove('show');
+    setTimeout(function(){
+      elYrs.textContent = t.proficiency;
+      elUse.textContent = t.use;
+      elAuthor.classList.add('show');
+    }, 260);
   }
 
-  // Spokes + labels
-  data.forEach(function(sk,k){
-    var a=(k/n)*Math.PI*2-Math.PI/2;
-    ctx.beginPath();
-    ctx.moveTo(cx,cy);
-    ctx.lineTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r);
-    ctx.strokeStyle=isDark?'rgba(255,255,255,.07)':'rgba(0,0,0,.08)';
-    ctx.lineWidth=.5;
-    ctx.stroke();
-
-    // Label sits MARGIN-10 px outside the ring edge, well inside canvas
-    var labelR=r+20;
-    var lx=cx+Math.cos(a)*labelR;
-    var ly=cy+Math.sin(a)*labelR;
-
-    var isActive=k===hi;
-    ctx.fillStyle=isActive?(isDark?'#a78bfa':'#5b4fff'):(isDark?'rgba(242,240,255,.58)':'rgba(26,20,32,.6)');
-    ctx.font=(isActive?'bold 9.5px':'9px')+' Space Mono,monospace';
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
-    ctx.fillText(sk.name, lx, ly);
-  });
-
-  // Data polygon
-  ctx.beginPath();
-  data.forEach(function(sk,k){
-    var val=sk.level?sk.level/5:0.8;
-    var a=(k/n)*Math.PI*2-Math.PI/2;
-    var d=r*val;
-    k===0?ctx.moveTo(cx+Math.cos(a)*d,cy+Math.sin(a)*d)
-         :ctx.lineTo(cx+Math.cos(a)*d,cy+Math.sin(a)*d);
-  });
-  ctx.closePath();
-  ctx.fillStyle='rgba(124,111,255,.18)';
-  ctx.fill();
-  ctx.strokeStyle='rgba(124,111,255,.7)';
-  ctx.lineWidth=1.5;
-  ctx.stroke();
-
-  // Node dots
-  data.forEach(function(sk,k){
-    var val=sk.level?sk.level/5:0.8;
-    var a=(k/n)*Math.PI*2-Math.PI/2;
-    var d=r*val;
-    var nx=cx+Math.cos(a)*d, ny=cy+Math.sin(a)*d;
-    ctx.beginPath();
-    ctx.arc(nx,ny,k===hi?4.5:2.5,0,Math.PI*2);
-    ctx.fillStyle=k===hi?'#7c6fff':'rgba(124,111,255,.45)';
-    ctx.fill();
-  });
-
-  // Active node glow — subtle, not overpowering
-  var val=data[hi].level?data[hi].level/5:0.8;
-  var ah=(hi/n)*Math.PI*2-Math.PI/2;
-  var hx=cx+Math.cos(ah)*r*val, hy=cy+Math.sin(ah)*r*val;
-  var g=ctx.createRadialGradient(hx,hy,0,hx,hy,14);
-  g.addColorStop(0,'rgba(124,111,255,.45)');
-  g.addColorStop(1,'rgba(124,111,255,0)');
-  ctx.beginPath();ctx.arc(hx,hy,14,0,Math.PI*2);
-  ctx.fillStyle=g;ctx.fill();
-}
-
-
-// Draw on first view
-new IntersectionObserver(function(entries){
-  if(entries[0].isIntersecting){
-    setTimeout(function(){ drawRadar('radarCanvas',TOOLS,0); },80);
-    document.getElementById('raName').textContent=TOOLS[0].name;
-    document.getElementById('raCat').textContent=TOOLS[0].cat;
+  // Set outer scroll height: 100vh per tool + 1 extra vh to exit
+  if(scrollOuter){
+    scrollOuter.style.height = (TOOLS.length * 100 + 100) + 'vh';
   }
-},{threshold:0.1}).observe(document.getElementById('tab-tools'));
 
-// Redraw on resize
-window.addEventListener('resize', function(){
-  setTimeout(function(){ drawRadar('radarCanvas',TOOLS,0); }, 100);
-});
+  function goTo(idx){
+    var clamped = Math.max(0, Math.min(TOOLS.length - 1, idx));
+    if(clamped === active) return;
+    active = clamped;
+    render(active);
+  }
+
+  // Scroll-driven: map scroll position within outer to slide index
+  function onScroll(){
+    if(!scrollOuter) return;
+    var rect = scrollOuter.getBoundingClientRect();
+    var scrolled = -rect.top;                          // px scrolled into the outer
+    var totalScroll = scrollOuter.offsetHeight - window.innerHeight;
+    var p = Math.max(0, Math.min(1, scrolled / totalScroll));
+    // Map 0→1 progress to 0→(n-1) index, but give the last slide the final 1/n chunk
+    var idx = Math.min(TOOLS.length - 1, Math.floor(p * TOOLS.length));
+    if(idx !== active){
+      active = idx;
+      render(active);
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, {passive: true});
+
+  // Kick off
+  render(0);
+})();
+
+// (tool card builder, soft skill builder, and radar removed — replaced by expertise carousel above)
 
 // ══════════════════════════════════════════════════════
 // TEXT COLOUR SWAP — hover only, cursor proximity per word
@@ -2472,23 +2720,22 @@ setTimeout(function(){
     'h1 .char, h2, .stitle, .about-big, .exp-co, .pname, .cttitle, .eb, .exp-role, .nav-links a, .ftl a'
   );
   swapEls.forEach(function(el){
-    // Detect base colour by checking computed style
     el.addEventListener('mouseenter', function(){
+      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       var computed = window.getComputedStyle(el);
       var col = computed.color;
-      // If violet-ish (r<g, b dominant) → swap to white; else → swap to violet
       var m = col.match(/\d+/g);
       if(!m) return;
       var isViolet = parseInt(m[2]) > parseInt(m[1]); // blue > green = violet-ish
       if(isViolet){
-        el.style.color = 'var(--w)';
-        el.style.webkitTextFillColor = '';
-        el.style.backgroundImage = 'none';
+        // violet → swap to white (dark mode) or dark ink (light mode)
+        el.style.color = isDark ? '#eeeaff' : '#1a1420';
       } else {
+        // non-violet → swap to violet always
         el.style.color = 'var(--violet)';
-        el.style.webkitTextFillColor = '';
-        el.style.backgroundImage = 'none';
       }
+      el.style.webkitTextFillColor = '';
+      el.style.backgroundImage = 'none';
       el.style.transition = 'color .15s ease';
     });
     el.addEventListener('mouseleave', function(){
@@ -2827,9 +3074,7 @@ window.addEventListener('scroll',function(){var sy=window.scrollY,t=document.get
   function draw(){
     var W=cv.width=innerWidth, H=cv.height=innerHeight, ctx=cv.getContext('2d');
     ctx.clearRect(0,0,W,H);
-    var _crossDark = document.documentElement.getAttribute('data-theme') !== 'light';
-    ctx.strokeStyle = _crossDark ? 'rgba(255,255,255,.26)' : 'rgba(26,20,32,.18)';
-    ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(255,255,255,.26)'; ctx.lineWidth=1;
     var ARM=8, xs=[0,W*.25,W*.5,W*.75,W-1], ys=[];
     for(var y=0;y<=H+200;y+=200) ys.push(y);
     xs.forEach(function(x){ ys.forEach(function(yy){
@@ -2837,7 +3082,6 @@ window.addEventListener('scroll',function(){var sy=window.scrollY,t=document.get
       ctx.moveTo(x,yy-ARM);ctx.lineTo(x,yy+ARM);ctx.stroke();
     });});
   }
-  window._redrawCrosses = draw;
   draw();
   window.addEventListener('resize',draw,{passive:true});
 
