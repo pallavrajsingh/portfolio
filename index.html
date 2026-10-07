@@ -973,144 +973,200 @@ body.cview .cring{width:48px;height:52px;opacity:.35;border-color:var(--violet);
   .exc-content{padding:36px 0;}
 }
 
-/* ══ EXPERIENCE ══ */
-/* ── EXPERIENCE ── */
-.exp-timeline {
+/* ══ EXPERIENCE — scroll timeline ══ */
+.exp-timeline-scroll {
   position: relative;
 }
-.exp-timeline::before {
-  content: '';
+/* Background spine line */
+.exp-spine-bg {
   position: absolute;
-  left: 220px; top: 0; bottom: 0;
+  left: 50%;
+  top: 0; bottom: 0;
   width: 1px;
-  background: linear-gradient(to bottom,
-    transparent, rgba(157,143,255,.2) 8%,
-    rgba(157,143,255,.2) 92%, transparent
-  );
+  background: rgba(157,143,255,.15);
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 0;
 }
-.exp-entry {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  position: relative;
-  padding: 52px 0;
-  border-bottom: none;
-  cursor: default;
-}
-.exp-entry:last-child { border-bottom: none; }
-
-/* ── LEFT column — everything right-aligned to spine ── */
-.exp-left {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding-right: 28px;
-  position: relative;
-  text-align: right;
-}
-/* Node on spine */
-.exp-node {
+/* Animated foreground spine */
+.exp-spine-fg {
   position: absolute;
-  right: -5px; top: 14px;
-  width: 9px; height: 9px;
-  border-radius: 50%;
-  background: transparent;
-  border: 1.5px solid rgba(157,143,255,.45);
-  transition: background .3s, box-shadow .3s;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 0;
+  background: var(--violet);
+  box-shadow: 0 0 8px var(--violet-glow);
+  transform: translateX(-50%);
+  transition: height .1s ease-out;
+  pointer-events: none;
   z-index: 1;
 }
-.exp-entry:hover .exp-node {
-  background: var(--violet);
-  box-shadow: 0 0 12px rgba(157,143,255,.6);
-  border-color: var(--violet);
+
+/* Each row: 3-column grid — [left card] [dot col] [right card] */
+.exp-entry {
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr;
+  position: relative;
+  padding-bottom: 72px;
+  cursor: default;
+  z-index: 2;
 }
-/* Year number */
+
+/* Dot column — centre, holds the spine dot */
+.exp-dot-col {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+.exp-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(157,143,255,.4);
+  background: var(--secdark-bg);
+  flex-shrink: 0;
+  transition: border-color .5s, background .5s, box-shadow .5s, transform .5s;
+  z-index: 3;
+  position: relative;
+}
+.exp-dot.active {
+  border-color: var(--violet);
+  background: var(--violet);
+  box-shadow: 0 0 14px var(--violet-glow);
+  transform: scale(1.25);
+}
+
+/* Left card — right-aligned text, flush to the dot col */
+.exp-card-left {
+  padding-right: 28px;
+  text-align: right;
+  transition: opacity .7s ease-out, transform .7s ease-out;
+}
+/* Right card — left-aligned text, flush to the dot col */
+.exp-card-right {
+  padding-left: 28px;
+  text-align: left;
+  transition: opacity .7s ease-out, transform .7s ease-out;
+}
+/* Empty placeholder cell for the side that has no content */
+.exp-empty { /* intentionally empty */ }
+
+.exp-card-left.inactive,
+.exp-card-right.inactive {
+  opacity: .28;
+  transform: translateY(24px);
+}
+.exp-card-left.active,
+.exp-card-right.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Date pill */
+.exp-period {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--violet);
+  border: 1px solid rgba(157,143,255,.28);
+  background: rgba(157,143,255,.07);
+  border-radius: 100px;
+  padding: 4px 14px;
+  margin-top: 6px;
+}
+/* Duration badge */
+.exp-dur-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+.exp-card-left .exp-dur-wrap { align-items: flex-end; }
+.exp-card-right .exp-dur-wrap { align-items: flex-start; }
+
 .exp-dur {
-  font-size: clamp(52px, 5.5vw, 72px);
+  font-size: clamp(40px, 4.5vw, 60px);
   font-weight: 900;
   letter-spacing: -.05em;
   line-height: 1;
   color: var(--violet);
-  display: block;
-  margin-bottom: 4px;
-  text-align: right;
 }
-/* "YEARS" / "MONTHS" */
 .exp-dur-label {
   font-family: var(--mono);
   font-size: 10px;
-  letter-spacing: .22em;
+  letter-spacing: .2em;
   text-transform: uppercase;
   color: rgba(157,143,255,.55);
-  display: block;
-  text-align: right;
-  margin-bottom: 14px;
-}
-/* Date range — single line, right-aligned */
-.exp-period {
-  font-family: var(--mono);
-  font-size: 9.5px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: rgba(157,143,255,.7);
-  display: block;
-  text-align: right;
-  white-space: nowrap;
-}
-
-/* ── RIGHT column ── */
-.exp-right {
-  padding-left: 52px;
-  border-left: 1px solid rgba(157,143,255,.07);
 }
 .exp-co {
-  font-size: clamp(28px, 3.2vw, 44px);
+  font-size: clamp(24px, 2.8vw, 40px);
   font-weight: 900;
   letter-spacing: -.04em;
   line-height: 1;
   color: var(--w);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   transition: color .3s;
 }
 .exp-entry:hover .exp-co { color: var(--violet); }
 .exp-role {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 9.5px;
   letter-spacing: .18em;
   text-transform: uppercase;
   color: var(--dimmer);
   display: block;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 .exp-desc {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.82;
   color: var(--dim);
-  max-width: 500px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 .exp-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.exp-card-left .exp-tags { justify-content: flex-end; }
+.exp-card-right .exp-tags { justify-content: flex-start; }
 .exp-tag {
   font-family: var(--mono);
-  font-size: 9.5px;
+  font-size: 9px;
   letter-spacing: .08em;
   text-transform: uppercase;
-  color: rgba(157,143,255,.5);
-  border: 1px solid rgba(157,143,255,.13);
-  padding: 4px 12px;
-  border-radius: 2px;
+  color: var(--w2);
+  border: 1px solid rgba(157,143,255,.45);
+  background: rgba(157,143,255,.1);
+  padding: 6px 12px;
+  border-radius: 4px;
   transition: color .2s, border-color .2s, background .2s;
 }
 .exp-entry:hover .exp-tag {
-  color: var(--violet);
-  border-color: rgba(157,143,255,.35);
-  background: rgba(157,143,255,.05);
+  color: #fff;
+  border-color: var(--violet);
+  background: rgba(157,143,255,.2);
 }
+
 @media(max-width:700px){
-  .exp-timeline::before { left: 90px; }
-  .exp-entry { grid-template-columns: 90px 1fr; padding: 36px 0; }
-  .exp-left { padding-right: 20px; }
-  .exp-right { padding-left: 20px; }
-  .exp-dur { font-size: 40px; }
+  .exp-timeline-scroll { padding-left: 28px; }
+  .exp-spine-bg, .exp-spine-fg { left: 7px; transform: none; }
+  .exp-entry {
+    grid-template-columns: 28px 1fr;
+    grid-template-rows: auto;
+  }
+  .exp-dot-col { grid-column: 1; grid-row: 1; }
+  .exp-card-left,
+  .exp-card-right {
+    grid-column: 2; grid-row: 1;
+    text-align: left;
+    padding-left: 20px;
+    padding-right: 0;
+  }
+  .exp-card-left .exp-dur-wrap,
+  .exp-card-right .exp-dur-wrap { justify-content: flex-start; }
+  .exp-card-left .exp-tags,
+  .exp-card-right .exp-tags { justify-content: flex-start; }
+  .exp-empty { display: none; }
+  .exp-dur { font-size: 36px; }
 }
 
 #bg-grid { position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity .5s; }
@@ -2037,16 +2093,20 @@ html[data-theme="dark"] body,
 <section id="experience" class="sec secdark">
   <div class="eb rv">Career</div>
   <h2 class="stitle rv">Work Experience</h2>
-  <div class="exp-timeline">
 
-    <div class="exp-entry rv">
-      <div class="exp-left">
-        <span class="exp-dur">5</span>
-        <span class="exp-dur-label">Years</span>
-        <span class="exp-period">Jun 2021 — Present</span>
-        <div class="exp-node"></div>
-      </div>
-      <div class="exp-right">
+  <div class="exp-timeline-scroll rv" id="expTimeline">
+    <!-- Background spine -->
+    <div class="exp-spine-bg"></div>
+    <!-- Animated foreground spine -->
+    <div class="exp-spine-fg" id="expSpineFg"></div>
+
+    <!-- Entry 0: Accenture — LEFT -->
+    <div class="exp-entry" data-idx="0">
+      <div class="exp-card-left inactive" id="expCard0">
+        <div class="exp-dur-wrap">
+          <span class="exp-dur">5</span>
+          <span class="exp-dur-label">Years</span>
+        </div>
         <div class="exp-co">Accenture</div>
         <div class="exp-role">Senior UI/UX Designer</div>
         <div class="exp-desc">Leading UX for enterprise and consumer-facing digital products. Driving end-to-end design across research, systems, and delivery for global clients across multiple industries.</div>
@@ -2058,16 +2118,19 @@ html[data-theme="dark"] body,
           <span class="exp-tag">Stakeholder Mgmt</span>
         </div>
       </div>
+      <div class="exp-dot-col"><div class="exp-dot" id="expDot0"></div></div>
+      <div class="exp-empty"></div>
     </div>
 
-    <div class="exp-entry rv d1">
-      <div class="exp-left">
-        <span class="exp-dur">8</span>
-        <span class="exp-dur-label">Months</span>
-        <span class="exp-period">Jan 2020 — Aug 2020</span>
-        <div class="exp-node"></div>
-      </div>
-      <div class="exp-right">
+    <!-- Entry 1: Siemens — RIGHT -->
+    <div class="exp-entry" data-idx="1">
+      <div class="exp-empty"></div>
+      <div class="exp-dot-col"><div class="exp-dot" id="expDot1"></div></div>
+      <div class="exp-card-right inactive" id="expCard1">
+        <div class="exp-dur-wrap">
+          <span class="exp-dur">8</span>
+          <span class="exp-dur-label">Months</span>
+        </div>
         <div class="exp-co">Siemens</div>
         <div class="exp-role">UI/UX Designer</div>
         <div class="exp-desc">Designed interfaces for industrial and smart-building technology products. Worked within complex design systems for engineering-grade software used by global teams.</div>
@@ -2080,14 +2143,13 @@ html[data-theme="dark"] body,
       </div>
     </div>
 
-    <div class="exp-entry rv d2">
-      <div class="exp-left">
-        <span class="exp-dur">3</span>
-        <span class="exp-dur-label">Months</span>
-        <span class="exp-period">May 2019 — Jul 2019</span>
-        <div class="exp-node"></div>
-      </div>
-      <div class="exp-right">
+    <!-- Entry 2: Carrier AC — LEFT -->
+    <div class="exp-entry" data-idx="2">
+      <div class="exp-card-left inactive" id="expCard2">
+        <div class="exp-dur-wrap">
+          <span class="exp-dur">3</span>
+          <span class="exp-dur-label">Months</span>
+        </div>
         <div class="exp-co">Carrier AC</div>
         <div class="exp-role">Product Designer</div>
         <div class="exp-desc">Internship focused on industrial product design and user research for climate control systems. Contributed to physical and digital product touchpoints.</div>
@@ -2097,16 +2159,19 @@ html[data-theme="dark"] body,
           <span class="exp-tag">Industrial Design</span>
         </div>
       </div>
+      <div class="exp-dot-col"><div class="exp-dot" id="expDot2"></div></div>
+      <div class="exp-empty"></div>
     </div>
 
-    <div class="exp-entry rv d3">
-      <div class="exp-left">
-        <span class="exp-dur">3</span>
-        <span class="exp-dur-label">Months</span>
-        <span class="exp-period">May 2018 — Jul 2018</span>
-        <div class="exp-node"></div>
-      </div>
-      <div class="exp-right">
+    <!-- Entry 3: Ideal Mockups — RIGHT -->
+    <div class="exp-entry" data-idx="3">
+      <div class="exp-empty"></div>
+      <div class="exp-dot-col"><div class="exp-dot" id="expDot3"></div></div>
+      <div class="exp-card-right inactive" id="expCard3">
+        <div class="exp-dur-wrap">
+          <span class="exp-dur">3</span>
+          <span class="exp-dur-label">Months</span>
+        </div>
         <div class="exp-co">Ideal Mockups</div>
         <div class="exp-role">Prototype Designer</div>
         <div class="exp-desc">Specialised in CMF and prototype design — translating concepts into tangible form through 3D modelling, rendering, and rapid prototyping via CAD to CAM workflows.</div>
@@ -3150,6 +3215,52 @@ window.addEventListener('scroll',function(){var sy=window.scrollY,t=document.get
   // Apply to about-big
   var ab = document.querySelector('.about-big');
   if(ab) splitIntoChars(ab);
+})();
+
+// ── EXPERIENCE VERTICAL SCROLL TIMELINE ──
+(function(){
+  var timeline = document.getElementById('expTimeline');
+  var spineFg  = document.getElementById('expSpineFg');
+  if(!timeline || !spineFg) return;
+
+  var TOTAL = 4;
+
+  function clamp01(v){ return Math.max(0, Math.min(1, v)); }
+
+  function tick(){
+    var containerRect = timeline.getBoundingClientRect();
+    var winH = window.innerHeight;
+    var midpoint = winH / 2;
+
+    // Progress 0→1: from when midpoint hits container top → midpoint hits container bottom
+    var scrolledPast = midpoint - containerRect.top;
+    var totalH = containerRect.height;
+    var progress = clamp01(scrolledPast / totalH);
+
+    // Grow the spine
+    spineFg.style.height = (progress * 100) + '%';
+
+    // Activate each dot + card
+    for(var i = 0; i < TOTAL; i++){
+      var threshold = i / (TOTAL - 1 || 1) * 0.72;
+      var isActive = progress >= threshold;
+
+      var dot  = document.getElementById('expDot' + i);
+      var card = document.getElementById('expCard' + i);
+      if(dot){
+        if(isActive){ dot.classList.add('active'); }
+        else { dot.classList.remove('active'); }
+      }
+      if(card){
+        if(isActive){ card.classList.remove('inactive'); card.classList.add('active'); }
+        else { card.classList.add('inactive'); card.classList.remove('active'); }
+      }
+
+    }
+  }
+
+  window.addEventListener('scroll', tick, { passive: true });
+  tick(); // initial
 })();
 
 // ── EDUCATION HORIZONTAL SCROLL TIMELINE ──
