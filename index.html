@@ -1667,7 +1667,9 @@ html[data-theme="dark"] body,
 [data-theme="light"] .exp-co { color: var(--w); }
 [data-theme="light"] .exp-role { color: rgba(79,53,204,.65); }
 [data-theme="light"] .exp-desc { color: var(--dim); }
-[data-theme="light"] .exp-tag { color: var(--violet); border-color: rgba(79,53,204,.25); background: rgba(79,53,204,.06); }
+[data-theme="light"] .exp-tag { color: var(--violet); border-color: rgba(79,53,204,.35); background: rgba(79,53,204,.08); }
+[data-theme="light"] .exp-card-left.inactive,
+[data-theme="light"] .exp-card-right.inactive { opacity: .55; }
 [data-theme="light"] .exp-dur { color: var(--violet); }
 [data-theme="light"] .exp-dur-label { color: rgba(79,53,204,.55); }
 [data-theme="light"] .exp-period { color: rgba(79,53,204,.65); }
@@ -1739,7 +1741,7 @@ html[data-theme="dark"] body,
 [data-theme="light"] .exp-dur-label { color: rgba(79,53,204,.55); }
 [data-theme="light"] .exp-period  { color: rgba(79,53,204,.7); }
 [data-theme="light"] .exp-right   { border-left-color: rgba(79,53,204,.1); }
-[data-theme="light"] .exp-tag     { color: var(--violet); border-color: rgba(79,53,204,.25); background: rgba(79,53,204,.06); }
+[data-theme="light"] .exp-tag     { color: var(--violet); border-color: rgba(79,53,204,.35); background: rgba(79,53,204,.08); }
 
 /* ── PROJECTS ── */
 [data-theme="light"] .pname  { color: var(--w); }
@@ -1765,10 +1767,10 @@ html[data-theme="dark"] body,
 
 /* ── Active tab + primary buttons — always white text on violet ── */
 [data-theme="light"] .tab-btn.active { color: #fff; background: var(--violet); }
-[data-theme="light"] .ctb.pri { color: #fff; }
-[data-theme="light"] .ctb.pri:hover { color: #fff; }
 [data-theme="light"] .ctb { color: var(--w); background: rgba(79,53,204,.06); border-color: rgba(79,53,204,.25); }
 [data-theme="light"] .ctb:hover { color: #fff; }
+[data-theme="light"] .ctb.pri { background: var(--violet); color: #fff; border-color: var(--violet); box-shadow: 0 6px 20px var(--violet-glow); }
+[data-theme="light"] .ctb.pri:hover { color: #fff; border-color: var(--pink); }
 [data-theme="light"] .tc-name    { color: var(--w); }
 [data-theme="light"] .tc-yrs-num { color: var(--w); }
 [data-theme="light"] .tc-yrs-unit { color: var(--dim); }
@@ -1781,7 +1783,6 @@ html[data-theme="dark"] body,
 [data-theme="light"] .cttitle { color: var(--w); }
 [data-theme="light"] .cttitle em { color: var(--violet); }
 [data-theme="light"] .ctsub  { color: var(--violet); }
-[data-theme="light"] .ctb    { color: var(--w); }
 
 /* ── FOOTER ── */
 [data-theme="light"] footer  { color: var(--dim); }
@@ -2209,9 +2210,6 @@ html[data-theme="dark"] body,
   <h2 class="cttitle rv d1" id="cttitle">Got a project?<br>Let's <em>talk.</em></h2>
   <div class="ctbtns rv d2">
     <a class="ctb pri mag" href="mailto:pallavraj75@gmail.com"><span>Send an Email</span></a>
-    <a class="ctb mag" href="https://www.behance.net/pallavrajsingh" target="_blank"><span>Behance</span></a>
-    <a class="ctb mag" href="http://linkedin.com/in/pallav-raj-singh-chouhan-4abb98184/" target="_blank"><span>LinkedIn</span></a>
-    <a class="ctb mag" href="https://instagram.com/xero.verse" target="_blank"><span>Instagram</span></a>
   </div>
 </section>
 
