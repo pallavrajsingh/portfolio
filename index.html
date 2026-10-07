@@ -1886,6 +1886,9 @@ themeBtn.addEventListener('click', function(){
     window._threeScene.background = new THREE.Color(isDark ? 0x0c0b14 : 0xfaf8f2);
     window._threeScene.fog = new THREE.FogExp2(isDark ? 0x0c0b14 : 0xfaf8f2, 0.032);
   }
+
+  // Redraw bg-crosses for new theme
+  if(window._redrawCrosses) window._redrawCrosses();
 });
 
 
@@ -1970,12 +1973,15 @@ themeBtn.addEventListener('click', function(){
     var stretch = Math.abs(dist - SPACING) / SPACING;
     var isTensioned = n1.tension > 0.05 || n2.tension > 0.05 || stretch > 0.1;
 
+    var _lnDark = document.documentElement.getAttribute('data-theme') !== 'light';
     if(isTensioned) {
       var glow = Math.max(n1.tension, n2.tension, stretch * 2);
-      ctx.strokeStyle = 'rgba(255,255,255,' + Math.min(1, 0.25 + glow * 0.75) + ')';
+      ctx.strokeStyle = _lnDark
+        ? 'rgba(255,255,255,' + Math.min(1, 0.25 + glow * 0.75) + ')'
+        : 'rgba(26,20,32,' + Math.min(1, 0.22 + glow * 0.72) + ')';
       ctx.lineWidth   = 0.8 + glow * 1.4;
     } else {
-      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      ctx.strokeStyle = _lnDark ? 'rgba(255,255,255,0.08)' : 'rgba(26,20,32,0.09)';
       ctx.lineWidth   = 0.65;
     }
     ctx.beginPath();
@@ -2006,8 +2012,9 @@ themeBtn.addEventListener('click', function(){
     var dt = Math.min((now - last) / 1000, 0.033);
     last = now;
 
-    // Background — exact colour from component
-    ctx.fillStyle = '#06070a';
+    // Background — theme-aware
+    var _isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    ctx.fillStyle = _isDark ? '#06070a' : '#faf8f2';
     ctx.fillRect(0, 0, W, H);
 
     // Pointer velocity
@@ -2118,7 +2125,7 @@ themeBtn.addEventListener('click', function(){
       }
       var px2 = pn1.x + (pn2.x - pn1.x) * pl.t;
       var py2 = pn1.y + (pn2.y - pn1.y) * pl.t;
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = document.documentElement.getAttribute('data-theme') !== 'light' ? '#ffffff' : '#1a1420';
       ctx.beginPath();
       ctx.arc(px2, py2, 2.0, 0, Math.PI*2);
       ctx.fill();
@@ -2137,18 +2144,21 @@ themeBtn.addEventListener('click', function(){
         ? nd2.radius * 2.2 + nd2.tension * 1.5
         : nd2.radius + Math.sin(nd2.phase) * 0.25;
 
-      // Glow halo — white
+      // Glow halo — theme-aware
+      var _ndDark = document.documentElement.getAttribute('data-theme') !== 'light';
       if(isNear || nd2.tension > 0.1) {
-        ctx.fillStyle = 'rgba(255,255,255,' + Math.min(1, 0.25 + nd2.tension*0.65) + ')';
+        ctx.fillStyle = _ndDark
+          ? 'rgba(255,255,255,' + Math.min(1, 0.25 + nd2.tension*0.65) + ')'
+          : 'rgba(79,53,204,' + Math.min(1, 0.18 + nd2.tension*0.55) + ')';
         ctx.beginPath();
         ctx.arc(nd2.x, nd2.y, cr * 2.2, 0, Math.PI*2);
         ctx.fill();
       }
 
       // Core dot
-      ctx.fillStyle = (isNear || nd2.tension > 0.1)
-        ? '#ffffff'
-        : 'rgba(255,255,255,0.28)';
+      ctx.fillStyle = _ndDark
+        ? ((isNear || nd2.tension > 0.1) ? '#ffffff' : 'rgba(255,255,255,0.28)')
+        : ((isNear || nd2.tension > 0.1) ? '#4f35cc' : 'rgba(26,20,32,0.22)');
       ctx.beginPath();
       ctx.arc(nd2.x, nd2.y, Math.max(0.8, cr), 0, Math.PI*2);
       ctx.fill();
@@ -2817,7 +2827,9 @@ window.addEventListener('scroll',function(){var sy=window.scrollY,t=document.get
   function draw(){
     var W=cv.width=innerWidth, H=cv.height=innerHeight, ctx=cv.getContext('2d');
     ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle='rgba(255,255,255,.26)'; ctx.lineWidth=1;
+    var _crossDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    ctx.strokeStyle = _crossDark ? 'rgba(255,255,255,.26)' : 'rgba(26,20,32,.18)';
+    ctx.lineWidth=1;
     var ARM=8, xs=[0,W*.25,W*.5,W*.75,W-1], ys=[];
     for(var y=0;y<=H+200;y+=200) ys.push(y);
     xs.forEach(function(x){ ys.forEach(function(yy){
@@ -2825,6 +2837,7 @@ window.addEventListener('scroll',function(){var sy=window.scrollY,t=document.get
       ctx.moveTo(x,yy-ARM);ctx.lineTo(x,yy+ARM);ctx.stroke();
     });});
   }
+  window._redrawCrosses = draw;
   draw();
   window.addEventListener('resize',draw,{passive:true});
 
