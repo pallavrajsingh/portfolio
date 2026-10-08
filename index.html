@@ -1191,15 +1191,7 @@ body.cview .cring{width:48px;height:52px;opacity:.35;border-color:var(--violet);
   .exp-dur { font-size: 36px; }
 }
 
-#bg-grid { position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity .5s; }
-#bg-grid.on { opacity:1; }
-#bg-grid::before {
-  content:'';position:absolute;inset:0;
-  background-image:
-    linear-gradient(to right, rgba(255,255,255,.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,.04) 1px, transparent 1px);
-  background-size:25vw 200px;
-}
+#bg-grid { display:none!important; }
 
 /* ══ PROJECTS ══ */
 /* ── PROJECTS ── */
@@ -1337,7 +1329,7 @@ body.cview .cring{width:48px;height:52px;opacity:.35;border-color:var(--violet);
 .edu-sticky{height:100vh;width:100vw;position:sticky;top:0;padding-top:10%;overflow:hidden;}
 .edu-slider{display:flex;height:30vw;width:180vw;align-items:center;gap:5vw;padding:0 5vw;margin-right:2vw;will-change:transform;}
 .edu-area{position:relative;height:100%;width:100%;}
-.edu-spine{position:absolute;left:0;top:49%;transform:translateY(-50%);display:flex;align-items:center;height:fit-content;width:100%;pointer-events:none;z-index:2;}
+.edu-spine{position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;height:fit-content;width:100%;pointer-events:none;z-index:2;}
 .edu-spine-ldot,.edu-spine-rdot{height:.8vw;width:.8vw;min-width:.8vw;border-radius:50%;background:var(--violet);}
 .edu-spine-line{height:1px;width:0%;border-radius:99px;background:var(--violet);flex-shrink:0;}
 .edu-top{display:flex;height:50%;width:100%;align-items:center;justify-content:flex-start;gap:.5vw;}
@@ -1348,18 +1340,21 @@ body.cview .cring{width:48px;height:52px;opacity:.35;border-color:var(--violet);
 
 .edu-col-spacer{width:25vw;flex-shrink:0;}
 .edu-top-item{position:relative;height:100%;width:30vw;padding:0 3vw;flex-shrink:0;}
-.edu-top-item .edu-abs{position:absolute;left:0;bottom:0;top:0;height:100%;}
-.edu-top-item .edu-dot{width:1vw;height:1vw;border-radius:50%;background:var(--violet);position:relative;left:-.5vw;transform:scale(0);}
-.edu-top-item .edu-stem{height:94%;width:1px;border-radius:99px;background:var(--violet);transform-origin:bottom;transform:scaleY(0);}
+/* abs is the shared containing block for dot+stem; both use absolute coords within it */
+.edu-top-item .edu-abs{position:absolute;left:0;top:0;bottom:0;}
+/* dot at top (far end), stem bridges down to spine */
+.edu-top-item .edu-dot{width:1vw;height:1vw;border-radius:50%;background:var(--violet);position:absolute;top:0;left:-.5vw;z-index:1;transform:scale(0);}
+.edu-top-item .edu-stem{position:absolute;top:1vw;bottom:0;left:0;width:1px;height:auto;border-radius:99px;background:var(--violet);transform-origin:bottom;transform:scaleY(0);}
 .edu-top-item .edu-text{margin-top:-1vw;display:flex;flex-direction:column;gap:1vw;}
 .edu-bot{height:50%;display:flex;align-items:center;justify-content:flex-start;width:100%;}
 .edu-period{width:34%;padding-top:2vw;height:100%;flex-shrink:0;}
 .edu-period p{font-family:var(--mono);font-size:1.65vw;line-height:1;color:rgba(157,143,255,.5);}
 .edu-bot-items{width:100%;display:flex;height:100%;column-gap:20vw;margin-left:7vw;}
 .edu-bot-item{position:relative;height:100%;width:25vw;padding:0 3vw;flex-shrink:0;}
-.edu-bot-item .edu-abs{position:absolute;left:0;bottom:-1%;height:100%;}
-.edu-bot-item .edu-stem{height:94%;width:1px;border-radius:99px;background:var(--violet);transform-origin:top;transform:scaleY(0);}
-.edu-bot-item .edu-dot{width:1vw;height:1vw;border-radius:50%;background:var(--violet);position:relative;left:-.5vw;transform:scale(0);}
+.edu-bot-item .edu-abs{position:absolute;left:0;top:0;bottom:0;}
+/* stem starts at spine (top), dot at far end (bottom) */
+.edu-bot-item .edu-stem{position:absolute;top:0;bottom:1vw;left:0;width:1px;height:auto;border-radius:99px;background:var(--violet);transform-origin:top;transform:scaleY(0);}
+.edu-bot-item .edu-dot{width:1vw;height:1vw;border-radius:50%;background:var(--violet);position:absolute;bottom:0;left:-.5vw;z-index:1;transform:scale(0);}
 .edu-bot-item .edu-text{display:flex;height:100%;width:100%;flex-direction:column;justify-content:flex-end;gap:1vw;}
 .edu-h4{font-size:2.5vw;font-weight:900;line-height:100%;letter-spacing:-.02em;color:var(--w);overflow:hidden;}
 .edu-p{font-size:1.5vw;line-height:115%;color:var(--dim);overflow:hidden;}
@@ -1369,16 +1364,18 @@ body.cview .cring{width:48px;height:52px;opacity:.35;border-color:var(--violet);
 [data-theme="light"] .edu-period p{color:rgba(79,53,204,.5);}
 [data-theme="light"] .edu-p.mono{color:rgba(79,53,204,.55);}
 @media(max-width:600px){
-  #education{height:400vh;}
-  .edu-slider{width:500vw;height:80vh;padding:0 7vw;gap:7vw;}
+  #education{height:300vh;}
+  .edu-slider{width:500vw;height:52vh;padding:0 7vw;gap:7vw;}
   .edu-title-block h2{font-size:8.5vw;}
-  
-.edu-col-spacer{width:25vw;flex-shrink:0;}
-.edu-top-item{width:70vw;} .edu-bot-item{width:70vw;}
+  .edu-col-spacer{width:25vw;flex-shrink:0;}
+  .edu-top-item{width:70vw;} .edu-bot-item{width:70vw;}
   .edu-h4{font-size:6.4vw;} .edu-p{font-size:4.8vw;} .edu-p.mono{font-size:3vw;}
   .edu-period p{font-size:4.2vw;}
   .edu-spine-ldot,.edu-spine-rdot{width:2vw;height:2vw;}
-  .edu-top-item .edu-dot,.edu-bot-item .edu-dot{width:2.5vw;height:2.5vw;left:-1.25vw;}
+  .edu-top-item .edu-dot{width:2.5vw;height:2.5vw;left:-1.25vw;top:0;}
+  .edu-top-item .edu-stem{top:2.5vw;}
+  .edu-bot-item .edu-dot{width:2.5vw;height:2.5vw;left:-1.25vw;bottom:0;}
+  .edu-bot-item .edu-stem{bottom:2.5vw;}
   .edu-top-items{column-gap:40vw;} .edu-bot-items{column-gap:40vw;margin-left:7vw;}
 }
 
@@ -1599,17 +1596,7 @@ html[data-theme="dark"] body,
 [data-theme="dark"] footer,
 [data-theme="dark"] .secdark,
 [data-theme="dark"] .seclight { background: rgba(13,13,13,.82) !important; }
-#bg-grid { position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity .5s; }
-#bg-grid.on { opacity:1; }
-#bg-grid::before {
-  content:'';position:absolute;inset:0;
-  background-image:
-    linear-gradient(to right, rgba(255,255,255,.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,.04) 1px, transparent 1px);
-  background-size:25vw 200px;
-}
-#bg-crosses { position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity .5s; }
-#bg-crosses.on { opacity:1; }
+#bg-grid, #bg-crosses { display:none!important; }
 #ls-sticky { z-index:3; }
 
 #contact .ctsub,#contact .cttitle,#contact .ctbtns { position:relative;z-index:2; }
