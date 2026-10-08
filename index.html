@@ -3759,7 +3759,8 @@ window.addEventListener('scroll',function(){var sy=window.scrollY,t=document.get
 
   function metrics(){
     // Drum card — sized for the front face in drum mode
-    var cardW = Math.min(stageH*CARD_H*CARD_RATIO, stageW*CARD_MAX_W);
+    var mobileMaxW = stageW < 700 ? 0.80 : CARD_MAX_W;
+    var cardW = Math.min(stageH*CARD_H*CARD_RATIO, stageW*mobileMaxW);
     var cardH = cardW/CARD_RATIO;
     var drumR = cardH*DRUM;
     // Ring — radius from stage size, card element sized to arc fraction.
