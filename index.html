@@ -2013,7 +2013,6 @@ html[data-theme="dark"] body,
 </section>
 
 <section id="about" class="sec secdark">
-  <div class="eb rv">About</div>
   <div class="about-wrap">
       <h2 class="about-big rv">Designing<br>with <em>intent</em></h2>
       <p class="ahl-wrap about-p rv d1">
@@ -2064,7 +2063,6 @@ html[data-theme="dark"] body,
         <!-- TOP HALF: title | col1:2002 | col3:2014 -->
         <div class="edu-top">
           <div class="edu-title-block">
-            <div class="eb">Background</div>
             <h2>Education</h2>
           </div>
           <div class="edu-top-items">
@@ -2142,7 +2140,6 @@ html[data-theme="dark"] body,
 
 <div id="skills-scroll" class="skills-scroll-outer">
 <section id="skills" class="sec seclight skills-sticky">
-  <div class="eb rv">Expertise</div>
   <h2 class="stitle rv">Tools &amp; Skills</h2>
 
   <!-- Bulletin — directly below heading -->
@@ -2195,7 +2192,6 @@ html[data-theme="dark"] body,
 </div><!-- /skills-scroll-outer -->
 
 <section id="experience" class="sec secdark">
-  <div class="eb rv">Career</div>
   <h2 class="stitle rv">Work Experience</h2>
 
   <div class="exp-timeline-scroll rv" id="expTimeline">
@@ -2295,8 +2291,6 @@ html[data-theme="dark"] body,
 <section id="projects" class="sec seclight" style="padding:0;">
   <div id="ww-stage" tabindex="0" role="listbox" aria-label="Selected Work"></div>
 </section>
-
-
 
 <section id="contact" class="sec seclight" style="position:relative;overflow:hidden;">
   <canvas id="contact-canvas"></canvas>
@@ -2662,13 +2656,12 @@ document.querySelectorAll('.prow').forEach(function(el){el.addEventListener('mou
   /* ── Active section tracking ── */
   var lastActive = '';
   function getActive(){
-    var scrollY = window.scrollY;
-    var threshold = scrollY + window.innerHeight * 0.35;
+    var midY = window.innerHeight * 0.45;
     var active = '';
     sectionEls.forEach(function(el){
-      if(el.offsetTop <= threshold) active = el.id;
+      var top = el.getBoundingClientRect().top;
+      if(top <= midY) active = el.id;
     });
-    // If nothing matched yet (above first section), keep empty
     return active;
   }
   function updateActive(){
@@ -3872,7 +3865,9 @@ window.addEventListener('scroll',function(){var sy=window.scrollY,t=document.get
     if(e.key==='ArrowDown'){ to(Math.round(targetVal)+1); e.preventDefault(); }
     else if(e.key==='ArrowUp'){ to(Math.round(targetVal)-1); e.preventDefault(); }
   });
-})();</script>
+})();
+
+</script>
 </div><!-- /scroll-container --></div><!-- /overflow-clip -->
 </body>
 </html>
