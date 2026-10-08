@@ -129,18 +129,24 @@ html,body{min-height:100%;overflow:visible;}
 #ls-sticky{ position:sticky; top:0; height:100vh; overflow:hidden; background:#000; }
 #ls-canvas{ position:absolute;inset:0;width:100%;height:100%;display:block; }
 #ls-overlay{ position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2; }
+#ls-overlay::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 55% 55% at 50% 50%, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.3) 55%, transparent 100%);
+  pointer-events:none;
+}
 .ls-ph{
   position:absolute;text-align:center;display:flex;flex-direction:column;
-  align-items:center;gap:.1em;font-weight:900;font-size:clamp(36px,5.5vw,80px);
-  letter-spacing:-.04em;line-height:1;text-transform:uppercase;color:#fff;pointer-events:none;opacity:1;
+  align-items:center;gap:.05em;font-weight:900;font-size:clamp(22px,7.5vw,110px);
+  letter-spacing:-.05em;line-height:.92;text-transform:uppercase;color:#fff;pointer-events:none;opacity:1;
+  text-shadow:0 2px 32px rgba(0,0,0,1),0 0 80px rgba(0,0,0,0.95);
 }
 .ls-ph .lp-top,.ls-ph .lp-mid,.ls-ph .lp-bot{
   display:block;opacity:0;transform:translateY(110%);
   transition:opacity .55s cubic-bezier(.16,1,.3,1),transform .55s cubic-bezier(.16,1,.3,1);
 }
-.ls-ph .lp-top{transition-delay:.00s;font-size:.5em;letter-spacing:.14em;color:var(--violet);font-weight:400;font-family:var(--mono);}
+.ls-ph .lp-top{transition-delay:.00s;font-size:.5em;letter-spacing:.14em;color:var(--violet);font-weight:400;font-family:var(--mono);display:none;}
 .ls-ph .lp-mid{transition-delay:.09s;}
-.ls-ph .lp-bot{transition-delay:.18s;color:var(--violet);}
+.ls-ph .lp-bot{transition-delay:.18s;color:#fff;}
 .ls-ph.on .lp-top,.ls-ph.on .lp-mid,.ls-ph.on .lp-bot{opacity:1;transform:translateY(0);}
 .ls-ph.out .lp-top,.ls-ph.out .lp-mid,.ls-ph.out .lp-bot{
   opacity:0;transform:translateY(-110%);
@@ -591,7 +597,8 @@ body.cview .cring{width:48px;height:52px;opacity:.35;border-color:var(--violet);
 .char.go{opacity:1;transform:none;}
 .violetw{color:var(--violet);}
 .hbot{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;position:relative;z-index:10;}
-.hdesc{max-width:380px;font-size:15px;line-height:1.82;color:var(--dim);opacity:0;transform:translateY(16px);transition:opacity .9s ease 1s,transform .9s ease 1s;}
+.hdesc{max-width:380px;font-size:15px;line-height:1.82;color:#ffffff;opacity:0;transform:translateY(16px);transition:opacity .9s ease 1s,transform .9s ease 1s;}
+[data-theme="light"] .hdesc{color:var(--dim);}
 .hdesc.go{opacity:1;transform:none;}
 .hscroll{position:absolute;right:176px;bottom:90px;display:flex;flex-direction:column;align-items:center;gap:9px;opacity:0;transition:opacity 1s ease 1.7s;pointer-events:none;}
 .hscroll.go{opacity:1;}
@@ -2005,9 +2012,9 @@ html[data-theme="dark"] body,
   <div id="ls-sticky">
     <canvas id="ls-canvas"></canvas>
     <div id="ls-overlay">
-      <div class="ls-ph on" id="ls-p0"><span class="lp-top">5 years</span><span class="lp-mid">of shipping</span><span class="lp-bot">design</span></div>
-      <div class="ls-ph"    id="ls-p1"><span class="lp-top">pixels</span><span class="lp-mid">with</span><span class="lp-bot">purpose</span></div>
-      <div class="ls-ph"    id="ls-p2"><span class="lp-top">where craft</span><span class="lp-mid">meets</span><span class="lp-bot">code</span></div>
+      <div class="ls-ph on" id="ls-p0"><span class="lp-top"></span><span class="lp-mid">5 Years of</span><span class="lp-bot">Shipping Design</span></div>
+      <div class="ls-ph"    id="ls-p1"><span class="lp-top"></span><span class="lp-mid">Pixels with</span><span class="lp-bot">Purpose</span></div>
+      <div class="ls-ph"    id="ls-p2"><span class="lp-top"></span><span class="lp-mid">Where Craft</span><span class="lp-bot">Meets Code</span></div>
     </div>
   </div>
 </section>
@@ -2419,13 +2426,18 @@ themeBtn.addEventListener('click', function(){
     var stretch = Math.abs(dist - SPACING) / SPACING;
     var isTensioned = n1.tension > 0.05 || n2.tension > 0.05 || stretch > 0.1;
     var lt = document.documentElement.getAttribute('data-theme') === 'light';
+    var midBx = (n1.bx + n2.bx) * 0.5;
+    var midBy = (n1.by + n2.by) * 0.5;
+    var xIn = midBx < W*0.52 ? 1 - midBx / (W*0.52) : 0;
+    var yIn = midBy > H*0.22 ? Math.min(1, (midBy - H*0.22) / (H*0.58)) : 0;
+    var zf  = Math.max(0.04, 1 - xIn * yIn * 0.96);
 
     if(isTensioned) {
       var glow = Math.max(n1.tension, n2.tension, stretch * 2);
       ctx.strokeStyle = lt
         ? 'rgba(26,20,32,' + Math.min(0.7, 0.3 + glow * 0.5) + ')'
-        : 'rgba(255,255,255,' + Math.min(1, 0.25 + glow * 0.75) + ')';
-      ctx.lineWidth = 0.8 + glow * 1.4;
+        : 'rgba(255,255,255,' + Math.min(1, (0.25 + glow * 0.75) * zf) + ')';
+      ctx.lineWidth = 0.8 + glow * 1.4 * zf;
     } else {
       ctx.strokeStyle = lt ? 'rgba(26,20,32,0.18)' : 'rgba(255,255,255,0.08)';
       ctx.lineWidth   = lt ? 0.8 : 0.65;
@@ -2596,13 +2608,16 @@ themeBtn.addEventListener('click', function(){
       var isNear = dd < ptr.radius;
 
       var baseR = lt2 ? nd2.radius * 1.6 : nd2.radius;
+      var nxIn = nd2.bx < W*0.52 ? 1 - nd2.bx/(W*0.52) : 0;
+      var nyIn = nd2.by > H*0.22 ? Math.min(1,(nd2.by - H*0.22)/(H*0.58)) : 0;
+      var nzf  = Math.max(0.04, 1 - nxIn * nyIn * 0.96);
       var cr = isNear
-        ? baseR * 2.2 + nd2.tension * 1.5
+        ? baseR + (baseR * 1.2 + nd2.tension * 1.5) * nzf
         : baseR + Math.sin(nd2.phase) * 0.25;
 
       // Glow halo
       if(isNear || nd2.tension > 0.1) {
-        ctx.fillStyle = haloBase + Math.min(1, 0.25 + nd2.tension*0.65) + ')';
+        ctx.fillStyle = haloBase + Math.min(1, (0.25 + nd2.tension*0.65) * nzf) + ')';
         ctx.beginPath();
         ctx.arc(nd2.x, nd2.y, cr * 2.2, 0, Math.PI*2);
         ctx.fill();
@@ -3001,85 +3016,146 @@ window.addEventListener('scroll',function(){var sy=window.scrollY,t=document.get
 })();
 
 // ══════════════════════════════════════════════════════
-// LIGHTSPEED — true 3D perspective starfield, scroll boosts speed
+// LIGHTSPEED — Three.js instanced warp (ported from LightSpeed React component)
 (function(){
-  var section=document.getElementById('lightspeed');
-  var sticky=document.getElementById('ls-sticky');
-  var cv=document.getElementById('ls-canvas');
-  if(!cv||!section)return;
-  var ctx=cv.getContext('2d');
-  var W,H;
-  function resize(){
-    W=cv.width=sticky.offsetWidth||innerWidth;
-    H=cv.height=sticky.offsetHeight||innerHeight;
-  }
-  setTimeout(resize,80);
-  window.addEventListener('resize',resize,{passive:true});
-  window.addEventListener('load',function(){setTimeout(resize,60);});
+  var section = document.getElementById('lightspeed');
+  var sticky  = document.getElementById('ls-sticky');
+  if(!section || !sticky) return;
 
-  var COLS=['#00f5ff','#00f5ff','#00f5ff','#00f5ff','#00f5ff',
-            '#00e8cc','#00e8cc','#00d4aa','#00d4aa',
-            '#3dd9ff','#18e8ff','#9060ff','#7040cc','#f040fb','#dd30e0'];
+  // Remove old canvas, let Three.js create a fresh WebGL canvas
+  var oldCv = document.getElementById('ls-canvas');
+  if(oldCv) oldCv.remove();
+  var cv = document.createElement('canvas');
+  cv.id = 'ls-canvas';
+  cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;';
+  sticky.insertBefore(cv, sticky.firstChild);
 
-  var N=180, stars=[];
-  function mk(z){
-    var a=Math.random()*Math.PI*2, r=0.1+Math.random()*0.9;
-    return {x:Math.cos(a)*r,y:Math.sin(a)*r,z:z,
-            col:COLS[Math.floor(Math.random()*COLS.length)],
-            w:0.8+Math.random()*1.6};
-  }
-  for(var i=0;i<N;i++) stars.push(mk(Math.random()));
+  // ── Renderer ───────────────────────────────────────────
+  var renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.toneMapping = THREE.NoToneMapping;
 
-  var phs=[document.getElementById('ls-p0'),
-           document.getElementById('ls-p1'),
-           document.getElementById('ls-p2')];
-  var activeP=0;
-  function sp(i){
-    if(i===activeP)return;
-    var leaving=phs[activeP];
-    leaving.classList.remove('on');
-    leaving.classList.add('out');
-    setTimeout(function(){ leaving.classList.remove('out'); },400);
-    activeP=i; phs[activeP].classList.add('on');
-  }
+  // ── Scene ──────────────────────────────────────────────
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x000000);
+  scene.fog = new THREE.FogExp2(0x000000, 0.025);
 
-  var boost=0, lastSY=window.scrollY;
-  window.addEventListener('scroll',function(){
-    var r=section.getBoundingClientRect();
-    var maxS=section.offsetHeight-innerHeight;
-    if(maxS<=0)return;
-    if(r.top>1||r.bottom<innerHeight-1)return;
-    var p=Math.max(0,Math.min(1,-r.top/maxS));
-    sp(p<0.40?0:p<0.75?1:2);
-    var sy=window.scrollY, d=Math.abs(sy-lastSY); lastSY=sy;
-    boost=Math.min(boost+d*0.0004,0.014);
-  },{passive:true});
+  var camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.01, 500);
+  camera.position.set(0, 0, 5);
 
-  function proj(x,y,z){
-    var fz=Math.max(z,0.001);
-    return {sx:(x/fz)*(W*0.45)+W*0.5, sy:(y/fz)*(H*0.45)+H*0.5};
-  }
+  // ── Params (matches React component defaults) ──────────
+  var COUNT       = 1000;
+  var BASE_SPEED  = 0.05;
+  var LIGHT_COLOR = '#ffffff';
+  var INTENSITY   = 1.5;
+  var RADIUS      = 25;
+  var CYL_LEN     = 150;
 
-  function draw(){
-    var spd=0.0008+boost; boost*=0.88;
-    ctx.fillStyle='rgba(0,0,0,0.25)';
-    ctx.fillRect(0,0,W,H);
-    ctx.lineCap='round';
-    for(var i=0;i<N;i++){
-      var s=stars[i], pz=s.z;
-      s.z-=spd*(0.8+s.z*0.5);
-      if(s.z<=0.02){stars[i]=mk(0.9+Math.random()*0.1);continue;}
-      var p1=proj(s.x,s.y,pz), p2=proj(s.x,s.y,s.z);
-      if(p2.sx<-50||p2.sx>W+50||p2.sy<-50||p2.sy>H+50)continue;
-      var alpha=Math.min((1-s.z)*1.4,1)*0.9;
-      if(alpha<0.05)continue;
-      var lw=Math.max(s.w*(1-s.z)*3.5,0.3);
-      ctx.beginPath(); ctx.moveTo(p1.sx,p1.sy); ctx.lineTo(p2.sx,p2.sy);
-      ctx.strokeStyle=s.col; ctx.lineWidth=lw; ctx.globalAlpha=alpha; ctx.stroke();
+  // ── Instanced mesh ─────────────────────────────────────
+  var col = new THREE.Color(LIGHT_COLOR).multiplyScalar(INTENSITY);
+  var geo = new THREE.SphereBufferGeometry(1, 6, 6);
+  var mat = new THREE.MeshBasicMaterial({
+    color:      col,
+    transparent: true,
+    opacity:     0.9,
+    blending:    THREE.AdditiveBlending,
+    depthWrite:  false
+  });
+  var mesh = new THREE.InstancedMesh(geo, mat, COUNT);
+  mesh.frustumCulled = false;
+  scene.add(mesh);
+
+  var dummy = new THREE.Object3D();
+
+  // ── Particles (mirrors useMemo + pre-warm logic) ───────
+  var particles = [];
+  for(var i = 0; i < COUNT; i++) {
+    var angle = Math.random() * Math.PI * 2;
+    var r     = 2 + Math.random() * (RADIUS - 2);
+    var p = {
+      x:   Math.cos(angle) * r,
+      y:   Math.sin(angle) * r,
+      z:   (Math.random() - 0.5) * CYL_LEN,
+      spd: 0.5 + Math.random() * 0.5,
+      len: 1 + Math.random() * 2
+    };
+    // Pre-warm 90 frames so tunnel is full on load
+    for(var j = 0; j < 90; j++) {
+      p.z += BASE_SPEED * p.spd * (1/60) * 50;
+      if(p.z > 5) { p.z = -CYL_LEN/2; p.spd = 0.5 + Math.random() * 0.5; }
     }
-    ctx.globalAlpha=1;
+    particles.push(p);
   }
-  (function loop(){requestAnimationFrame(loop);draw();})();
+
+  // ── Scroll → phase text + speed boost ─────────────────
+  var boost  = 0;
+  var lastSY = window.scrollY;
+  var phs    = [
+    document.getElementById('ls-p0'),
+    document.getElementById('ls-p1'),
+    document.getElementById('ls-p2')
+  ];
+  var activeP = 0;
+  function showPhase(idx) {
+    if(idx === activeP) return;
+    var leaving = phs[activeP];
+    if(leaving) {
+      leaving.classList.remove('on');
+      leaving.classList.add('out');
+      setTimeout(function(){ leaving.classList.remove('out'); }, 400);
+    }
+    activeP = idx;
+    if(phs[activeP]) phs[activeP].classList.add('on');
+  }
+
+  window.addEventListener('scroll', function(){
+    var r    = section.getBoundingClientRect();
+    var maxS = section.offsetHeight - window.innerHeight;
+    if(maxS <= 0 || r.top > 1 || r.bottom < window.innerHeight - 1) return;
+    var prog = Math.max(0, Math.min(1, -r.top / maxS));
+    showPhase(prog < 0.40 ? 0 : prog < 0.75 ? 1 : 2);
+    var sy = window.scrollY;
+    var d  = Math.abs(sy - lastSY);
+    lastSY = sy;
+    boost  = Math.min(boost + d * 0.03, 3.0);
+  }, {passive:true});
+
+  // ── Resize ─────────────────────────────────────────────
+  window.addEventListener('resize', function(){
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }, {passive:true});
+
+  // ── Render loop (mirrors useFrame logic) ───────────────
+  var last = performance.now();
+  function tick() {
+    requestAnimationFrame(tick);
+    var now = performance.now();
+    var dt  = Math.min((now - last) / 1000, 0.033);
+    last = now;
+
+    var spd  = (BASE_SPEED + boost) * dt * 50;
+    boost   *= 0.90;
+
+    for(var i = 0; i < COUNT; i++) {
+      var p = particles[i];
+      p.z  += spd * p.spd;
+      if(p.z > 5) {
+        p.z   = -CYL_LEN / 2;
+        p.spd = 0.5 + Math.random() * 0.5;
+      }
+      dummy.position.set(p.x, p.y, p.z);
+      var stretchZ = p.len + (BASE_SPEED + boost) * p.spd * 0.5;
+      dummy.scale.set(0.04, 0.04, stretchZ);
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i, dummy.matrix);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+    renderer.render(scene, camera);
+  }
+  tick();
 })();
 
 
