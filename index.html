@@ -1148,19 +1148,19 @@ body.cview .cring{width:48px;height:52px;opacity:.35;border-color:var(--violet);
 }
 
 @media(max-width:700px){
-  .exp-timeline-scroll { padding-left: 28px; }
-  .exp-spine-bg, .exp-spine-fg { left: 7px; transform: none; }
+  .exp-timeline-scroll { padding-left: 0; }
+  .exp-spine-bg, .exp-spine-fg { left: 20px; transform: none; }
   .exp-entry {
-    grid-template-columns: 28px 1fr;
+    grid-template-columns: 40px 1fr;
     grid-template-rows: auto;
   }
-  .exp-dot-col { grid-column: 1; grid-row: 1; }
+  .exp-dot-col { grid-column: 1; grid-row: 1; justify-content: center; }
   .exp-card-left,
   .exp-card-right {
     grid-column: 2; grid-row: 1;
     text-align: left;
-    padding-left: 20px;
-    padding-right: 0;
+    padding-left: 16px;
+    padding-right: 16px;
   }
   .exp-card-left .exp-dur-wrap,
   .exp-card-right .exp-dur-wrap { justify-content: flex-start; }
@@ -1563,7 +1563,7 @@ footer{border-top:1px solid var(--bdr);padding:24px 176px 24px 80px;display:flex
 
 /* ══ BACKGROUND GRID ══ */
 html[data-theme="dark"] body,
-[data-theme="dark"] body { background: #0d0d0d; }
+[data-theme="dark"] body { background: #2D2D2D; }
 [data-theme="light"] body { background: var(--bg); }
 [data-theme="dark"] .sec,
 [data-theme="dark"] .mq,
@@ -1828,6 +1828,97 @@ html[data-theme="dark"] body,
 [data-theme="light"] .ahl:hover { background:rgba(79,53,204,.08); }
 [data-theme="light"] .ahl.ahl-red { color:#ef4444; }
 [data-theme="light"] .ahl.ahl-red:hover { background:rgba(239,68,68,.1); }
+
+/* ── WORKS WHEEL ── */
+#ww-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  min-height: 560px;
+  overflow: hidden;
+  outline: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+#ww-stage:focus-visible { outline: 2px solid var(--violet); outline-offset: -2px; }
+.ww-wheel {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform-style: preserve-3d;
+}
+.ww-card {
+  position: absolute;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: opacity .15s;
+  text-decoration: none;
+  border-radius: 14px;
+  box-shadow: 4px 4px 21px 4px rgba(0,0,0,0.25);
+}
+.ww-card-inner {
+  position: relative;
+  width: 100%; height: 100%;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--bg2);
+  transform-origin: center;
+}
+[data-theme="light"] .ww-card-inner {
+  filter:
+    drop-shadow(0 0 0px 1px rgba(79,53,204,0.25))
+    drop-shadow(0 4px 16px rgba(79,53,204,0.20))
+    drop-shadow(0 12px 32px rgba(0,0,0,0.15));
+}
+.ww-card-inner img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  border-radius: 14px;
+}
+.ww-badge {
+  position: absolute;
+  right: 12px; bottom: 12px;
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(12,11,20,.78);
+  color: #eeeaff;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-family: var(--mono);
+  letter-spacing: .06em;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .2s, transform .2s;
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.ww-card:hover .ww-badge { opacity: 1; transform: translateY(0); }
+[data-theme="light"] .ww-badge { background: rgba(250,248,242,.85); color: var(--w); }
+.ww-ring-label {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  color: var(--w);
+  pointer-events: none;
+  will-change: opacity;
+}
+.ww-front-title {
+  position: absolute;
+  top: 50%; left: 80px;
+  transform: translateY(-50%);
+  font-weight: 800;
+  letter-spacing: -.04em;
+  color: var(--w);
+  pointer-events: none;
+  opacity: 0;
+  will-change: opacity;
+  max-width: 20%;
+  line-height: 1.1;
+}
 
 </style>
 </head>
@@ -2178,19 +2269,10 @@ html[data-theme="dark"] body,
   </div>
 </section>
 
-<section id="projects" class="sec seclight" style="padding-bottom:0">
-  <div style="padding-bottom:48px">
-    <div class="eb rv">Selected Work</div>
-    <h2 class="stitle rv" style="margin-bottom:0">Projects</h2>
-  </div>
-  <div>
-    <a class="prow rv" href="https://www.behance.net/gallery/178702661/Interactive-Resume" target="_blank" data-img="https://mir-s3-cdn-cf.behance.net/projects/404/790552178702661.Y3JvcCwxMzgwLDEwODAsMjcwLDA.png"><div class="pnum">01</div><div><div class="pname">Interactive Resume</div><div class="ptags"><span class="ptag">Figma</span><span class="ptag">Motion</span><span class="ptag">Prototype</span></div></div><div class="parr">↗</div></a>
-    <a class="prow rv" href="https://www.behance.net/gallery/115227193/Surface-Phone" target="_blank" data-img="https://mir-s3-cdn-cf.behance.net/projects/404/4c0428115227193.615973b7cd3fe.jpg"><div class="pnum">02</div><div><div class="pname">Surface Phone</div><div class="ptags"><span class="ptag">Product Design</span><span class="ptag">Concept</span><span class="ptag">3D</span></div></div><div class="parr">↗</div></a>
-    <a class="prow rv" href="https://www.behance.net/gallery/149361439/Appetite-UIUX-Case-Study" target="_blank" data-img="https://mir-s3-cdn-cf.behance.net/projects/404/681bf5149361439.Y3JvcCwzNTc5LDI4MDAsMjEyLDA.png"><div class="pnum">03</div><div><div class="pname">Appetite — UI/UX Case Study</div><div class="ptags"><span class="ptag">UI/UX</span><span class="ptag">App Design</span><span class="ptag">Case Study</span></div></div><div class="parr">↗</div></a>
-    <a class="prow rv" href="https://www.behance.net/gallery/96439145/OneTouch-UIUX-Case-Study" target="_blank" data-img="https://mir-s3-cdn-cf.behance.net/projects/404/ad127996439145.Y3JvcCwzNTc5LDI4MDAsMjEyLDA.png"><div class="pnum">04</div><div><div class="pname">OneTouch — UI/UX Case Study</div><div class="ptags"><span class="ptag">UI/UX</span><span class="ptag">Case Study</span></div></div><div class="parr">↗</div></a>
-    <a class="prow rv" href="https://www.behance.net/gallery/98472921/Porsche-Design-ENDURANCE-Watch-concept" target="_blank" data-img="https://mir-s3-cdn-cf.behance.net/projects/404/3a2be398472921.Y3JvcCwyODEyLDIyMDAsODg0LDA.png"><div class="pnum">05</div><div><div class="pname">Porsche Endurance Watch Concept</div><div class="ptags"><span class="ptag">Product Design</span><span class="ptag">Concept</span><span class="ptag">3D</span></div></div><div class="parr">↗</div></a>
-    <a class="prow rv" href="https://www.behance.net/gallery/86100605/iPhone-12-Pro-concept" target="_blank" data-img="https://mir-s3-cdn-cf.behance.net/projects/404/58d9ac86100605.Y3JvcCwzMDY4LDI0MDAsMzg3LDA.png"><div class="pnum">06</div><div><div class="pname">iPhone 12 Pro Concept</div><div class="ptags"><span class="ptag">Product Design</span><span class="ptag">Concept</span><span class="ptag">Forbes Featured</span></div></div><div class="parr">↗</div></a>
-  </div>
+<!-- Section is tall so the sticky stage stays pinned while the user scrolls
+     through all projects. Height set by JS to (count + 2) * 100vh. -->
+<section id="projects" class="sec seclight" style="padding:0;">
+  <div id="ww-stage" tabindex="0" role="listbox" aria-label="Selected Work"></div>
 </section>
 
 
@@ -3532,6 +3614,242 @@ window.addEventListener('scroll',function(){var sy=window.scrollY,t=document.get
   },{rootMargin:'100px'});
   io.observe(section);
   window.addEventListener('resize',function(){computeLinePcts();},{passive:true});
+})();
+
+// ══════════════════════════════════════════════════════
+// WORKS WHEEL — 3-D ring → drum project navigator
+// Faithful port of the WorksWheel React component.
+// ══════════════════════════════════════════════════════
+(function(){
+  var stage = document.getElementById('ww-stage');
+  if(!stage) return;
+
+  // ── Data ───────────────────────────────────────────
+  var ITEMS = [
+    { title:'Interactive Resume',
+      image:'https://mir-s3-cdn-cf.behance.net/projects/404/790552178702661.Y3JvcCwxMzgwLDEwODAsMjcwLDA.png',
+      href:'https://www.behance.net/gallery/178702661/Interactive-Resume' },
+    { title:'Surface Phone',
+      image:'https://mir-s3-cdn-cf.behance.net/projects/404/4c0428115227193.615973b7cd3fe.jpg',
+      href:'https://www.behance.net/gallery/115227193/Surface-Phone' },
+    { title:'Appetite',
+      image:'https://mir-s3-cdn-cf.behance.net/projects/404/681bf5149361439.Y3JvcCwzNTc5LDI4MDAsMjEyLDA.png',
+      href:'https://www.behance.net/gallery/149361439/Appetite-UIUX-Case-Study' },
+    { title:'OneTouch',
+      image:'https://mir-s3-cdn-cf.behance.net/projects/404/ad127996439145.Y3JvcCwzNTc5LDI4MDAsMjEyLDA.png',
+      href:'https://www.behance.net/gallery/96439145/OneTouch-UIUX-Case-Study' },
+    { title:'Porsche Endurance',
+      image:'https://mir-s3-cdn-cf.behance.net/projects/404/3a2be398472921.Y3JvcCwyODEyLDIyMDAsODg0LDA.png',
+      href:'https://www.behance.net/gallery/98472921/Porsche-Design-ENDURANCE-Watch-concept' },
+    { title:'iPhone 12 Pro',
+      image:'https://mir-s3-cdn-cf.behance.net/projects/404/58d9ac86100605.Y3JvcCwzMDY4LDI0MDAsMzg3LDA.png',
+      href:'https://www.behance.net/gallery/86100605/iPhone-12-Pro-concept' }
+  ];
+
+  // ── Geometry constants ─────────────────────────────
+  var CARD_H=0.38, CARD_MAX_W=0.34, CARD_RATIO=1.45;
+  var STEP=40, DRUM=2.22, LENS=2.7, BOW=1.82;
+  // Ring: radius as fraction of shorter stage dim; thumbnails fill ~48% of arc.
+  // Using actual element sizing (not CSS scale) so no 3D z-fighting.
+  var RING_STAGE_FRAC = 0.34;
+  var RING_ARC_FILL   = 0.48;
+  var TITLE_FS=0.124, CULL=1.6;
+  var WHEEL_UNITS=900, DRAG_UNITS=420, SETTLE_MS=140, EASE=0.12;
+
+  var count=ITEMS.length, last=count-1;
+
+  // ── Helpers ────────────────────────────────────────
+  function clamp(v,lo,hi){ return Math.min(hi,Math.max(lo,v)); }
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function rad(deg){ return deg*Math.PI/180; }
+  function bowAt(drumDeg,bow){ return -bow*(1-Math.cos(rad(drumDeg))); }
+
+  function place(ringDeg,drumDeg,ringR,drumR,bow,m){
+    return 'translateX('+( m*bowAt(drumDeg,bow) )+'px)'+
+           ' rotateZ('+( (1-m)*ringDeg )+'deg)'+
+           ' translateY('+( -(1-m)*ringR )+'px)'+
+           ' rotateX('+( m*drumDeg )+'deg)'+
+           ' translateZ('+( m*drumR )+'px)';
+  }
+
+  // ── Build DOM ──────────────────────────────────────
+  var wheelEl = document.createElement('div');
+  wheelEl.className = 'ww-wheel';
+  wheelEl.style.transformStyle = 'preserve-3d';
+
+  var cardEls = ITEMS.map(function(item,i){
+    var card = document.createElement('a');
+    card.className = 'ww-card';
+    card.href = item.href;
+    card.target = '_blank';
+    card.rel = 'noopener noreferrer';
+    card.setAttribute('role','option');
+    card.setAttribute('aria-selected', i===0?'true':'false');
+
+    var inner = document.createElement('span');
+    inner.className = 'ww-card-inner';
+
+    var img = document.createElement('img');
+    img.src = item.image;
+    img.alt = item.title;
+    img.draggable = false;
+    img.loading = 'lazy';
+    inner.appendChild(img);
+
+    var badge = document.createElement('span');
+    badge.className = 'ww-badge';
+    badge.innerHTML = '<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" style="flex-shrink:0"><path d="M3 9 9 3M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> View';
+    inner.appendChild(badge);
+
+    card.appendChild(inner);
+    wheelEl.appendChild(card);
+    return card;
+  });
+
+  var ringLabelEl = document.createElement('div');
+  ringLabelEl.className = 'ww-ring-label';
+  ringLabelEl.textContent = 'Selected Work';
+
+  var frontTitleEl = document.createElement('div');
+  frontTitleEl.className = 'ww-front-title';
+  frontTitleEl.textContent = ITEMS[0].title;
+
+  stage.appendChild(wheelEl);
+  stage.appendChild(ringLabelEl);
+  stage.appendChild(frontTitleEl);
+
+  // ── State ──────────────────────────────────────────
+  var stageW=0, stageH=0;
+  var turnVal=0, targetVal=0, activeIdx=0;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function metrics(){
+    // Drum card — sized for the front face in drum mode
+    var cardW = Math.min(stageH*CARD_H*CARD_RATIO, stageW*CARD_MAX_W);
+    var cardH = cardW/CARD_RATIO;
+    var drumR = cardH*DRUM;
+    // Ring — radius from stage size, card element sized to arc fraction.
+    // Real element sizing (not CSS scale) avoids giant transparent boxes
+    // that cause 3-D z-fighting and apparent visual overlap.
+    var ringR = Math.min(stageW, stageH) * RING_STAGE_FRAC;
+    var arcPerItem = count ? (2*Math.PI*ringR/count) : 1;
+    var ringCardW = clamp(arcPerItem*RING_ARC_FILL, 32, cardW*0.9);
+    var ringCardH = ringCardW/CARD_RATIO;
+    return {
+      cardW:cardW, cardH:cardH,
+      ringCardW:ringCardW, ringCardH:ringCardH,
+      ringR:ringR, drumR:drumR,
+      bow:cardH*BOW, depth:cardH*LENS,
+      titleFs:cardH*TITLE_FS
+    };
+  }
+
+  function resize(){
+    stageW = stage.clientWidth;
+    stageH = stage.clientHeight;
+    var m = metrics();
+    stage.style.perspective = m.depth+'px';
+    ringLabelEl.style.fontSize = m.titleFs+'px';
+    frontTitleEl.style.fontSize = m.titleFs+'px';
+  }
+
+  var ro = new ResizeObserver(resize);
+  ro.observe(stage);
+  resize();
+
+  // ── Navigate ───────────────────────────────────────
+  function to(next){ targetVal = clamp(next, 0, last+1); }
+
+  // ── rAF loop ───────────────────────────────────────
+  var rafId = 0;
+  function draw(){
+    rafId = requestAnimationFrame(draw);
+    var gap = targetVal - turnVal;
+    if(Math.abs(gap)<0.0005) turnVal = targetVal;
+    else turnVal += gap*(reduced?1:EASE);
+
+    var t = turnVal;
+    var m = clamp(t,0,1);
+    var pos = Math.max(0, t-1);
+    var M = metrics();
+
+    wheelEl.style.transform = 'translateZ('+(-m*M.drumR)+'px)';
+
+    for(var i=0;i<count;i++){
+      var d = i - pos;
+      var drumDeg = d*STEP;
+      var card = cardEls[i];
+      // Lerp the element itself between ring-small and drum-full dimensions.
+      // This means no scale() distortion and no oversized transparent boxes
+      // that cause 3-D z-fighting overlap in ring mode.
+      var curW = lerp(M.ringCardW, M.cardW, m);
+      var curH = lerp(M.ringCardH, M.cardH, m);
+      card.style.width  = curW+'px';
+      card.style.height = curH+'px';
+      card.style.marginLeft = (-curW/2)+'px';
+      card.style.marginTop  = (-curH/2)+'px';
+      card.style.transform = place(d*(360/count), drumDeg, M.ringR, M.drumR, M.bow, m);
+      var dAbs = Math.abs(d);
+      var hardCull = m > 0.5 && dAbs > CULL;
+      var transOp;
+      if(hardCull) {
+        transOp = 0;
+      } else if(m < 1) {
+        // During ring→drum transition cards converge to origin before drum separates them.
+        // Fade side cards so only the front is visible while the ring opens.
+        transOp = dAbs < 0.5 ? 1 : Math.max(0, 1 - m * dAbs);
+      } else {
+        transOp = 1;
+      }
+      card.style.opacity = String(transOp);
+      card.style.zIndex = String(Math.round(100-dAbs*2));
+      var inner = card.firstElementChild;
+      if(inner) inner.style.transform = ''; // element is correctly sized — no scale needed
+    }
+
+    ringLabelEl.style.opacity = String(1-m);
+    // Delay front title until near the end of the ring→drum transition
+    frontTitleEl.style.opacity = String(Math.max(0, (m - 0.7) / 0.3));
+
+    var near = clamp(Math.round(pos), 0, last);
+    if(near !== activeIdx){
+      frontTitleEl.textContent = ITEMS[near].title;
+      for(var j=0;j<count;j++)
+        cardEls[j].setAttribute('aria-selected', j===near?'true':'false');
+      activeIdx = near;
+    }
+  }
+
+  // ── Section height — give (count + 2) viewports of scroll room ────────
+  var sectionEl = document.getElementById('projects');
+  if(sectionEl) sectionEl.style.height = (count + 2) * 100 + 'vh';
+
+  // ── Scroll-driven animation ────────────────────────
+  // Progress 0→1 across the section's scrollable range maps to
+  // targetVal 0→(last+1), so the ring opens and each card advances
+  // one at a time as the user scrolls through the section.
+  function readScroll(){
+    if(!sectionEl) return;
+    var rect = sectionEl.getBoundingClientRect();
+    var scrollable = sectionEl.offsetHeight - window.innerHeight;
+    if(scrollable <= 0) return;
+    targetVal = clamp((-rect.top / scrollable) * (last + 1), 0, last + 1);
+  }
+  readScroll();
+  window.addEventListener('scroll', readScroll, {passive:true});
+
+  // Start/stop rAF with visibility
+  var visObs = new IntersectionObserver(function(entries){
+    if(entries[0].isIntersecting){ if(!rafId) rafId=requestAnimationFrame(draw); }
+    else { cancelAnimationFrame(rafId); rafId=0; }
+  },{rootMargin:'200px'});
+  visObs.observe(stage);
+
+  // Keyboard accessibility (arrow keys still work for screen readers)
+  stage.addEventListener('keydown', function(e){
+    if(e.key==='ArrowDown'){ to(Math.round(targetVal)+1); e.preventDefault(); }
+    else if(e.key==='ArrowUp'){ to(Math.round(targetVal)-1); e.preventDefault(); }
+  });
 })();</script>
 </div><!-- /scroll-container --></div><!-- /overflow-clip -->
 </body>
