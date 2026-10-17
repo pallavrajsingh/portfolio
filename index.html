@@ -530,7 +530,7 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
   .tl-points li { font-size: 15px; }
   .ring-stage { grid-template-rows: auto 1fr auto; }
   .ring-view { grid-row: 2; }
-  .ring-info { grid-row: 3; grid-template-columns: auto minmax(0, 1fr) auto; row-gap: 14px; margin-top: 0; padding: 18px 0 0; border-bottom: 0; border-top: 1px solid var(--line2); }
+  .ring-info { grid-row: 3; grid-template-columns: auto minmax(0, 1fr) auto; row-gap: 14px; margin-top: 0; padding-top: 18px; padding-bottom: 0; border-bottom: 0; border-top: 1px solid var(--line2); }
   .ri-text { grid-column: 1 / -1; grid-row: 1; text-align: center; }
   .ri-title { white-space: normal; }
   #ringPrev { grid-column: 1; grid-row: 2; }
@@ -1520,9 +1520,10 @@ void main() {
   const NR = rcs.length;
   let RR = 400, CW = 300, ringPos = 0, ringFront = -1;
   rcs.forEach((c, i) => c.style.setProperty('--i', i));
+  const ringPose = pos => 'translateZ(' + (-RR).toFixed(0) + 'px) rotateX(-7deg) rotateY(' + (-pos * 360 / NR).toFixed(3) + 'deg)';
   function setRing(pos, force) {
     ringPos = pos;
-    ringEl.style.transform = 'translateZ(' + (-RR).toFixed(0) + 'px) rotateX(-9deg) rotateY(' + (-pos * 360 / NR).toFixed(3) + 'deg)';
+    ringEl.style.transform = ringPose(pos);
     rcs.forEach((c, i) => { const a = (i - pos) * 2 * Math.PI / NR; c.style.setProperty('--o', (.4 + .6 * Math.max(0, Math.cos(a))).toFixed(3)); });
     const f = ((Math.round(pos) % NR) + NR) % NR;
     if (f !== ringFront || force) {
@@ -1540,10 +1541,30 @@ void main() {
   }
   function ringLayout() {
     // cards keep the thumbnails' own landscape shape, as wide as the view allows
-    const vr = ringView.getBoundingClientRect(), mob = MOBILE.matches, AR = 808 / 632;
-    CW = Math.max(120, Math.min(mob ? VW * .8 : VW * .44, vr.height * .84 * AR, 780));
-    RR = CW / (2 * Math.tan(Math.PI / NR)) * 1.16;
-    ringEl.style.setProperty('--cw', CW.toFixed(0) + 'px'); ringEl.style.setProperty('--ch', (CW / AR).toFixed(0) + 'px'); ringEl.style.setProperty('--R', RR.toFixed(0) + 'px');
+    const vr = ringView.getBoundingClientRect(), mob = MOBILE.matches, AR = 808 / 632, M = clamp(vr.height * .07, 12, mob ? 18 : 40);   // margin above and below the ring
+    const apply = () => {
+      RR = CW / (2 * Math.tan(Math.PI / NR)) * 1.16;
+      ringEl.style.setProperty('--cw', CW.toFixed(0) + 'px'); ringEl.style.setProperty('--ch', (CW / AR).toFixed(0) + 'px'); ringEl.style.setProperty('--R', RR.toFixed(0) + 'px');
+    };
+    CW = Math.max(120, Math.min(VW * (mob ? .8 : VW < 1000 && VH > VW ? .68 : .44), vr.height * .84 * AR, 780));   // portrait tablets get wider cards
+    ringEl.style.top = '';
+    apply();
+    // the tilt and the perspective draw the front card bigger and lower than its box, and the cards across the ring higher,
+    // so measure the whole ring as drawn, at rest on a card and halfway to the next (its widest sweep), shrink it until it
+    // fits the view with the same margin above and below, and centre it
+    const at = Math.round(ringPos);
+    const sweep = () => {
+      let t = 1e9, b = -1e9;
+      [at, at + .5].forEach(pos => { ringEl.style.transform = ringPose(pos); rcs.forEach(c => { const r = c.getBoundingClientRect(); t = Math.min(t, r.top); b = Math.max(b, r.bottom); }); });
+      return { t, b, h: b - t };
+    };
+    for (let i = 0; i < 3; i++) {                                   // a few passes: the perspective doesn't scale quite linearly
+      const k = (vr.height - 2 * M) / Math.max(1, sweep().h);
+      if (k >= .995) break;
+      CW = Math.max(110, CW * Math.min(1, k)); apply();
+    }
+    let low = 0;
+    for (let i = 0; i < 2; i++) { const u = sweep(); low += ((u.t - vr.top) - (vr.bottom - u.b)) / 2; ringEl.style.top = 'calc(50% - ' + low.toFixed(1) + 'px)'; }
     setRing(ringPos, true);
   }
   const ringP = k => .05 + k / (NR - 1) * .9;
@@ -7541,7 +7562,7 @@ window.__ASSETS = {"assets/art/chicken.png": "data:image/jpeg;base64,/9j/4AAQSkZ
 }
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { scroll-behavior: auto; }
+html { scroll-behavior: auto; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body { margin: 0; font-family: var(--font); color: var(--tx); background: #fff; line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: clip; }
 img, svg { max-width: 100%; }
 button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; padding: 0; text-align: inherit; }
@@ -7645,12 +7666,16 @@ html[lang="hi"] .lang-knob { transform: translateX(100%); }
 /* ---------- phone (live prototype) ---------- */
 .phone { --s: .66; position: relative; width: calc(406px * var(--s)); height: calc(860px * var(--s)); flex: none; }
 .phone-body { position: absolute; left: 0; top: 0; width: 406px; height: 860px; transform: scale(var(--s)); transform-origin: 0 0; padding: 8px; border-radius: 60px; background: #fff; box-shadow: 0 0 0 1.5px #E2E4EE, 0 50px 90px -40px rgba(30, 34, 110, .5); }
-.phone-screen { position: relative; width: 390px; height: 844px; border-radius: 52px; overflow: hidden; background: #fff; box-shadow: inset 0 0 0 1px var(--line); isolation: isolate; }
-.phone-screen iframe { display: block; width: 100%; height: 100%; border: 0; }
+/* the mask makes Safari really clip the frame to the rounded screen */
+.phone-screen { position: relative; width: 390px; height: 844px; border-radius: 52px; overflow: hidden; background: #fff; box-shadow: inset 0 0 0 1px var(--line); isolation: isolate; -webkit-mask-image: -webkit-radial-gradient(white, black); }
+.phone-screen iframe { display: block; width: 100%; height: 100%; border: 0; border-radius: inherit; }
+/* until a phone is handed over the page owns every touch on it: the frame can't catch a swipe (or be dragged out of place) */
+.phone:not(.live) .phone-screen iframe { pointer-events: none; }
 .phone-island { position: absolute; z-index: 3; top: 19px; left: 50%; width: 112px; height: 32px; margin-left: -56px; border-radius: 20px; background: #15161C; pointer-events: none; }
 .phone-load { position: absolute; inset: 0; display: grid; place-items: center; color: var(--mut); font-size: 15px; transition: opacity .3s; pointer-events: none; }
 .phone.ready .phone-load { opacity: 0; }
-.shield { position: absolute; inset: 0; z-index: 4; border-radius: 52px; cursor: pointer; }
+/* iOS lets touches fall through a fully transparent layer onto a frame below, so the shield is a hair off transparent and on its own layer */
+.shield { position: absolute; inset: 0; z-index: 4; display: block; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 52px; background: rgba(255, 255, 255, .004); cursor: pointer; -webkit-transform: translateZ(0); transform: translateZ(0); -webkit-tap-highlight-color: transparent; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
 .phone.live .shield { display: none; }
 .live-dot { width: 9px; height: 9px; border-radius: 50%; background: #2fb36d; box-shadow: 0 0 0 0 rgba(47, 179, 109, .5); animation: live 2s infinite; flex: none; }
 @keyframes live { 70% { box-shadow: 0 0 0 9px rgba(47, 179, 109, 0); } 100% { box-shadow: 0 0 0 0 rgba(47, 179, 109, 0); } }
@@ -7814,8 +7839,42 @@ html[lang="hi"] .lang-knob { transform: translateX(100%); }
   .acnt { position: relative; display: flex; align-items: center; gap: .6rem; margin-top: .6rem; font-size: .8rem; color: var(--tx); }
   .acnt::before { content: ''; flex: none; width: 4.5rem; height: 6px; border-radius: 3px; background: var(--soft); }
   .acnt b { position: absolute; left: 0; top: 50%; width: calc(4.5rem * var(--f, 0)); height: 6px; margin-top: -3px; border-radius: 3px; background: var(--ok); }
+  .acard { top: 48%; }
   .acard.ot ul { grid-template-columns: 1fr; gap: .28rem; }
   .acard.ot li { font-size: .82rem; }
+}
+/* phones with Safari's bars showing (or small phones): tighter scenes so everything fits the visible screen */
+@media (max-width: 760px) and (max-height: 760px) {
+  .er-h { font-size: 1.5rem; }
+  .er-head { margin-bottom: 10px; }
+  .diary { padding: .6rem .8rem .35rem 2.6rem; }
+  .diary::before { left: 1.75rem; }
+  .diary-title { font-size: 1rem; padding-bottom: .25rem; }
+  .er-row { min-height: 2.75rem; padding: .25rem 0; gap: .55rem; }
+  .er-task { font-size: .9rem; line-height: 1.2; }
+  .er-cost { font-size: 1rem; }
+  .tally { padding: .7rem .85rem; }
+  .t-row b { font-size: 1.25rem; }
+  .dotscene .h { font-size: 1.55rem; }
+  .beats { margin-top: .5rem; }
+  .unit { padding: .85rem; }
+  .unit-h { margin-bottom: .6rem; }
+  .unit-h b { font-size: 1.9rem; }
+  .dots { width: min(100%, 30vh); }
+  .legend { margin-top: .6rem; }
+  .apps .stage { padding-top: calc(var(--bar) + 2vh); }
+  .cr-t h3 { font-size: 1.3rem; }
+  .cr-text { min-height: 9.5rem; }
+  .pe-who { height: 108px; }
+  .pw-face { width: 78px; }
+  .pw-name { font-size: 1.3rem; }
+  .pw-line { font-size: .86rem; }
+  .pe-main { gap: 12px; }
+  .pm-time { font-size: 1.35rem; }
+  .pm-seg { margin-top: .65rem; }
+  .pm-body { min-height: 6.8rem; margin-top: .9rem; }
+  .pm-txt { font-size: 1.12rem; }
+  .pe-day { padding-top: 10px; }
 }
 
 /* ---------- 4 · research: a crowd of 25 that regroups ---------- */
@@ -7865,7 +7924,7 @@ html[lang="hi"] .lang-knob { transform: translateX(100%); }
   .cr-legend li { grid-template-columns: 10px auto; gap: .35rem; font-size: .82rem; }
   .cr-legend li small { display: none; }
   .cr-legend li i { width: 10px; height: 10px; }
-  .cr-stage { height: auto; min-height: 300px; }
+  .cr-stage { height: auto; min-height: 220px; }
   .person { width: 28px; height: 36px; margin: -18px 0 0 -14px; }
   .grp-label { font-size: .78rem; }
   .crowdscene .hint { display: none; }
@@ -8696,8 +8755,9 @@ html[data-theme="dark"] {
 html[data-contrast="high"] { --mut: #4A4D5E; --div: #B5B8C8; --outline: #8C8FA3; --tx: #1C1D26; }
 html[data-theme="dark"][data-contrast="high"] { --mut: #C3C6D6; --div: #4B4E66; --outline: #6E7188; --tx: #F0F0F6; }
 html[data-platform="ios"] .and, html:not([data-platform="ios"]) .ios { display: none !important; }
-html.embed { --sat: 44px; --sab: 14px; overflow: hidden; }
-html.embed body { position: fixed; inset: 0; overflow: hidden; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html.embed { --sat: 44px; --sab: 14px; height: 100%; overflow: hidden; overscroll-behavior: none; }
+html.embed body { position: fixed; inset: 0; overflow: hidden; overscroll-behavior: none; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; }
 body { font-family: var(--font); color: var(--tx); background: #E6E7EE; -webkit-font-smoothing: antialiased; overscroll-behavior: none; }
@@ -9968,7 +10028,11 @@ html[data-theme="dark"] .wave i { background: #fff; }
   const EMBED = window.self !== window.top || /[?&]embed=1/.test(location.search);
   if (EMBED) {
     root.classList.add('embed');
-    addEventListener('scroll', () => { if (scrollX || scrollY) scrollTo(0, 0); }); // focus or the keyboard must not shift the screen inside the frame
+    // focus, the keyboard or a stray drag must never leave the screen shifted inside the frame (Safari can move the frame's page)
+    const pin0 = () => { if (scrollX || scrollY) scrollTo(0, 0); const se = document.scrollingElement; if (se && (se.scrollTop || se.scrollLeft)) { se.scrollTop = 0; se.scrollLeft = 0; } };
+    addEventListener('scroll', pin0);
+    addEventListener('load', pin0);
+    if (window.visualViewport) { visualViewport.addEventListener('scroll', pin0); visualViewport.addEventListener('resize', pin0); }
   }
 
   /* ---------- helpers ---------- */
@@ -10120,6 +10184,7 @@ html[data-theme="dark"] .wave i { background: #fff; }
     if (prevScroll && sc) sc.scrollTop = prevScroll;
     try { history.replaceState(null, '', '#/' + path); } catch (e) { /* srcdoc */ }
     if (window.parent !== window) window.parent.postMessage({ ot: 'route', path: path }, '*');
+    if (EMBED) { if (scrollX || scrollY) scrollTo(0, 0); if (document.scrollingElement) document.scrollingElement.scrollTop = 0; }
   }
   function go(path) { closeOverlays(); stack.push(path); show(path, 'push'); }
   function tab(path) { closeOverlays(); stack.length = 0; stack.push(path); show(path, 'fade'); }
@@ -11565,6 +11630,7 @@ html[data-theme="dark"] .wave i { background: #fff; }
     FEATURES.map(f => '<li>' + LL(f[0]) + (!f[1] && !f[2] && !f[3] ? '<em>' + L('new', 'नया') + '</em>' : '') + '</li>').join('') + '</ul></article>';
   const appCards = $$('#appsRow .acard:not(.ot)').map(el => ({ el, x: 0, y: 0, r: 0 }));
   const otCard = $('#appsRow .acard.ot'), otItems = $$('li', otCard);
+  let otS = 1;                                                   // the merged card shrinks to fit short phone screens
 
   /* ---------------------------------------------------------------
      4 · survey and interviews: 25 people who regroup for every question
@@ -11634,8 +11700,10 @@ html[data-theme="dark"] .wave i { background: #fff; }
       grpLabels.forEach(l => l.classList.remove('on'));
       return;
     }
-    const cell = small ? 31 : Math.min(44, W / 15), gap = cell * 1.5;
     const cols = st.n.map(n => n > 12 ? 5 : n > 4 ? 3 : 2);
+    const sumC = cols.reduce((a, c) => a + c, 0);
+    const cell = Math.min(small ? 31 : Math.min(44, W / 15), (W - 12) / (sumC + 1.5 * (cols.length - 1))), gap = cell * 1.5;   // groups always fit the width
+    const ps = small ? Math.min(1, cell / 31) : 1;
     const total = cols.reduce((a, c) => a + c * cell, 0) + gap * (cols.length - 1);
     let x0 = (W - total) / 2;
     const baseY = H * (small ? .74 : .7);
@@ -11643,7 +11711,7 @@ html[data-theme="dark"] .wave i { background: #fff; }
     persons.forEach((el, i) => {
       const m = st.member[i], c = cols[m.g];
       const x = starts[m.g] + (m.slot % c) * cell + cell / 2, y = baseY - Math.floor(m.slot / c) * cell * 1.22;
-      el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+      el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)' + (ps < 1 ? ' scale(' + ps.toFixed(3) + ')' : '');
       el.style.color = GROUP_C[m.g];
     });
     grpLabels.forEach((l, g) => {
@@ -12046,7 +12114,7 @@ html[data-theme="dark"] .wave i { background: #fff; }
   let flow = null;
   function buildFlow() {
     const wrap = $('.flow-svg-wrap'), svg = $('#flowSvg');
-    const wide = wrap.clientWidth / Math.max(1, wrap.clientHeight) > 1.15;
+    const wide = innerWidth > 600 && wrap.clientWidth / Math.max(1, wrap.clientHeight) > 1.15;   // phones in portrait always get the tall flow
     let vb, pts, pathD, br = [];
     if (wide) {
       vb = [0, 0, 1340, 560];
@@ -12054,10 +12122,10 @@ html[data-theme="dark"] .wave i { background: #fff; }
       pathD = 'M110 280 C180 190 260 190 330 280 S480 370 550 280 S700 190 770 280 S910 370 980 280';
       BRANCH.forEach((b, j) => { const yy = 60 + j * 88; br.push({ d: 'M1036 280 C1070 280 1066 ' + yy + ' 1104 ' + yy, x: 1104, y: yy }); });
     } else {
-      vb = [0, 0, 400, 760];
-      pts = [[200, 36], [200, 131], [200, 226], [200, 321], [200, 416]];
-      pathD = 'M200 36 C262 68 262 99 200 131 S138 194 200 226 S262 289 200 321 S138 384 200 416';
-      BRANCH.forEach((b, j) => { const xx = j % 2 ? 300 : 100, yy = 540 + Math.floor(j / 2) * 80; br.push({ d: 'M200 446 C200 490 ' + xx + ' 478 ' + xx + ' ' + (yy - 32), x: xx - 95, y: yy }); });
+      vb = [0, 0, 400, 664];
+      pts = [[200, 32], [200, 112], [200, 192], [200, 272], [200, 352]];
+      pathD = 'M200 32 C258 59 258 85 200 112 S142 165 200 192 S258 245 200 272 S142 325 200 352';
+      BRANCH.forEach((b, j) => { const xx = j % 2 ? 300 : 100, yy = 462 + Math.floor(j / 2) * 72; br.push({ d: 'M200 382 C200 420 ' + xx + ' 404 ' + xx + ' ' + (yy - 32), x: xx - 95, y: yy }); });
     }
     svg.classList.toggle('tall', !wide);
     let s = '<path class="path-ghost" d="' + pathD + '"/><path class="path" id="flowPath" pathLength="1" d="' + pathD + '"/>';
@@ -12110,6 +12178,7 @@ html[data-theme="dark"] .wave i { background: #fff; }
     const f = document.createElement('iframe');
     f.title = 'OneTouch prototype';
     f.setAttribute('allow', 'microphone; autoplay; clipboard-write');
+    f.setAttribute('scrolling', 'no');            // Safari: the frame's own page never scrolls; the app scrolls inside its screens
     f.srcdoc = APP_SRC.replace('<head>', '<head><script>window.__OT_START=' + JSON.stringify(el.dataset.start || 'home') + '<\\/script>');
     const p = phones[el.id] = { el, frame: f, route: el.dataset.start, queued: null, hover: false };
     f.addEventListener('load', () => {
@@ -12228,8 +12297,20 @@ html[data-theme="dark"] .wave i { background: #fff; }
     heroPhone.style.setProperty('--s', (wideHero ? clamp((vh - BAR - (vh <= 560 ? 24 : 80)) / 860, vh <= 560 ? .3 : .45, .8) : clamp((vh - (BAR + 30 + head.height) - 60) / 860, .36, .62)).toFixed(3));
     tryPhone.style.setProperty('--s', (vw > 900 ? clamp((vh - BAR - 96) / 860, .5, .82) : clamp((vh - BAR - 150) / 860, .5, .7)).toFixed(3));
     $('#erHeads').style.height = Math.max(erA.offsetHeight, erB.offsetHeight) + 'px';
-    const wide = vw > 960, cw = appCards[0].el.offsetWidth;
-    appCards.forEach((c, k) => { if (wide) { c.x = (k - 1) * (cw + 28); c.y = 0; c.r = 0; } else if (vw <= 760) { c.x = 0; c.y = (k - 1) * 134; c.r = 0; } else { c.x = (k - 1) * 26; c.y = (k - 1) * -26; c.r = (k - 1) * 6; } });
+    // apps: the heading block is as tall as the taller of its two headings (three lines on a phone), so the cards never cover it;
+    // on phones the three cards stack with a real gap and, like the merged card, shrink if the screen is short
+    const ah = $('.apps-head'), aTag = $('.tag', ah), aTop = aTag.offsetHeight + 12;
+    $$('h2', ah).forEach(h => { h.style.top = NARROW.matches ? aTop + 'px' : ''; });
+    ah.style.height = NARROW.matches ? (aTop + Math.max($('#appsA').offsetHeight, $('#appsB').offsetHeight) + 18) + 'px' : '';
+    const wide = vw > 960, cw = appCards[0].el.offsetWidth, rowH = $('#appsRow').clientHeight, chh = appCards[0].el.offsetHeight;
+    const stepY = chh + 10, cs = vw <= 760 ? Math.min(1, Math.max(.72, (rowH - 44) / (2 * stepY + chh))) : 1;   // a real margin under the last card
+    appCards.forEach((c, k) => { c.s = cs; if (wide) { c.x = (k - 1) * (cw + 28); c.y = 0; c.r = 0; } else if (vw <= 760) { c.x = 0; c.y = (k - 1) * stepY * cs; c.r = 0; } else { c.x = (k - 1) * 26; c.y = (k - 1) * -26; c.r = (k - 1) * 6; } });
+    otS = Math.min(1, Math.max(.6, (rowH - 20) / otCard.offsetHeight));
+    // who uses it: on phones only the current line shows, so the block keeps the height of the longest one (no jump mid-scroll)
+    const bEl = $('#problem .beats'), bLis = $$('li', bEl);
+    bEl.style.minHeight = '';
+    if (NARROW.matches) { let mh = 0; bLis.forEach(li => { const d = li.style.display; li.style.display = 'block'; mh = Math.max(mh, li.offsetHeight); li.style.display = d; }); bEl.style.minHeight = mh + 'px'; }
+    fitStages();
     anLay();
     const vis = $('#rulesVis').getBoundingClientRect();
     PV_W = NARROW.matches ? 340 : 460; PV_H = NARROW.matches ? 480 : 440;
@@ -12239,6 +12320,21 @@ html[data-theme="dark"] .wave i { background: #fff; }
     if (v3.idx >= 0) v3Wheel();
     if (crStep >= 0) placeCrowd(crStep === 5 ? 0 : crStep);
     scenes.forEach(s => { s.last = -1; });
+  }
+
+  // phones: a pinned scene whose content is taller than the visible screen (Safari's bars can take a fifth of it) is scaled to fit
+  // (stage: the block is centred in the stage; row: the block is a grid row of its own and its children must fit that row)
+  const FIT = [['#errands', '.er-wrap', 'stage'], ['#problem', '.dot-grid', 'stage'], ['#people', '.pe-main', 'row']];
+  function fitStages() {
+    FIT.forEach(([sec, inner, how]) => {
+      const st = $(sec + ' .stage'), el = $(inner, st);
+      el.style.transform = '';
+      if (!NARROW.matches) return;
+      let avail, h;
+      if (how === 'stage') { const cs = getComputedStyle(st); avail = st.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - 20; h = el.offsetHeight; }
+      else { const kids = [...el.children], gap = parseFloat(getComputedStyle(el).rowGap) || 0; avail = el.clientHeight - 6; h = kids.reduce((a, k) => a + k.offsetHeight, 0) + gap * (kids.length - 1); }
+      if (h > avail) { el.style.transformOrigin = '50% 50%'; el.style.transform = 'scale(' + Math.max(.7, avail / h).toFixed(3) + ')'; }
+    });
   }
 
   /* ---------------------------------------------------------------
@@ -12312,12 +12408,12 @@ html[data-theme="dark"] .wave i { background: #fff; }
     appCards.forEach((c, k) => {
       const rise = (1 - easeOut(seg(p, k * .04, .14 + k * .04))) * 60;
       const x = c.x * (1 - m), y = c.y * (1 - m) + rise, r = c.r * (1 - m) + (k - 1) * 5 * m;
-      c.el.style.transform = 'translate(' + x.toFixed(1) + 'px, calc(-50% + ' + y.toFixed(1) + 'px)) rotate(' + r.toFixed(2) + 'deg) scale(' + (1 - .1 * m).toFixed(3) + ')';
+      c.el.style.transform = 'translate(' + x.toFixed(1) + 'px, calc(-50% + ' + y.toFixed(1) + 'px)) rotate(' + r.toFixed(2) + 'deg) scale(' + ((1 - .1 * m) * (c.s || 1)).toFixed(3) + ')';
       c.el.style.opacity = (1 - seg(p, .48, .6)).toFixed(3);
     });
     const o = easeOut(seg(p, .5, .64));
     otCard.style.opacity = o.toFixed(3);
-    otCard.style.transform = 'translateY(-50%) scale(' + (.82 + .18 * o).toFixed(4) + ')';
+    otCard.style.transform = 'translateY(-50%) scale(' + ((.82 + .18 * o) * otS).toFixed(4) + ')';
     otItems.forEach((li, k) => li.classList.toggle('on', p >= .64 + k * .022));
     appsA.style.opacity = (1 - seg(p, .46, .56)).toFixed(3);
     appsB.style.opacity = seg(p, .54, .64).toFixed(3);
