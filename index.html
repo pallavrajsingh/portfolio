@@ -278,9 +278,6 @@ html.ready .ruler, html.ready .r-corner { opacity: 1; }
 .kw { position: relative; display: inline-block; font-weight: 500; white-space: nowrap; transition: opacity .4s, color .3s; }
 .kw::before { content: ''; position: absolute; left: -.08em; right: -.08em; bottom: .04em; height: .3em; background: var(--neon); z-index: -1; transform-origin: 0 50%; transition: height .4s var(--ease); }
 .kw:hover::before, .kw.open::before { height: 1.05em; }
-.about-hint { display: flex; align-items: center; gap: 10px; margin-top: 30px; color: var(--ink3); font-size: 11px; }
-.about-hint i { width: 9px; height: 9px; background: var(--neon); box-shadow: 0 0 0 1px var(--ink); animation: hintPx 1.6s steps(2) infinite; }
-@keyframes hintPx { 50% { opacity: .2; } }
 .peek { position: absolute; left: 0; top: 0; z-index: 5; width: 300px; background: var(--paper); box-shadow: 0 0 0 1px var(--line2), 0 40px 70px -40px rgba(11, 12, 15, .5); opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity .35s var(--ease), transform .45s var(--ease), visibility 0s .35s; }
 .peek.on { opacity: 1; visibility: visible; transform: none; transition: opacity .35s var(--ease), transform .45s var(--ease); }
 .peek-img { aspect-ratio: 808 / 632; overflow: hidden; background: #E6E6E3; }
@@ -391,9 +388,8 @@ html.ready .ruler, html.ready .r-corner { opacity: 1; }
 .tl-points { display: grid; gap: 8px; margin-top: 18px; }
 .tl-points li { position: relative; padding-left: 22px; font-size: clamp(16px, 1.15vw, 18px); line-height: 1.55; color: var(--ink2); }
 .tl-points li::before { content: ''; position: absolute; left: 0; top: .72em; width: 10px; height: 1px; background: var(--ink); }
-.tags { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 18px; }
-.tags li { font-family: var(--fm); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink3); }
-.tags li::before { content: '#'; margin-right: 2px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 22px; }
+.tags li { padding: 5px 11px; border: 1px solid var(--line2); border-radius: 99px; font-size: 13px; line-height: 1.3; color: var(--ink2); }
 
 /* ==========================================================================
    05 · SELECTED WORK · cards seated on a 3D ring
@@ -447,7 +443,26 @@ html.ready .ruler, html.ready .r-corner { opacity: 1; }
 .foot { padding: 0 clamp(8px, 1.2vw, 18px) clamp(8px, 1.2vw, 18px); }
 .foot-panel { --ci: 30%; --cx: 10%; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; height: clamp(460px, 46vw, 700px); max-height: 92vh; max-height: 92svh; background: var(--neon); border-radius: clamp(20px, 3vw, 44px); clip-path: inset(var(--ci) var(--cx) 0 var(--cx) round clamp(20px, 3vw, 44px)); touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
 #ghostCv { position: absolute; inset: 0; width: 100%; height: 100%; }
-.foot-bottom { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 14px 20px; flex-wrap: wrap; padding-bottom: clamp(20px, 4vh, 40px); pointer-events: none; }
+.foot-bottom { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 14px 20px; flex-wrap: wrap; padding-bottom: clamp(20px, 4vh, 40px); pointer-events: none; transition: opacity .4s, visibility .4s; }
+.foot-panel { transition: height .6s var(--ease); }
+/* the arcade */
+.arc-btn { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 99px; background: var(--ink); color: var(--neon); font-size: 12px; transition: opacity .35s, visibility .35s, transform .4s var(--spring); }
+.arc-btn i { font-style: normal; }
+.arc-btn:hover { transform: translateY(-2px); }
+.arc-play { left: var(--pad); top: 50%; }
+.arc-quit { right: clamp(14px, 2.2vw, 28px); top: clamp(14px, 2.2vw, 28px); opacity: 0; visibility: hidden; }
+.arc-help { position: absolute; z-index: 2; left: 0; right: 0; bottom: clamp(10px, 2vh, 20px); text-align: center; font-size: 10px; color: rgba(11, 12, 15, .62); opacity: 0; transition: opacity .35s; pointer-events: none; }
+.foot-panel.playing { touch-action: none; max-height: calc(100vh - var(--bar) - 12px); max-height: calc(100svh - var(--bar) - 12px); }   /* the whole cabinet fits under the header */
+.foot-panel.playing .arc-play, .foot-panel.playing .foot-bottom { opacity: 0; visibility: hidden; }
+.foot-panel.playing .arc-quit, .foot-panel.playing .arc-help { opacity: 1; visibility: visible; }
+/* touch: a d-pad under the maze (beside it in landscape) */
+.arc-pad { --k: clamp(54px, 15vw, 70px); position: absolute; z-index: 2; left: 50%; bottom: clamp(18px, 3vh, 30px); display: grid; grid-template-columns: repeat(3, var(--k)); grid-template-rows: repeat(3, var(--k)); gap: 6px; transform: translateX(-50%); opacity: 0; visibility: hidden; transition: opacity .35s, visibility .35s; touch-action: none; }
+.arc-pad button { display: grid; place-items: center; border-radius: 10px; background: var(--ink); touch-action: none; -webkit-user-select: none; user-select: none; transition: transform .12s, background .12s; }
+.arc-pad button.on { transform: scale(.92); background: #2A2C31; }
+.arc-pad svg { width: 38%; height: 38%; fill: var(--neon); }
+.pad-u { grid-column: 2; grid-row: 1; } .pad-l { grid-column: 1; grid-row: 2; } .pad-r { grid-column: 3; grid-row: 2; } .pad-d { grid-column: 2; grid-row: 3; }
+html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; }
+@media (orientation: landscape) and (max-height: 560px) { .arc-pad { --k: 48px; left: auto; right: clamp(16px, 3vw, 32px); bottom: 50%; transform: translateY(50%); } }
 .foot-bottom > * { pointer-events: auto; }
 .foot-id { color: var(--ink); }
 .foot-links { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -513,7 +528,9 @@ html.ready .ruler, html.ready .r-corner { opacity: 1; }
   .tl-node { grid-column: 1; grid-row: 1; top: calc(var(--bar) + 30px); margin-top: 20px; }
   .tl-body { grid-column: 2; grid-row: 2; }
   .tl-points li { font-size: 15px; }
-  .ring-info { grid-template-columns: auto minmax(0, 1fr) auto; row-gap: 14px; }
+  .ring-stage { grid-template-rows: auto 1fr auto; }
+  .ring-view { grid-row: 2; }
+  .ring-info { grid-row: 3; grid-template-columns: auto minmax(0, 1fr) auto; row-gap: 14px; margin-top: 0; padding: 18px 0 0; border-bottom: 0; border-top: 1px solid var(--line2); }
   .ri-text { grid-column: 1 / -1; grid-row: 1; text-align: center; }
   .ri-title { white-space: normal; }
   #ringPrev { grid-column: 1; grid-row: 2; }
@@ -526,12 +543,12 @@ html.ready .ruler, html.ready .r-corner { opacity: 1; }
 }
 @media (max-width: 760px) and (orientation: portrait) {
   /* the index becomes a thumb wheel on the right edge: every section on it, one tap goes */
+  .foot-panel { height: 540px; max-height: none; }
+  .foot-panel.playing { height: min(94svh, 780px); }
   html.menu-open .bar-link { opacity: 1; pointer-events: auto; }
   .dial-info { display: none; }
   .dial-items a { gap: 10px; font-size: clamp(25px, 7.4vw, 32px); }
   .dial-items a i { font-size: 10px; }
-  .dial-items a::after { content: attr(data-note); position: absolute; right: 0; top: 100%; margin-top: 5px; font-family: var(--fm); font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; color: var(--ink2); opacity: 0; transition: opacity .3s; }
-  .dial-items a.on::after { opacity: 1; }
   .dial-items a.here i::after { content: ''; display: inline-block; width: 7px; height: 7px; margin-left: 6px; background: var(--neon); box-shadow: 0 0 0 1px var(--ink); vertical-align: middle; }
   .menu-foot { bottom: 20px; }
   .menu-foot > a { display: none; }
@@ -634,11 +651,11 @@ html.ready .ruler, html.ready .r-corner { opacity: 1; }
       <span class="r-corner mono" id="rCorner" aria-hidden="true">X 0000<br>Y 0000</span>
       <div class="frame" id="frame">
         <p class="frame-label mono" aria-hidden="true"><i></i>Portfolio</p>
-        <p class="layer hero-tag" data-layer="Component · Tag"><span>Product Designer</span></p>
-        <h1 class="layer hero-name" id="heroName" data-layer="Text · Display" aria-label="Pallav Raj"><span class="hn-l" data-chars>Pallav</span><span class="hn-l" data-chars>Raj</span></h1>
-        <p class="layer hero-desc" id="heroDesc" data-layer="Text · Paragraph">Designing is like meditating. Somewhere in the process you get a bright idea and resolve to turn within.</p>
+        <p class="layer hero-tag" data-layer="Text · My Job"><span>Product Designer</span></p>
+        <h1 class="layer hero-name" id="heroName" data-layer="Text · It's Me" aria-label="Pallav Raj"><span class="hn-l" data-chars>Pallav</span><span class="hn-l" data-chars>Raj</span></h1>
+        <p class="layer hero-desc" id="heroDesc" data-layer="Text · Philosophy">Designing is like meditating. Somewhere in the process you get a bright idea and resolve to turn within.</p>
         <div class="sel" id="sel" aria-hidden="true">
-          <span class="sel-name mono" id="selName">Text · Display</span>
+          <span class="sel-name mono" id="selName">Text · It's Me</span>
           <i class="h h-tl"></i><i class="h h-tc"></i><i class="h h-tr"></i><i class="h h-ml"></i><i class="h h-mr"></i><i class="h h-bl"></i><i class="h h-bc"></i><i class="h h-br"></i>
           <span class="sel-dim mono" id="selDim">0 × 0</span>
         </div>
@@ -668,7 +685,6 @@ html.ready .ruler, html.ready .r-corner { opacity: 1; }
       </div>
       <div class="about-r">
         <p class="about-p" id="aboutP">Every interface deserves thoughtful craft: effortlessly <a class="kw" href="https://www.behance.net/gallery/178702661/Interactive-Resume" target="_blank" rel="noopener" data-cursor="View" data-title="Interactive Resume" data-kind="Behance" data-img="https://mir-s3-cdn-cf.behance.net/projects/808/790552178702661.Y3JvcCwxMzgwLDEwODAsMjcwLDA.png">built</a>, truly <a class="kw" href="#surface-phone" data-cursor="Open" data-title="Surface Phone" data-kind="Case study" data-img="https://mir-s3-cdn-cf.behance.net/projects/808/4c0428115227193.615973b7cd3fe.jpg">loved</a>, beautifully <a class="kw" href="#onetouch" data-cursor="Open" data-title="OneTouch" data-kind="Case study" data-img="https://mir-s3-cdn-cf.behance.net/projects/808/ad127996439145.Y3JvcCwzNTc5LDI4MDAsMjEyLDA.png">polished</a>.</p>
-        <p class="about-hint mono rv" id="aboutHint"><i></i><span>Hover a highlighted word to see the work behind it</span></p>
         <div class="peek" id="peek" aria-hidden="true"><div class="peek-img"><img alt="" id="peekImg"></div><div class="peek-cap"><span class="mono" id="peekKind">Case study</span><b id="peekTitle">Surface Phone</b><a class="peek-go mono" id="peekGo" href="#">Open <i>→</i></a></div></div>
       </div>
     </div>
@@ -855,10 +871,21 @@ html.ready .ruler, html.ready .r-corner { opacity: 1; }
 </main>
 
 <!-- FOOTER · an orange panel opens; a ghost made of pixels lives in it. It wanders, follows the pointer
-     (but is shy up close), flies to wherever you click, and bursts and reappears if you click it. -->
+     (but is shy up close), flies to wherever you click, and bursts and reappears if you click it.
+     Press play and it becomes "Ship it!", a little arcade game: a Pac-Man turned round, where you are the ghost,
+     the maze is a wireframe, the dots are pixels and the enemies are bugs. -->
 <footer class="foot" id="foot">
   <div class="foot-panel" id="footPanel" data-cursor="">
     <canvas id="ghostCv" aria-hidden="true"></canvas>
+    <button class="arc-btn arc-play mono" id="arcPlay" data-cursor="Play"><i>▶</i><span>Play “Ship it!”</span></button>
+    <button class="arc-btn arc-quit mono" id="arcQuit" data-cursor="Quit"><span>Quit</span><i>✕</i></button>
+    <p class="arc-help mono" id="arcHelp" aria-live="polite"></p>
+    <div class="arc-pad" id="arcPad" role="group" aria-label="Move">
+      <button class="pad-u" data-d="0,-1" aria-label="Up"><svg viewBox="0 0 10 10"><path d="M5 2 9 7H1Z"/></svg></button>
+      <button class="pad-l" data-d="-1,0" aria-label="Left"><svg viewBox="0 0 10 10"><path d="M2 5 7 1V9Z"/></svg></button>
+      <button class="pad-r" data-d="1,0" aria-label="Right"><svg viewBox="0 0 10 10"><path d="M8 5 3 1V9Z"/></svg></button>
+      <button class="pad-d" data-d="0,1" aria-label="Down"><svg viewBox="0 0 10 10"><path d="M5 8 9 3H1Z"/></svg></button>
+    </div>
     <div class="wrap foot-bottom">
       <span class="foot-id mono">Thanks for scrolling</span>
       <ul class="foot-links">
@@ -1143,10 +1170,12 @@ w.__csPause=function(on){on=!!on;if(on===paused)return;paused=on;if(!on){var h=h
   });
 
   /* ---------------------------------------------------------------
-     Manifesto: light-speed, after haoqi.design. The collaborator's cursor waits in the middle of the canvas;
-     scrolling spins it up into a portal that fills the screen. Inside, rays of light travel only as far as you
-     scroll: still when you stop, backwards when you scroll up, and longer, denser and faster the deeper you go.
-     At the end the portal closes back down to a point.
+     Manifesto: light-speed, after haoqi.design, in our own colours. The collaborator's cursor waits in the middle
+     of the canvas as a small, thick, glossy orange 3D cursor. Scrolling tumbles it half a turn about its long axis
+     while it grows into a portal that swallows the screen. Inside is hyperspace: rays of light that travel only as
+     far as you scroll (still when you stop, backwards when you scroll up), stretch when you scroll fast, and get
+     longer, denser and brighter the deeper you go. As the portal opens its face breaks into pixels that flip to
+     hyperspace. The pointer nudges the vanishing point. At the end the portal closes back into the cursor, which clicks once, into the next section.
   --------------------------------------------------------------- */
   const Warp = (() => {
     const sec = $('#manifesto'), cv = $('#warpCv'), tag = $('#warpTag'), phs = $$('.warp-ph'), idxEl = $('#warpIdx'), vEl = $('#warpV');
@@ -1155,26 +1184,29 @@ w.__csPause=function(on){on=!!on;if(on===paused)return;paused=on;if(!on){var h=h
       const cs = $$('.ci', l), n = Math.max(1, cs.length - 1);
       cs.forEach((c, i) => { c.style.setProperty('--dl', Math.round(li * 100 + i / n * 200 + Math.random() * 100) + 'ms'); c.style.setProperty('--dx', Math.round(Math.random() * 180) + 'ms'); });
     }));
-    // the hero's cursor (its svg path), measured from the widest point inside it; INR is the circle that fits there
-    const MID = [9.3, 9.2], INR = 3.2, ARROW = [[4, 2.5], [19.5, 11], [12, 12.8], [8.6, 20]].map(([x, y]) => [x - MID[0], y - MID[1]]);
+    // the hero's cursor (its svg path), measured from the widest point inside it; INR is the circle that fits there.
+    // It tumbles about its long axis (tip to notch), and is THICK units deep.
+    const MID = [9.3, 9.2], INR = 3.2, THICK = 2.6, TILT = .45, ARROW = [[4, 2.5], [19.5, 11], [12, 12.8], [8.6, 20]].map(([x, y]) => [x - MID[0], y - MID[1]]);
+    const AX = (() => { const x = 8, y = 10.3, l = Math.hypot(x, y); return [x / l, y / l]; })();
     const FS = `
 precision highp float;
-uniform vec2 uRes, uC, uV0, uV1, uV2, uV3;
-uniform float uTime, uT, uReveal, uScale, uSpin, uFull;
-const vec3 ACC = vec3(.12, .29, 1.);
-const vec3 DEEP = vec3(0.);
-const vec3 C0 = vec3(0., .85, 1.), C1 = vec3(.1, .36, 1.), C2 = vec3(.5, .24, 1.), C3 = vec3(1., .26, .82), HOT = vec3(1., .42, 0.);
+uniform vec2 uRes, uC, uO, uAx, uV0, uV1, uV2, uV3;
+uniform vec4 uRing;
+uniform float uTime, uT, uVel, uReveal, uScale, uSpin, uFull, uThick, uPix;
+const vec3 ORANGE = vec3(1., .416, 0.);
+const vec3 HOT = vec3(.8, .3, 0.);
 float hsh(float n) { return fract(sin(n * 127.1 + 311.7) * 43758.5453); }
+vec3 hsv(vec3 c) { vec3 p = abs(fract(c.xxx + vec3(1., 2. / 3., 1. / 3.)) * 6. - 3.); return c.z * mix(vec3(1.), clamp(p - 1., 0., 1.), c.y); }
 float aa(float v, float lo) {
 #ifdef HAS_D
-  return max(fwidth(v) * 1.5, lo);
+  return max(fwidth(v) * 1.2, lo);
 #else
   return lo * 2.5;
 #endif
 }
-// polar cells: each is a ray; along it, sparks whose phase is pushed by the scroll clock
+// hyperspace: polar cells are rays; along each, sparks whose phase is pushed by the scroll clock
 vec3 rays(vec2 fc) {
-  vec2 u = (fc * 2. - uRes) / min(uRes.x, uRes.y);
+  vec2 u = (fc - uRes * .5 - uO) * 2. / min(uRes.x, uRes.y);
   float r = length(u);
   float ac = (atan(u.y, u.x) / 3. + 6.) * 100.;
   float id = floor(ac) + .5, cell = abs(fract(ac) - .5);
@@ -1182,19 +1214,20 @@ vec3 rays(vec2 fc) {
   float keep = mix(.18, 1., tr);
   float km = 1. - smoothstep(keep - .025, keep + .025, fract(id * .61803398875));
   if (km <= 0.) return vec3(0.);
-  float spd = mix(.7, 3.6, tr), len = mix(2.7, .975, tr);
+  float spd = mix(.7, 3.6, tr), len = mix(2.7, .975, tr) / (1. + uVel * .4);   // scroll fast and they stretch
   float ph = ((6. - r) * 2. + id * .4) * fract(id * .61) + uTime * spd;
   float m = max(0., max(1. - fract(ph + .14) * len, max(1. - fract(ph + .12) * len, 1. - fract(ph + .08) * len)));
   float e = aa(m, 2. / uRes.y);
   float star = smoothstep(.12 - e, .12 + e, m);
   float w = aa(cell, .002);
-  star *= (1. - smoothstep(.13 - w, .13 + w, cell)) * km;
-  if (star <= 0.) return vec3(0.);
-  float h = hsh(id), h2 = hsh(id + 7.3);
-  vec3 col = h < .4 ? C0 : h < .72 ? C1 : h < .88 ? C2 : h < .95 ? C3 : HOT;
-  col = mix(col, h < .5 ? C1 : C0, (.5 + .5 * sin(uTime * spd * .52 + id * .29 + h2 * 6.2832)) * .4);
-  float inten = min(uT * 1.3, 1.) * 2.4 + .25;
-  return col * inten * pow(smoothstep(.1, 1., r), 1.25) * mix(.78, 1., smoothstep(.14, .5, m)) * star;
+  float core = (1. - smoothstep(.13 - w, .13 + w, cell)) * star;
+  float halo = (1. - smoothstep(.1, .5, cell)) * smoothstep(.05, .6, m) * .05;          // a faint glow around each ray
+  if (core + halo <= 0.) return vec3(0.);
+  float h = hsh(id), h2 = hsh(id + 7.3), h3 = hsh(id + 3.1);
+  // blues around 203°, each ray its own shade, drifting as you scroll; one in sixteen burns orange
+  vec3 col = h3 > .94 ? HOT : hsv(vec3(fract(.565 + (h - .5) * .2 + sin(uTime * spd * .52 + id * .29 + h2 * 6.2832) * .06), mix(.86, 1., h2), 1.));
+  float inten = h3 > .94 ? 1.35 * min(uT * 1.5, 1.) : 6.5 * min(uT * 1.2, 1.);   // the orange ones are not overdriven, so they stay orange
+  return col * inten * pow(smoothstep(.1, 1., r), 1.25) * mix(.78, 1., smoothstep(.14, .5, m)) * (core + halo) * km;
 }
 void edge(vec2 p, vec2 a, vec2 b, inout float d, inout float s) {
   vec2 e = b - a, w = p - a;
@@ -1206,23 +1239,50 @@ void edge(vec2 p, vec2 a, vec2 b, inout float d, inout float s) {
 float arrow(vec2 p) {
   float d = dot(p - uV0, p - uV0), s = 1.;
   edge(p, uV0, uV3, d, s); edge(p, uV1, uV0, d, s); edge(p, uV2, uV1, d, s); edge(p, uV3, uV2, d, s);
-  return s * sqrt(d);
+  return s * sqrt(d) - .55;                                                     // rounded corners
 }
 void main() {
   vec2 fc = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
-  float inside = 1., rim = 0.;
-  if (uFull < .5) {
-    vec2 q = (fc - uC) / uScale;
-    float cs = cos(uSpin), fl = (cs < 0. ? -1. : 1.) * max(abs(cs), .02);
-    q.x /= fl;
-    float d = arrow(q) * uScale * abs(fl);
-    inside = 1. - smoothstep(-.75, .75, d);
-    if (inside <= 0.) { gl_FragColor = vec4(0.); return; }
-    rim = 1. - smoothstep(0., 2.2, -d);
+  vec3 inner = rays(fc);
+  vec4 outc = vec4(0.);
+  if (uFull > .5) outc = vec4(min(inner, 1.), 1.);
+  else {
+    // the cursor as a solid: its face, squashed by the tumble, swept through its depth
+    vec2 q = (fc - uC) / uScale, a = uAx, b = vec2(-a.y, a.x);
+    float cs = cos(uSpin), sn = sin(uSpin), sg = cs < 0. ? -1. : 1., cq = sg * max(abs(cs), .05);
+    float qa = dot(q, a), qb = dot(q, b), wf = sg * uThick * .5;
+    vec2 pf = qa * a + (qb + wf * sn) / cq * b;
+    float dFace = arrow(pf), dSolid = dFace, wMin = wf;
+    for (int i = 0; i < 10; i++) {
+      float w = uThick * ((float(i) + .5) / 10. - .5);
+      float dd = arrow(qa * a + (qb + w * sn) / cq * b);
+      if (dd < dSolid) { dSolid = dd; wMin = w; }
+    }
+    float eS = aa(dSolid, .02), eF = aa(dFace, .02);
+    float solid = 1. - smoothstep(-eS, eS, dSolid), face = 1. - smoothstep(-eF, eF, dFace);
+    // a soft shadow on the paper while it's small
+    vec2 qs = (fc - uC - vec2(0., 10.)) / uScale;
+    float shadow = (1. - smoothstep(-.3, 2.6, arrow(dot(qs, a) * a + dot(qs, b) / cq * b))) * .2 * (1. - uReveal);
+    // face: glossy orange skin (a band of light that sweeps with the tumble, a bright rim); as it opens, the face
+    // breaks into pixels that flip, one at a time, to the hyperspace behind it
+    float band = exp(-pow(dot(pf, normalize(vec2(1., -.55))) * .15 + 1.2 - (uSpin - .45) * .8, 2.) * 5.);
+    float rim = 1. - smoothstep(0., .8, -dFace);
+    vec3 skin = ORANGE + (band * .5 + rim * .3) * vec3(1., .93, .82);
+    vec2 cid = floor(fc / uPix);
+    float th = fract(sin(dot(cid, vec2(12.9898, 78.233))) * 43758.5453) * .98 + .01;
+    vec3 fcol = mix(skin, inner, step(th, uReveal));
+    // sides: deep orange, lighter towards the face
+    float tside = clamp((wMin * sg + uThick * .5) / uThick, 0., 1.);
+    vec3 scol = mix(vec3(.42, .11, 0.), vec3(1., .58, .22), tside * tside) * mix(1., .55, uReveal);
+    vec3 col = mix(scol, fcol, face);
+    outc = vec4(min(col, 1.) * solid, solid) + vec4(0., 0., 0., shadow) * (1. - solid);
   }
-  vec3 rgb = mix(ACC, DEEP, smoothstep(0., .88, uReveal)) + rays(fc) * uReveal;
-  rgb += (1. - uFull) * ((1. - abs(cos(uSpin))) * .18 + rim * .3);
-  gl_FragColor = vec4(min(rgb, 1.) * inside, inside);
+  // the click: a ring from the tip
+  if (uRing.w > 0.) {
+    float rd = abs(length(fc - uRing.xy) - uRing.z), ring = (1. - smoothstep(1., 2.6, rd)) * uRing.w;
+    outc = outc * (1. - ring) + vec4(ORANGE, 1.) * ring;
+  }
+  gl_FragColor = outc;
 }`;
     let gl = null, U = {};
     try {
@@ -1240,37 +1300,39 @@ void main() {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
         const loc = gl.getAttribLocation(pr, 'p');
         gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-        ['uRes', 'uC', 'uV0', 'uV1', 'uV2', 'uV3', 'uTime', 'uT', 'uReveal', 'uScale', 'uSpin', 'uFull'].forEach(n => { U[n] = gl.getUniformLocation(pr, n); });
+        ['uRes', 'uC', 'uO', 'uAx', 'uV0', 'uV1', 'uV2', 'uV3', 'uRing', 'uTime', 'uT', 'uVel', 'uReveal', 'uScale', 'uSpin', 'uFull', 'uThick', 'uPix'].forEach(n => { U[n] = gl.getUniformLocation(pr, n); });
         ARROW.forEach((v, i) => gl.uniform2f(U['uV' + i], v[0], v[1]));
+        gl.uniform2f(U.uAx, AX[0], AX[1]); gl.uniform1f(U.uThick, THICK);
         cv.addEventListener('webglcontextlost', e => { e.preventDefault(); gl = null; sec.classList.add('nogl'); });
       }
     } catch (err) { gl = null; }
     if (!gl) sec.classList.add('nogl');
 
     let W = 0, H = 0, dpr = 1, HS = 1, on = false, raf = 0, last = 0;
-    let clock = 0, shown = 0, vel = 0, phase = -2;        // the scroll clock, and the eased value the streaks see
-    let Srest = 3, Sfull = 300, scale = 3, spin = 0, reveal = 0, full = 0;
+    let clock = 0, shown = 0, vel = 0, sp = 0, phase = -2;          // the scroll clock, the eased value the rays see, and its speed
+    let Srest = 3, Sfull = 300, scale = 3, spin = TILT, reveal = 0, full = 0, ring = [0, 0, 0, 0];
+    const O = { x: 0, y: 0, tx: 0, ty: 0 };                          // the vanishing point's nudge towards the pointer
     function portal(p) {
+      const g = seg(p, 0, .13), k = seg(p, .83, .95), c = seg(p, .95, 1);
       if (RM) { scale = Sfull; spin = 0; reveal = 1; full = 1; }
       else {
-        const g = seg(p, 0, .12), k = seg(p, .85, .99);
-        if (k <= 0) {
-          scale = Srest * Math.pow(Sfull / Srest, eio(g));
-          spin = Math.PI * 2 * eio(seg(g, 0, .6));
-          reveal = smooth(seg(g, .1, .85));
-        } else {
-          scale = Sfull * Math.pow(Srest / Sfull, eio(seg(k, 0, .75))) * (1 - eio(seg(k, .75, 1)));
-          spin = -Math.PI * 2 * eio(seg(k, .3, 1));
-          reveal = 1 - smooth(seg(k, 0, .7));
-        }
+        if (k <= 0) { scale = Srest * Math.pow(Sfull / Srest, eio(g)); spin = TILT + Math.PI * eio(seg(g, 0, .7)); reveal = smooth(seg(g, .62, 1)); }
+        else { scale = Sfull * Math.pow(Srest / Sfull, eio(k)); spin = TILT + Math.PI * (1 + eio(seg(k, .25, 1))); reveal = 1 - smooth(seg(k, 0, .75)); }
+        scale *= 1 - .16 * Math.sin(Math.min(1, c / .45) * Math.PI);            // the click: a quick press
         full = g >= 1 && k <= 0 ? 1 : 0;
       }
-      const t = seg(p, 0, .03);
-      tag.style.opacity = RM ? 0 : (1 - t).toFixed(3);
-      tag.style.transform = 'translate(' + (10.7 * Srest - 4).toFixed(1) + 'px,' + (6.8 * Srest + t * 14).toFixed(1) + 'px)';
+      // the ring starts at the tip
+      const q = (c - .2) / .8;
+      if (!RM && q > 0 && q < 1) {
+        const v = ARROW[0], qa = v[0] * AX[0] + v[1] * AX[1], qb = (-v[0] * AX[1] + v[1] * AX[0]) * Math.cos(spin);
+        ring = [(W / 2 + (qa * AX[0] - qb * AX[1]) * scale) * dpr, (H / 2 + (qa * AX[1] + qb * AX[0]) * scale) * dpr, (8 + eo(q) * 64) * dpr, 1 - q];
+      } else ring = [0, 0, 0, 0];
+      const t = Math.max(1 - seg(p, 0, .03), seg(p, .955, .99));
+      tag.style.opacity = RM ? 0 : t.toFixed(3);
+      tag.style.transform = 'translate(' + (10.7 * Srest - 4).toFixed(1) + 'px,' + (6.8 * Srest + (1 - t) * 14).toFixed(1) + 'px)';
       sec.classList.toggle('full', reveal > .92);
       root.classList.toggle('on-dark', reveal > .92 && p > 0 && p < 1);
-      const ph = p < .14 || p > .85 ? -1 : p < .37 ? 0 : p < .61 ? 1 : 2;
+      const ph = p < .15 || p > .83 ? -1 : p < .37 ? 0 : p < .6 ? 1 : 2;
       if (ph !== phase) { phase = ph; phs.forEach((el, i) => el.classList.toggle('on', i === ph)); if (ph >= 0) idxEl.textContent = '0' + (ph + 1); }
     }
     function render() {
@@ -1279,8 +1341,10 @@ void main() {
       if (!gl) return;
       gl.uniform2f(U.uRes, cv.width, cv.height);
       gl.uniform2f(U.uC, cv.width / 2, cv.height / 2);
-      gl.uniform1f(U.uTime, shown); gl.uniform1f(U.uT, pv);
-      gl.uniform1f(U.uReveal, reveal); gl.uniform1f(U.uScale, scale * dpr); gl.uniform1f(U.uSpin, spin); gl.uniform1f(U.uFull, full);
+      gl.uniform2f(U.uO, O.x * dpr, O.y * dpr);
+      gl.uniform4f(U.uRing, ring[0], ring[1], ring[2], ring[3]);
+      gl.uniform1f(U.uTime, shown); gl.uniform1f(U.uT, pv); gl.uniform1f(U.uVel, sp);
+      gl.uniform1f(U.uReveal, reveal); gl.uniform1f(U.uScale, scale * dpr); gl.uniform1f(U.uSpin, spin); gl.uniform1f(U.uFull, full); gl.uniform1f(U.uPix, clamp(Math.min(W, H) * .03, 14, 30) * dpr);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
     function frame(now) {
@@ -1292,16 +1356,20 @@ void main() {
       shown = RM ? clock : shown + (clock - shown) * (1 - Math.exp(-dt * 8));   // a little inertia, like a smooth scroller
       if (Math.abs(clock - shown) < 1e-5) shown = clock;
       vel = (shown - prev) / dt;
+      sp = Math.min(3, Math.abs(vel) * 2.5);
+      const ko = 1 - Math.exp(-dt * 5);
+      O.x += (O.tx - O.x) * ko; O.y += (O.ty - O.y) * ko;
       vEl.textContent = (Math.abs(vel) * 60).toFixed(2);
       render();
-      if (shown !== clock) raf = requestAnimationFrame(frame); else last = 0;
+      if (shown !== clock || Math.abs(O.tx - O.x) + Math.abs(O.ty - O.y) > .3) raf = requestAnimationFrame(frame); else last = 0;
     }
     const kick = () => { if (on && !raf) raf = requestAnimationFrame(frame); };
+    if (FINE && !RM) addEventListener('mousemove', e => { if (!on) return; O.tx = (e.clientX - W / 2) * .08; O.ty = (e.clientY - H / 2) * .08; kick(); }, { passive: true });
     function resize() {
       W = cv.clientWidth; H = cv.clientHeight; HS = sec.offsetHeight;
       dpr = Math.min(window.devicePixelRatio || 1, MOBILE.matches ? 1.5 : 1.75);
       cv.width = Math.max(2, Math.round(W * dpr)); cv.height = Math.max(2, Math.round(H * dpr));
-      Srest = clamp(Math.min(W, H) / 260, 2.2, 3.4);          // the cursor starts 40–60px tall
+      Srest = clamp(Math.min(W, H) / 240, 2.4, 3.8);          // the cursor rests 45–65px tall
       Sfull = Math.hypot(W, H) / 2 / INR * 1.05;              // big enough that the whole screen sits inside it
       if (gl) gl.viewport(0, 0, cv.width, cv.height);
       phs.forEach(ph => { ph.style.fontSize = ''; });
@@ -1338,7 +1406,6 @@ void main() {
     const n = RM ? words.length : Math.round(seg(p, .22, .44) * words.length);
     words.forEach((w, i) => w.classList.toggle('on', i < n));
   });
-  $('#aboutHint span').textContent = FINE ? 'Hover a highlighted word to see the work behind it' : 'Tap a highlighted word to see the work behind it';
   let openKw = null, hideT = 0;
   function showPeek(kw) {
     clearTimeout(hideT);
@@ -1519,68 +1586,105 @@ void main() {
     footPanel.style.setProperty('--cx', ((1 - q) * 10).toFixed(2) + '%');
   });
 
-  // The ghost, rebuilt from the logo as pixels, lives in the panel. Left alone it wanders; with the pointer around
-  // it comes over and hovers nearby, but darts off if you get too close; click anywhere and it flies there; click
-  // the ghost itself and it bursts and pulls itself together somewhere else. It turns and leans the way it's going,
-  // its pixels trail when it moves, its eyes follow you, and now and then it blinks.
-  const Haunt = (() => {
+  // The footer panel is an arcade cabinet.
+  // ATTRACT: the ghost, rebuilt from the logo as pixels. Left alone it wanders; with the pointer around it comes
+  // over and hovers nearby, but darts off if you get too close; click anywhere and it flies there; click the
+  // ghost itself and it bursts and pulls itself together somewhere else.
+  // GAME: "Ship it!", Pac-Man turned round. You are the ghost; the maze is a website wireframe in a browser
+  // window; the dots are pixels; the four enemies are bugs (Scope Creep chases you, Edge Case cuts you off,
+  // Regression flanks with Scope Creep, Feedback Loop circles back); the select tool lets you fix them;
+  // levels are releases, and clearing one ships it.
+  const Arcade = (() => {
     const panel = $('#footPanel'), cv = $('#ghostCv'), ctx = cv.getContext('2d'), src = $('.brand-mark svg'), strip = $('.foot-bottom');
-    const VB = { x: 10, y: 14, w: 48, h: 44 }, COLS = 40, U = VB.w / COLS, ROWS = Math.ceil(VB.h / U);
-    const px = [];
-    let eyes = [[9.2, 15.2], [12.5, 14.4]];
-    (function build() {
-      // rasterise the logo at 4× and sample the middle of every cell: ink for the body, white for the eyes
-      const S = 4, off = document.createElement('canvas');
+    const playBtn = $('#arcPlay'), quitBtn = $('#arcQuit'), help = $('#arcHelp'), pad2 = $('#arcPad');
+    const INK = '#0B0C0F', WHITE = '#FFFFFF', DIM = 'rgba(11, 12, 15, .16)';
+    const VB = { x: 10, y: 14, w: 48, h: 44 };
+    // the logo as a grid of pixels, at any resolution: ink body, white eyes, and where the pupils sit
+    function raster(COLS) {
+      const U = VB.w / COLS, ROWS = Math.ceil(VB.h / U), S = 4, off = document.createElement('canvas');
       off.width = COLS * S; off.height = ROWS * S;
       const o = off.getContext('2d');
       o.scale(S / U, S / U); o.translate(-VB.x, -VB.y);
       $$('.g-shape', src).forEach(p => { o.fillStyle = '#000'; o.fill(new Path2D(p.getAttribute('d'))); });
       $$('.g-whites', src).forEach(p => { o.fillStyle = '#fff'; o.fill(new Path2D(p.getAttribute('d'))); });
-      const d = o.getImageData(0, 0, off.width, off.height).data;
+      const d = o.getImageData(0, 0, off.width, off.height).data, cells = [];
       for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
         const i = ((r * S + S / 2) * off.width + c * S + S / 2) * 4;
-        if (d[i + 3] > 127) px.push({ hx: c, hy: r, c: d[i] > 127 ? 1 : 0, x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0 });
+        if (d[i + 3] > 127) cells.push({ hx: c, hy: r, c: d[i] > 127 ? 1 : 0 });
       }
-      try { eyes = $$('.g-pupil', src).map(p => { const b = p.getBBox(); return [(b.x + b.width / 2 - VB.x) / U, (b.y + b.height / 2 - VB.y) / U]; }); } catch (e) { /* keep the fallback */ }
-      // each pupil rides on the white pixel under it, so it flies apart with its eye
-      eyes = eyes.map(([ex, ey]) => { let best = px[0], bd = 1e9; px.forEach(p => { if (!p.c) return; const dd = (p.hx + .5 - ex) ** 2 + (p.hy + .5 - ey) ** 2; if (dd < bd) { bd = dd; best = p; } }); return { gx: Math.round(ex - 1), gy: Math.round(ey - 1), a: best }; });
-    })();
-    let W = 0, H = 0, cell = 8, dpr = 1, on = false, seen = false, raf = 0, last = 0, t = 0;
-    let minX = 0, maxX = 0, minY = 0, maxY = 0, mx = -1e4, my = -1e4, inside = false, touchT = 0;
-    const G = { x: -1, y: 0, vx: 0, vy: 0, face: 1, lean: 0, tx: 0, ty: 0, until: 0, shy: 0 };   // the ghost as a whole; face 1 = the logo's own (looking left)
+      let eyes = [[21.05, 32.25], [25, 31.25]];
+      try { eyes = $$('.g-pupil', src).map(p => { const b = p.getBBox(); return [b.x + b.width / 2, b.y + b.height / 2]; }); } catch (e) { /* keep the fallback */ }
+      return { COLS, ROWS, cells, eyes: eyes.map(([x, y]) => [(x - VB.x) / U, (y - VB.y) / U]) };
+    }
+    const BIG = raster(40), MINI = raster(16);
+
+    /* ---- a 5×7 bitmap font, for the arcade lettering ---- */
+    const FONT = { A: [14, 17, 17, 31, 17, 17, 17], B: [30, 17, 17, 30, 17, 17, 30], C: [14, 17, 16, 16, 16, 17, 14], D: [28, 18, 17, 17, 17, 18, 28], E: [31, 16, 16, 30, 16, 16, 31], F: [31, 16, 16, 30, 16, 16, 16], G: [14, 17, 16, 23, 17, 17, 15], H: [17, 17, 17, 31, 17, 17, 17], I: [14, 4, 4, 4, 4, 4, 14], J: [7, 2, 2, 2, 2, 18, 12], K: [17, 18, 20, 24, 20, 18, 17], L: [16, 16, 16, 16, 16, 16, 31], M: [17, 27, 21, 21, 17, 17, 17], N: [17, 17, 25, 21, 19, 17, 17], O: [14, 17, 17, 17, 17, 17, 14], P: [30, 17, 17, 30, 16, 16, 16], Q: [14, 17, 17, 17, 21, 18, 13], R: [30, 17, 17, 30, 20, 18, 17], S: [15, 16, 16, 14, 1, 1, 30], T: [31, 4, 4, 4, 4, 4, 4], U: [17, 17, 17, 17, 17, 17, 14], V: [17, 17, 17, 17, 17, 10, 4], W: [17, 17, 17, 21, 21, 21, 10], X: [17, 17, 10, 4, 10, 17, 17], Y: [17, 17, 17, 10, 4, 4, 4], Z: [31, 1, 2, 4, 8, 16, 31],
+      0: [14, 17, 19, 21, 25, 17, 14], 1: [4, 12, 4, 4, 4, 4, 14], 2: [14, 17, 1, 2, 4, 8, 31], 3: [31, 2, 4, 2, 1, 17, 14], 4: [2, 6, 10, 18, 31, 2, 2], 5: [31, 16, 30, 1, 1, 17, 14], 6: [6, 8, 16, 30, 17, 17, 14], 7: [31, 1, 2, 4, 8, 8, 8], 8: [14, 17, 17, 14, 17, 17, 14], 9: [14, 17, 17, 15, 1, 2, 12],
+      '!': [4, 4, 4, 4, 4, 0, 4], '.': [0, 0, 0, 0, 0, 12, 12], ':': [0, 12, 12, 0, 12, 12, 0], '-': [0, 0, 0, 31, 0, 0, 0], '/': [0, 1, 2, 4, 8, 16, 0], '?': [14, 17, 1, 2, 4, 0, 4], "'": [12, 4, 8, 0, 0, 0, 0], '>': [8, 4, 2, 1, 2, 4, 8], '+': [0, 4, 4, 31, 4, 4, 0], '=': [0, 0, 31, 0, 31, 0, 0], ' ': [0, 0, 0, 0, 0, 0, 0] };
+    const textW = (str, s) => str.length * 6 * s - s;
+    function text(str, x, y, s, col, align) {
+      if (align === 'center') x -= textW(str, s) / 2; else if (align === 'right') x -= textW(str, s);
+      x = Math.round(x); y = Math.round(y);
+      ctx.fillStyle = col;
+      for (const ch of str.toUpperCase()) {
+        const g = FONT[ch] || FONT[' '];
+        for (let r = 0; r < 7; r++) for (let c = 0; c < 5; c++) if (g[r] & (16 >> c)) ctx.fillRect(x + c * s, y + r * s, s, s);
+        x += 6 * s;
+      }
+    }
+    // pixel sprites: k = ink, w = white
+    function sprite(rows, x, y, s, map) {
+      for (let r = 0; r < rows.length; r++) for (let c = 0; c < rows[r].length; c++) {
+        const ch = rows[r][c], col = map[ch];
+        if (!col) continue;
+        ctx.fillStyle = col; ctx.fillRect(Math.round(x + c * s), Math.round(y + r * s), Math.ceil(s), Math.ceil(s));
+      }
+    }
+    const BUG = [['k.......k', '.k.....k.', '..kwkwk..', 'kkwwkwwkk', '.kwwkwwk.', 'kkwwkwwkk', '.kwwkwwk.', 'k.kkkkk.k'],
+                 ['.k.....k.', '.k.....k.', '..kwkwk..', '.kwwkwwk.', 'kkwwkwwkk', '.kwwkwwk.', 'kkwwkwwkk', '..kkkkk..']];
+    const BUG_EYES = ['.........', '.........', '...w.w...'];
+
+    let W = 0, H = 0, dpr = 1, on = false, raf = 0, last = 0, t = 0, mode = 'attract';
+    const parts = [];                                                       // loose pixels: bursts, sparkles
+
+    /* ================= ATTRACT: the big ghost ================= */
+    const COLS = BIG.COLS, ROWS = BIG.ROWS;
+    const px = BIG.cells.map(c => ({ ...c, x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0 }));
+    const eyes = BIG.eyes.map(([ex, ey]) => { let best = px[0], bd = 1e9; px.forEach(p => { if (!p.c) return; const dd = (p.hx + .5 - ex) ** 2 + (p.hy + .5 - ey) ** 2; if (dd < bd) { bd = dd; best = p; } }); return { gx: Math.round(ex - 1), gy: Math.round(ey - 1), a: best }; });
+    let cell = 8, seen = false, minX = 0, maxX = 0, minY = 0, maxY = 0, mx = -1e4, my = -1e4, inside = false, touchT = 0;
+    const G = { x: -1, y: 0, vx: 0, vy: 0, face: 1, lean: 0, tx: 0, ty: 0, until: 0, shy: 0 };
     const ripples = [];
     const reach = () => COLS * cell * .45;
-    // where a cell of the sprite belongs right now: mirrored to face its way, leaning into the motion, bobbing
+    const L = { x: 0, y: 0 };                                               // where the play button sits
     function home(hx, hy, wave) {
       const lx = (G.face > 0 ? hx : COLS - 1 - hx) - (COLS - 1) / 2, ly = hy - (ROWS - 1) / 2;
       const c = Math.cos(G.lean), s = Math.sin(G.lean), bob = RM ? 0 : Math.sin(t * 1.7) * cell * .8;
       return [G.x + (lx * c - ly * s) * cell + wave - cell / 2, G.y + (lx * s + ly * c) * cell + bob - cell / 2];
     }
-    function size() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = panel.clientWidth; H = panel.clientHeight;
-      cv.width = Math.max(2, W * dpr); cv.height = Math.max(2, H * dpr);
-      const room = H - strip.offsetHeight;
-      cell = clamp(Math.floor(Math.min(room * .62 / ROWS, W * (W < 700 ? .46 : .24) / COLS)), 3, 10);
+    function attractLayout() {
+      // only the play button (left: centred vertically on desktop, at the top on phones); the ghost has the rest of the panel
+      const room = H - strip.offsetHeight, padL = parseFloat(getComputedStyle(strip).paddingLeft) || 24, narrow = W < 700;
+      L.x = padL; L.y = narrow ? Math.max(22, Math.round(room * .08)) : Math.round((room - playBtn.offsetHeight) / 2);   // desktop: halfway down the panel
+      playBtn.style.top = L.y + 'px'; playBtn.style.left = L.x + 'px';
+      const below = L.y + playBtn.offsetHeight + 16;
+      cell = clamp(Math.floor(Math.min((room - (narrow ? below : 0)) * .6 / ROWS, W * (narrow ? .5 : .24) / COLS)), 3, 10);
       const gw = COLS * cell, gh = ROWS * cell, pad = cell * 3;
       minX = gw / 2 + pad; maxX = Math.max(minX, W - gw / 2 - pad);
-      minY = gh / 2 + pad; maxY = Math.max(minY, room - gh / 2 - pad);
-      if (G.x < 0) { G.x = lerp(minX, maxX, .62); G.y = (minY + maxY) / 2; }
+      minY = (narrow ? below : 0) + gh / 2 + pad; maxY = Math.max(minY, room - gh / 2 - pad);
+      if (G.x < 0) { G.x = lerp(minX, maxX, .5); G.y = (minY + maxY) / 2; }
       G.x = clamp(G.x, minX, maxX); G.y = clamp(G.y, minY, maxY);
-      px.forEach(p => { [p.x, p.y] = home(p.hx, p.hy, 0); p.tx = p.x; p.ty = p.y; p.vx = p.vy = 0; });
-      if (!on) draw(performance.now());
     }
     function steer(dt, now) {
       const k = dt * 60, gw = COLS * cell;
       let tx, ty, pull = .01, vmax = cell * 1.3;
-      if (now < G.until) { tx = G.tx; ty = G.ty; pull = .03; vmax = cell * 3.4; }                         // sent somewhere
-      else if (inside) {                                                                                  // curious, from a little way off
+      if (now < G.until) { tx = G.tx; ty = G.ty; pull = .03; vmax = cell * 3.4; }
+      else if (inside) {
         const dx = G.x - mx, dy = G.y - my, d = Math.hypot(dx, dy) || 1;
         tx = mx + dx / d * gw * .68; ty = my + dy / d * gw * .45; pull = .016; vmax = cell * 2;
-        if (d < reach() && now > G.shy && now > G.until + 1500) { G.vx += dx / d * cell * 2.8; G.vy += dy / d * cell * 2.8; G.shy = now + 700; }   // too close: it darts off
-      } else if (!RM) {                                                                                   // left alone, it wanders
-        tx = lerp(minX, maxX, .5 + .5 * Math.sin(t * .23)); ty = lerp(minY, maxY, .5 + .5 * Math.sin(t * .41 + 1.3));
-      } else { tx = G.x; ty = G.y; }
+        if (d < reach() && now > G.shy && now > G.until + 1500) { G.vx += dx / d * cell * 2.8; G.vy += dy / d * cell * 2.8; G.shy = now + 700; }
+      } else if (!RM) { tx = lerp(minX, maxX, .5 + .5 * Math.sin(t * .23)); ty = lerp(minY, maxY, .5 + .5 * Math.sin(t * .41 + 1.3)); }
+      else { tx = G.x; ty = G.y; }
       tx = clamp(tx, minX, maxX); ty = clamp(ty, minY, maxY);
       G.vx = (G.vx + (tx - G.x) * pull * k) * Math.pow(.9, k); G.vy = (G.vy + (ty - G.y) * pull * k) * Math.pow(.9, k);
       const v = Math.hypot(G.vx, G.vy), lim = now < G.shy ? cell * 3.4 : vmax;
@@ -1605,11 +1709,8 @@ void main() {
         p.x += p.vx * k; p.y += p.vy * k;
       }
     }
-    function draw(now) {
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, W, H);
+    function drawAttract(now) {
       const g = Math.max(2, cell - Math.max(1, Math.round(cell * .16))), far = cell * 10, shut = !RM && t % 3.8 < .13;
-      // click ripples: a square of pixels that steps outwards and fades
       for (let i = ripples.length - 1; i >= 0; i--) {
         const r = ripples[i], q = (now - r.t) / 520;
         if (q >= 1) { ripples.splice(i, 1); continue; }
@@ -1627,46 +1728,336 @@ void main() {
           const sz = g * Math.max(.3, 1 - Math.hypot(p.x - p.tx, p.y - p.ty) / far);
           ctx.rect(p.x + (cell - sz) / 2, p.y + (cell - sz) / 2, sz, sz);
         }
-        ctx.fillStyle = c ? '#FFFFFF' : '#0B0C0F';
+        ctx.fillStyle = c ? WHITE : INK;
         ctx.fill();
       }
       if (shut) return;
-      // pupils: 2×2 pixel blocks looking at the pointer, or where it's heading
       const lx = Math.round(inside ? clamp((mx - G.x) / 120, -1, 1) : clamp(G.vx / cell, -1, 1));
       const ly = Math.round(inside ? clamp((my - G.y) / 120, -1, 1) : clamp(G.vy / cell, -1, 1));
-      ctx.fillStyle = '#0B0C0F';
+      ctx.fillStyle = INK;
       ctx.beginPath();
       eyes.forEach(e => {
         const dx = e.a.x - e.a.tx, dy = e.a.y - e.a.ty;
-        for (let i = 0; i < 4; i++) { const [x, y] = home(e.gx + (i & 1), e.gy + (i >> 1), 0); ctx.rect(x + lx * cell + dx, y + ly * cell + dy, g, g); }
+        for (let i = 0; i < 4; i++) { const [x, y2] = home(e.gx + (i & 1), e.gy + (i >> 1), 0); ctx.rect(x + lx * cell + dx, y2 + ly * cell + dy, g, g); }
       });
       ctx.fill();
+    }
+
+    /* ================= GAME: Ship it! ================= */
+    const MAP = ['###################', '#........#........#', '#.##.###.#.###.##.#', '#o...............o#', '#.##.#.#####.#.##.#', '#....#...#...#....#', '####.#       #.####', '####.# ##-## #.####', '    .  #BBB#  .    ', '####.# ##### #.####', '####.#       #.####', '#........#........#', '#.##.###.#.###.##.#', '#o.......G.......o#', '###################'];
+    const DIRS = [[0, -1], [-1, 0], [0, 1], [1, 0]];
+    const SCHEDULE = [7, 20, 7, 20, 5, 1e9];                                 // scatter, chase, scatter, chase …
+    let hi = +(localStorage.getItem('shipit.hi') || 0);
+    let grid = [], gc = 0, gr = 0, tile = 16, ox = 0, oy = 0, portrait = false, walls = null;
+    let state = 'ready', stT = 0, score = 0, lives = 3, level = 0, dots = 0, fright = 0, combo = 0, phaseT = 0, phaseI = 0, paused = false, flash = 0;
+    let door = [0, 0], exit = [0, 0], nest = [0, 0], startP = [0, 0], startB = [];
+    const player = { x: 0, y: 0, dx: 0, dy: 0, nx: 0, ny: 0, face: 1 };
+    const bugs = [0, 1, 2, 3].map(i => ({ i, x: 0, y: 0, dx: 0, dy: 0, st: 'house', rel: 0 }));
+    const pops = [];                                                        // floating score numbers
+    function buildMap() {
+      const src2 = portrait ? MAP[0].split('').map((_, c) => MAP.map(r => r[c]).join('')) : MAP;   // phones in portrait get the maze turned on its side
+      grid = src2.map(r => r.split('')); gr = grid.length; gc = grid[0].length; dots = 0; startB = [];
+      for (let r = 0; r < gr; r++) for (let c = 0; c < gc; c++) {
+        const ch = grid[r][c];
+        if (ch === '.' || ch === 'o') dots++;
+        if (ch === 'G') { startP = [c, r]; grid[r][c] = ' '; }
+        if (ch === '-') door = [c, r];
+        if (ch === 'B') startB.push([c, r]);
+      }
+      nest = startB[1];
+      exit = DIRS.map(([dx, dy]) => [door[0] + dx, door[1] + dy]).find(([x, y]) => grid[y] && grid[y][x] !== '#' && grid[y][x] !== 'B');
+    }
+    const cellAt = (x, y) => grid[((y % gr) + gr) % gr][((x % gc) + gc) % gc];
+    function open(x, y, a) {
+      const ch = cellAt(Math.round(x), Math.round(y));
+      if (ch === '#') return false;
+      if (ch === '-' || ch === 'B') return a !== player && (a.st === 'leave' || a.st === 'eaten');
+      return true;
+    }
+    function gameLayout() {
+      const pad = Math.max(14, Math.min(W, H) * .035);
+      portrait = H > W * 1.05;
+      if (!grid.length || (portrait ? gc > gr : gr > gc)) { const keep = grid.length && state !== 'over'; buildMap(); if (keep) resetActors(); }
+      // room for the controls: a line of help with a keyboard, a d-pad on touch screens (under the maze, or beside it in landscape)
+      const k = $('button', pad2).offsetWidth || 60;
+      const resB = FINE ? 34 : portrait ? k * 3 + 12 + 40 : 0, resR = !FINE && !portrait ? k * 3 + 12 + 48 : 0, top = FINE ? 0 : 56;
+      const aw = W - resR, ah = H - resB - top;
+      tile = Math.max(8, Math.floor(Math.min((aw - pad * 2) / (gc + 1), (ah - pad * 2) / (gr + 4.4))));
+      ox = Math.round((aw - gc * tile) / 2);
+      oy = Math.round(top + (ah - (gr + 4.4) * tile) / 2 + tile * 2.6);
+      // walls, traced like the old arcade mazes: a line just inside every wall face that meets a corridor
+      walls = new Path2D();
+      const isW = (x, y) => x < 0 || y < 0 || x >= gc || y >= gr ? true : grid[y][x] === '#';
+      const ins = Math.round(tile * .32);
+      for (let r = 0; r < gr; r++) for (let c = 0; c < gc; c++) {
+        if (!isW(c, r)) continue;
+        const X = ox + c * tile, Y = oy + r * tile, T = tile;
+        const up = !isW(c, r - 1), dn = !isW(c, r + 1), lf = !isW(c - 1, r), rt = !isW(c + 1, r);
+        if (r - 1 >= 0 && up) { walls.moveTo(X + (lf ? ins : 0), Y + ins); walls.lineTo(X + T - (rt ? ins : 0), Y + ins); }
+        if (r + 1 < gr && dn) { walls.moveTo(X + (lf ? ins : 0), Y + T - ins); walls.lineTo(X + T - (rt ? ins : 0), Y + T - ins); }
+        if (c - 1 >= 0 && lf) { walls.moveTo(X + ins, Y + (up ? ins : 0)); walls.lineTo(X + ins, Y + T - (dn ? ins : 0)); }
+        if (c + 1 < gc && rt) { walls.moveTo(X + T - ins, Y + (up ? ins : 0)); walls.lineTo(X + T - ins, Y + T - (dn ? ins : 0)); }
+        // inside corners
+        [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sy]) => {
+          if (isW(c + sx, r) && isW(c, r + sy) && !isW(c + sx, r + sy) && c + sx >= 0 && c + sx < gc && r + sy >= 0 && r + sy < gr) {
+            const cx = sx < 0 ? X + ins : X + T - ins, cy = sy < 0 ? Y + ins : Y + T - ins;
+            walls.moveTo(sx < 0 ? X : X + T, cy); walls.lineTo(cx, cy); walls.lineTo(cx, sy < 0 ? Y : Y + T);
+          }
+        });
+      }
+    }
+    function resetActors() {
+      Object.assign(player, { x: startP[0], y: startP[1], dx: 0, dy: 0, nx: 0, ny: 0 });
+      const spots = [exit, startB[1], startB[0], startB[2]];
+      bugs.forEach((b, i) => Object.assign(b, { x: spots[i][0], y: spots[i][1], dx: 0, dy: 0, st: i ? 'house' : 'roam', rel: [0, 1.5, 5, 9][i] }));
+      fright = 0; combo = 0; phaseT = 0; phaseI = 0;
+    }
+    function newGame() { score = 0; lives = 3; level = 0; buildMap(); gameLayout(); resetActors(); setState('ready'); }
+    function setState(s2) { state = s2; stT = 0; }
+    const speedP = () => 6.4 * (1 + Math.min(level, 6) * .035), speedB = () => 5.6 * (1 + Math.min(level, 8) * .045);
+    function steerTo(d) {
+      player.nx = d[0]; player.ny = d[1];
+      if ((player.dx || player.dy) && d[0] === -player.dx && d[1] === -player.dy) { player.dx = d[0]; player.dy = d[1]; }
+    }
+    function decide(a) {
+      if (a === player) {
+        if ((a.nx || a.ny) && open(a.x + a.nx, a.y + a.ny, a)) { a.dx = a.nx; a.dy = a.ny; }
+        else if (!open(a.x + a.dx, a.y + a.dy, a)) { a.dx = 0; a.dy = 0; }
+        if (a.dx) a.face = a.dx > 0 ? -1 : 1;
+        return;
+      }
+      const free = a.st === 'leave' || a.st === 'eaten';
+      let opts = DIRS.filter(([dx, dy]) => open(a.x + dx, a.y + dy, a) && (free || !(dx === -a.dx && dy === -a.dy)));
+      if (!opts.length) opts = DIRS.filter(([dx, dy]) => open(a.x + dx, a.y + dy, a));
+      if (!opts.length) return;
+      if (a.st === 'fright') { const o = opts[Math.floor(Math.random() * opts.length)]; a.dx = o[0]; a.dy = o[1]; return; }
+      const [tx, ty] = target(a);
+      let best = opts[0], bd = 1e9;
+      opts.forEach(o => { const d = (a.x + o[0] - tx) ** 2 + (a.y + o[1] - ty) ** 2; if (d < bd) { bd = d; best = o; } });
+      a.dx = best[0]; a.dy = best[1];
+    }
+    function target(b) {
+      if (b.st === 'leave') return exit;
+      if (b.st === 'eaten') return nest;
+      const corners = [[gc - 2, -3], [1, -3], [gc - 1, gr + 1], [0, gr + 1]];
+      if (phaseI % 2 === 0) return corners[b.i];                            // scatter
+      const px2 = Math.round(player.x), py2 = Math.round(player.y), fx = player.dx || 0, fy = player.dy || 0;
+      if (b.i === 0) return [px2, py2];                                      // Scope Creep: straight at you
+      if (b.i === 1) return [px2 + fx * 4, py2 + fy * 4];                    // Edge Case: where you're going
+      if (b.i === 2) { const a = bugs[0], ax = px2 + fx * 2, ay = py2 + fy * 2; return [2 * ax - a.x, 2 * ay - a.y]; }   // Regression: flanks with Scope Creep
+      return Math.hypot(px2 - b.x, py2 - b.y) > 7 ? [px2, py2] : corners[3];  // Feedback Loop: comes close, then circles back
+    }
+    function arrive(a) {
+      if (a === player) {
+        const x = Math.round(a.x), y = Math.round(a.y), ch = grid[y] && grid[y][x];
+        if (ch === '.') { grid[y][x] = ' '; score += 10; dots--; }
+        else if (ch === 'o') {
+          grid[y][x] = ' '; score += 50; dots--; combo = 0; fright = Math.max(2.2, 6.5 - level * .6);
+          bugs.forEach(b => { if (b.st === 'roam') { b.st = 'fright'; b.dx = -b.dx; b.dy = -b.dy; } });
+        }
+        if (dots <= 0) { setState('clear'); }
+      } else {
+        if (a.st === 'leave' && Math.round(a.x) === exit[0] && Math.round(a.y) === exit[1]) a.st = fright > 0 ? 'fright' : 'roam';
+        if (a.st === 'eaten' && Math.round(a.x) === nest[0] && Math.round(a.y) === nest[1]) a.st = 'leave';
+      }
+      decide(a);
+    }
+    function move(a, dist) {
+      let guard = 0;
+      while (dist > 1e-6 && guard++ < 10) {
+        if (!a.dx && !a.dy) { decide(a); if (!a.dx && !a.dy) return; }
+        const nx = a.dx > 0 ? Math.floor(a.x + 1e-6) + 1 : a.dx < 0 ? Math.ceil(a.x - 1e-6) - 1 : a.x;
+        const ny = a.dy > 0 ? Math.floor(a.y + 1e-6) + 1 : a.dy < 0 ? Math.ceil(a.y - 1e-6) - 1 : a.y;
+        const rem = Math.abs(nx - a.x) + Math.abs(ny - a.y);
+        if (dist < rem) { a.x += a.dx * dist; a.y += a.dy * dist; return; }
+        a.x = nx; a.y = ny; dist -= rem;
+        if (a.x < 0) a.x += gc; else if (a.x >= gc) a.x -= gc;              // the tunnel wraps round
+        if (a.y < 0) a.y += gr; else if (a.y >= gr) a.y -= gr;
+        arrive(a);
+      }
+    }
+    function burst(x, y, n, s, col) { for (let i = 0; i < n; i++) { const a = Math.random() * 6.283, v = (1 + Math.random() * 3) * s; parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 0, max: .6 + Math.random() * .6, s, col }); } }
+    function update(dt) {
+      stT += dt;
+      if (state === 'ready') { if (stT > 1.8) setState('play'); return; }
+      if (state === 'dying') { if (stT > 1.6) { if (--lives <= 0) { setState('over'); if (score > hi) { hi = score; localStorage.setItem('shipit.hi', String(hi)); } } else { resetActors(); setState('ready'); } } return; }
+      if (state === 'clear') { flash = stT; if (stT > 2.4) { level++; buildMap(); gameLayout(); resetActors(); setState('ready'); } return; }
+      if (state === 'over') { if (stT > 3.2) quit(); return; }
+      // play
+      if (fright > 0) { fright -= dt; if (fright <= 0) bugs.forEach(b => { if (b.st === 'fright') b.st = 'roam'; }); }
+      else { phaseT += dt; if (phaseT > SCHEDULE[phaseI]) { phaseT = 0; phaseI = Math.min(phaseI + 1, SCHEDULE.length - 1); bugs.forEach(b => { if (b.st === 'roam') { b.dx = -b.dx; b.dy = -b.dy; } }); } }
+      move(player, speedP() * dt);
+      bugs.forEach(b => {
+        if (b.st === 'house') { b.rel -= dt; if (b.rel <= 0) b.st = 'leave'; return; }
+        const sp = b.st === 'eaten' ? 12 : b.st === 'fright' ? 3.4 : b.st === 'leave' ? 3.2 : speedB();
+        move(b, sp * dt);
+        const d = Math.hypot(b.x - player.x, b.y - player.y);
+        if (d < .62 && state === 'play') {
+          if (b.st === 'fright') {
+            b.st = 'eaten'; const pts = 200 * Math.pow(2, combo++); score += pts;
+            pops.push({ x: b.x, y: b.y, s: String(pts), t: 0 });
+            burst(ox + (b.x + .5) * tile, oy + (b.y + .5) * tile, 14, tile * .06, WHITE);
+          } else if (b.st === 'roam') {
+            setState('dying');
+            burst(ox + (player.x + .5) * tile, oy + (player.y + .5) * tile, 60, tile * .07, INK);
+          }
+        }
+      });
+    }
+    function drawGame() {
+      const T = tile, lw = Math.max(2, Math.round(T * .09)), s = Math.max(1.5, T / 15);
+      // the browser window around the maze
+      const x0 = ox - T * .5, y0 = oy - T * 2.4, x1 = ox + gc * T + T * .5, y1 = oy + gr * T + T * .5;
+      ctx.lineWidth = lw; ctx.strokeStyle = INK;
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x0, y0, x1 - x0, y1 - y0, T * .45) : ctx.rect(x0, y0, x1 - x0, y1 - y0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x0, oy - T * .7); ctx.lineTo(x1, oy - T * .7); ctx.stroke();
+      ctx.fillStyle = INK;
+      [0, 1, 2].forEach(i => { ctx.beginPath(); ctx.arc(x0 + T * (.75 + i * .5), y0 + T * .85, T * .14, 0, 6.283); ctx.fill(); });
+      let url = 'SHIP-IT.APP/V1.' + level;
+      if (textW(url, s) + s * 6 > (x1 - x0) - T * 2.2 - textW('000000', s) * 2 - T) url = 'V1.' + level;   // short address bar on small screens
+      const uw = textW(url, s) + s * 6;
+      ctx.lineWidth = Math.max(1, lw * .7);
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect((x0 + x1) / 2 - uw / 2, y0 + T * .85 - s * 5.5, uw, s * 11, s * 5.5) : ctx.rect((x0 + x1) / 2 - uw / 2, y0 + T * .85 - s * 5.5, uw, s * 11); ctx.stroke();
+      text(url, (x0 + x1) / 2, y0 + T * .85 - s * 3.5, s, INK, 'center');
+      text(String(score).padStart(6, '0'), x1 - T * .6, y0 + T * .85 - s * 3.5, s, INK, 'right');
+      // under the window: lives, hi-score
+      for (let i = 0; i < Math.max(0, lives - (state === 'dying' ? 1 : 0)); i++) drawMini(x0 + T * (.6 + i * 1.1), y1 + T * .35, T * .055, 1, false);
+      text('HI ' + String(Math.max(hi, score)).padStart(6, '0'), x1, y1 + T * .45, s, 'rgba(11, 12, 15, .55)', 'right');
+      // maze: flashes when you ship
+      ctx.lineWidth = lw; ctx.lineCap = 'square';
+      ctx.strokeStyle = state === 'clear' && Math.floor(flash * 6) % 2 ? WHITE : INK;
+      ctx.stroke(walls);
+      ctx.fillStyle = WHITE; ctx.fillRect(ox + door[0] * T + (portrait ? T * .45 : 0), oy + door[1] * T + (portrait ? 0 : T * .45), portrait ? T * .1 : T, portrait ? T : T * .1);
+      // pixels and select tools
+      const ds = Math.max(2, Math.round(T * .16)), blink = Math.floor(t * 3) % 2;
+      for (let r = 0; r < gr; r++) for (let c = 0; c < gc; c++) {
+        const ch = grid[r][c], cx = ox + c * T + T / 2, cy = oy + r * T + T / 2;
+        if (ch === '.') { ctx.fillStyle = INK; ctx.fillRect(Math.round(cx - ds / 2), Math.round(cy - ds / 2), ds, ds); }
+        else if (ch === 'o' && (blink || state !== 'play')) {
+          const h = T * .32, hs = Math.max(3, Math.round(T * .14));
+          ctx.strokeStyle = WHITE; ctx.lineWidth = Math.max(1.5, T * .06); ctx.strokeRect(cx - h, cy - h, h * 2, h * 2);
+          ctx.fillStyle = INK; [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sy]) => ctx.fillRect(Math.round(cx + sx * h - hs / 2), Math.round(cy + sy * h - hs / 2), hs, hs));
+        }
+      }
+      // bugs
+      const bs = T * 1.15 / 9, leg = Math.floor(t * 8) % 2;
+      bugs.forEach(bg => {
+        const X = ox + (bg.x + .5) * T - 4.5 * bs, Y = oy + (bg.y + .5) * T - 4 * bs + (bg.st === 'house' ? Math.sin(t * 6 + bg.i) * T * .12 : 0);
+        if (state === 'dying' && stT > .3) return;
+        if (bg.st === 'eaten') { sprite(BUG_EYES, X, Y, bs, { w: WHITE }); return; }
+        if (bg.st === 'fright') { const end = fright < 1.8 && Math.floor(t * 6) % 2; sprite(BUG[leg], X, Y, bs, end ? { k: WHITE, w: INK } : { k: WHITE, w: DIM }); return; }
+        sprite(BUG[leg], X, Y, bs, { k: INK, w: WHITE });
+      });
+      // you
+      if (state !== 'dying' && state !== 'over') drawMini(ox + (player.x + .5) * T, oy + (player.y + .5) * T, T * 1.3 / MINI.COLS, player.face, true);
+      // points that float up
+      for (let i = pops.length - 1; i >= 0; i--) { const p = pops[i]; p.t += 1 / 60; if (p.t > 1) { pops.splice(i, 1); continue; } text(p.s, ox + (p.x + .5) * T, oy + (p.y - p.t * .8) * T, Math.max(1, s * .8), WHITE, 'center'); }
+      // messages
+      const msg = state === 'ready' ? (level ? 'V1.' + level + ' READY!' : 'READY!') : state === 'clear' ? 'SHIPPED!' : state === 'over' ? 'GAME OVER' : paused ? 'PAUSED' : '';
+      if (msg) {
+        const ms = Math.max(2, Math.round(T / 5)), mw = textW(msg, ms) + ms * 8, mh = ms * 13, mx2 = ox + gc * T / 2, my2 = oy + gr * T / 2;
+        ctx.fillStyle = INK; ctx.fillRect(Math.round(mx2 - mw / 2), Math.round(my2 - mh / 2), Math.round(mw), Math.round(mh));
+        text(msg, mx2, my2 - ms * 3.5, ms, state === 'over' ? WHITE : '#FF6A00', 'center');
+      }
+    }
+    // the little ghost: the logo at 16 pixels across, looking where it's going
+    function drawMini(cx, cy, s, face, look) {
+      const w = MINI.COLS * s, h = MINI.ROWS * s, x0 = cx - w / 2, y0 = cy - h / 2 + (RM ? 0 : Math.sin(t * 8) * s * .6);
+      MINI.cells.forEach(c => { const hx = face > 0 ? c.hx : MINI.COLS - 1 - c.hx; ctx.fillStyle = c.c ? WHITE : INK; ctx.fillRect(Math.round(x0 + hx * s), Math.round(y0 + c.hy * s), Math.ceil(s), Math.ceil(s)); });
+      ctx.fillStyle = INK;
+      const lx = look ? clamp(player.dx * (face > 0 ? 1 : 1), -1, 1) * .5 : 0, ly = look ? player.dy * .5 : 0;
+      MINI.eyes.forEach(([ex, ey]) => { const hx = face > 0 ? ex : MINI.COLS - ex; ctx.fillRect(Math.round(x0 + (hx - .5 + lx) * s), Math.round(y0 + (ey - .5 + ly) * s), Math.ceil(s), Math.ceil(s)); });
+    }
+
+    /* ================= the cabinet ================= */
+    function size() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = panel.clientWidth; H = panel.clientHeight;
+      cv.width = Math.max(2, W * dpr); cv.height = Math.max(2, H * dpr);
+      attractLayout();
+      px.forEach(p => { [p.x, p.y] = home(p.hx, p.hy, 0); p.tx = p.x; p.ty = p.y; p.vx = p.vy = 0; });
+      if (mode === 'game') gameLayout();
+      if (!on) draw(performance.now());
+    }
+    function draw(now) {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      if (mode === 'attract') drawAttract(now); else drawGame();
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const p = parts[i];
+        p.life += 1 / 60; if (p.life > p.max) { parts.splice(i, 1); continue; }
+        p.x += p.vx; p.y += p.vy; p.vx *= .94; p.vy *= .94;
+        ctx.globalAlpha = 1 - p.life / p.max; ctx.fillStyle = p.col; ctx.fillRect(p.x, p.y, Math.max(2, p.s * 3), Math.max(2, p.s * 3));
+      }
+      ctx.globalAlpha = 1;
     }
     function frame(now) {
       raf = 0;
       if (!on) return;
       const dt = last ? Math.min(.05, (now - last) / 1000) : 1 / 60;
       last = now; t += dt;
-      steer(dt, now); step(dt); draw(now);
+      if (mode === 'attract') { steer(dt, now); step(dt); }
+      else if (!paused) update(dt);
+      draw(now);
       raf = requestAnimationFrame(frame);
     }
     const kick = () => { if (on && !raf) { last = 0; raf = requestAnimationFrame(frame); } };
+    function play() {
+      mode = 'game'; paused = false;
+      panel.classList.add('playing');
+      help.textContent = FINE ? 'Arrow keys or WASD to move · P to pause · Esc to quit' : '';
+      // the big ghost bursts as the cabinet boots
+      px.forEach(p => parts.push({ x: p.x, y: p.y, vx: (Math.random() - .5) * 14, vy: (Math.random() - .5) * 14, life: 0, max: .5 + Math.random() * .5, s: cell / 3, col: p.c ? WHITE : INK }));
+      newGame();
+      setTimeout(() => { size(); panel.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'end' }); }, 60);
+      setTimeout(() => { size(); panel.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'end' }); }, 700);   // again once the panel has grown on phones
+      quitBtn.focus({ preventScroll: true });
+    }
+    function quit() {
+      if (score > hi) { hi = score; localStorage.setItem('shipit.hi', String(hi)); }
+      mode = 'attract'; paused = false;
+      panel.classList.remove('playing');
+      setTimeout(size, 700);
+      playBtn.focus({ preventScroll: true });
+    }
+    // the d-pad: a press steers straight away (and a swipe anywhere on the maze works too)
+    $$('button', pad2).forEach(bt => {
+      const d = bt.dataset.d.split(',').map(Number);
+      bt.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); steerTo(d); bt.classList.add('on'); if (navigator.vibrate) navigator.vibrate(8); });
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => bt.addEventListener(ev, () => bt.classList.remove('on')));
+      bt.addEventListener('click', e => e.preventDefault());
+    });
+    playBtn.addEventListener('click', play);
+    quitBtn.addEventListener('click', quit);
+    addEventListener('keydown', e => {
+      if (mode !== 'game') return;
+      const d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0], w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0], W: [0, -1], S: [0, 1], A: [-1, 0], D: [1, 0] }[e.key];
+      if (d) { e.preventDefault(); steerTo(d); }
+      else if (e.key === 'p' || e.key === 'P' || e.key === ' ') { e.preventDefault(); if (state === 'play') paused = !paused; }
+      else if (e.key === 'Escape') { e.preventDefault(); quit(); }
+    });
+    // attract: the pointer and clicks move the ghost. game: swipes steer.
+    let sw = null, awayPause = false;
     function at(e) {
       const r = panel.getBoundingClientRect();
       mx = e.clientX - r.left; my = e.clientY - r.top;
-      inside = !e.target.closest('a, button');
+      inside = mode === 'attract' && !e.target.closest('a, button');
       if (inside) curSay(Math.hypot(mx - G.x, my - G.y) < reach() ? 'Boo!' : 'Come here');
+      else if (mode === 'game') curSay('');
     }
-    panel.addEventListener('pointermove', at);
-    panel.addEventListener('pointerdown', e => { clearTimeout(touchT); at(e); });
+    panel.addEventListener('pointermove', e => {
+      at(e);
+      if (sw && mode === 'game') { const dx = e.clientX - sw.x, dy = e.clientY - sw.y; if (Math.hypot(dx, dy) > 18) { steerTo(Math.abs(dx) > Math.abs(dy) ? [Math.sign(dx), 0] : [0, Math.sign(dy)]); sw = { x: e.clientX, y: e.clientY }; } }
+    });
+    panel.addEventListener('pointerdown', e => { clearTimeout(touchT); at(e); if (mode === 'game' && e.pointerType !== 'mouse' && !e.target.closest('button')) sw = { x: e.clientX, y: e.clientY }; });
     panel.addEventListener('pointerleave', () => { inside = false; });
-    panel.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') touchT = setTimeout(() => { inside = false; }, 900); });
+    panel.addEventListener('pointerup', e => { sw = null; if (e.pointerType !== 'mouse') touchT = setTimeout(() => { inside = false; }, 900); });
+    panel.addEventListener('touchmove', e => { if (mode === 'game') e.preventDefault(); }, { passive: false });
     panel.addEventListener('click', e => {
-      if (e.target.closest('a, button')) return;
+      if (mode !== 'attract' || e.target.closest('a, button')) return;
       const r = panel.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, now = performance.now();
       ripples.push({ x, y, t: now });
       if (Math.hypot(x - G.x, y - G.y) < reach()) {
-        // boo: it bursts, and pulls itself back together somewhere else
         for (const p of px) {
           const dx = p.x + cell / 2 - x, dy = p.y + cell / 2 - y, dd = Math.hypot(dx, dy) || 1, f = cell * (2.6 + Math.random() * 2.6) * Math.min(1.6, 260 / (dd + 80));
           p.vx += dx / dd * f + (Math.random() - .5) * cell * 1.5; p.vy += dy / dd * f + (Math.random() - .7) * cell * 1.5;
@@ -1675,17 +2066,19 @@ void main() {
         for (let i = 0; i < 16; i++) { nx = lerp(minX, maxX, Math.random()); ny = lerp(minY, maxY, Math.random()); if (Math.hypot(nx - G.x, ny - G.y) > Math.max(maxX - minX, maxY - minY) * .4) break; }
         G.x = G.tx = nx; G.y = G.ty = ny; G.vx = G.vy = 0; G.until = now + 1400; G.shy = 0;
         curSay('Come here');
-      } else { G.tx = x; G.ty = y; G.until = now + 1800; }   // anywhere else: it comes to the spot (then settles beside the pointer)
+      } else { G.tx = x; G.ty = y; G.until = now + 1800; }
     });
     new IntersectionObserver(es => {
       on = es[0].isIntersecting;
       if (on && !seen) {
-        // first time in view: it flies in from the side
         seen = true;
-        if (!RM) { G.x = W + COLS * cell * .7; px.forEach(p => { [p.x, p.y] = home(p.hx, p.hy, 0); }); G.tx = lerp(minX, maxX, .62); G.ty = (minY + maxY) / 2; G.until = performance.now() + 2600; }
+        if (!RM) { G.x = W + COLS * cell * .7; px.forEach(p => { [p.x, p.y] = home(p.hx, p.hy, 0); }); G.tx = lerp(minX, maxX, .6); G.ty = (minY + maxY) / 2; G.until = performance.now() + 2600; }
       }
+      if (!on && mode === 'game' && state === 'play') { paused = true; awayPause = true; }   // walk away and it waits for you
+      if (on && awayPause) { awayPause = false; paused = false; setState('ready'); }
       kick();
     }, { threshold: .2 }).observe(panel);
+    if (window.ResizeObserver) new ResizeObserver(() => { if (Math.abs(panel.clientHeight - H) > 2 || Math.abs(panel.clientWidth - W) > 2) size(); }).observe(panel);
     return { size };
   })();
   if (FINE && !RM) {
@@ -1865,7 +2258,7 @@ void main() {
   --------------------------------------------------------------- */
   function layout() {
     VW = innerWidth; VH = innerHeight;
-    fitName(); eduLayout(); ringLayout(); Warp.resize(); Haunt.size();
+    fitName(); eduLayout(); ringLayout(); Warp.resize(); Arcade.size();
     if (root.classList.contains('menu-open')) Dial.geo();
     run(true); chrome();
     rulerNumbers();
