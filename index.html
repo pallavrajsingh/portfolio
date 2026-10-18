@@ -684,7 +684,7 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
         <h2 class="h2 rv" data-words>Designing with <span class="mark">intent</span></h2>
       </div>
       <div class="about-r">
-        <p class="about-p" id="aboutP">Every interface deserves thoughtful craft: effortlessly <a class="kw" href="https://www.behance.net/gallery/178702661/Interactive-Resume" target="_blank" rel="noopener" data-cursor="View" data-title="Interactive Resume" data-kind="Behance" data-img="https://mir-s3-cdn-cf.behance.net/projects/808/790552178702661.Y3JvcCwxMzgwLDEwODAsMjcwLDA.png">built</a>, truly <a class="kw" href="#surface-phone" data-cursor="Open" data-title="Surface Phone" data-kind="Case study" data-img="https://mir-s3-cdn-cf.behance.net/projects/808/4c0428115227193.615973b7cd3fe.jpg">loved</a>, beautifully <a class="kw" href="#onetouch" data-cursor="Open" data-title="OneTouch" data-kind="Case study" data-img="https://mir-s3-cdn-cf.behance.net/projects/808/ad127996439145.Y3JvcCwzNTc5LDI4MDAsMjEyLDA.png">polished</a>.</p>
+        <p class="about-p" id="aboutP">Every interface deserves thoughtful craft: effortlessly <a class="kw" href="https://www.behance.net/gallery/178702661/Interactive-Resume" target="_blank" rel="noopener" data-cursor="View" data-title="Interactive Resume" data-kind="Behance" data-img="https://mir-s3-cdn-cf.behance.net/projects/808/790552178702661.Y3JvcCwxMzgwLDEwODAsMjcwLDA.png">built</a>, truly <a class="kw" href="#surface-phone" data-cursor="Open" data-title="Surface Phone" data-kind="Conceptual Design" data-img="https://mir-s3-cdn-cf.behance.net/projects/808/4c0428115227193.615973b7cd3fe.jpg">loved</a>, beautifully <a class="kw" href="#onetouch" data-cursor="Open" data-title="OneTouch" data-kind="Case study" data-img="https://mir-s3-cdn-cf.behance.net/projects/808/ad127996439145.Y3JvcCwzNTc5LDI4MDAsMjEyLDA.png">polished</a>.</p>
         <div class="peek" id="peek" aria-hidden="true"><div class="peek-img"><img alt="" id="peekImg"></div><div class="peek-cap"><span class="mono" id="peekKind">Case study</span><b id="peekTitle">Surface Phone</b><a class="peek-go mono" id="peekGo" href="#">Open <i>→</i></a></div></div>
       </div>
     </div>
@@ -846,7 +846,7 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
       <div class="ring-view" id="ringView">
         <div class="ring" id="ring">
           <a class="rc" href="https://www.behance.net/gallery/178702661/Interactive-Resume" target="_blank" rel="noopener" data-title="Interactive Resume" data-kind="Behance" aria-label="Interactive Resume on Behance"><span class="rc-face"><img src="https://mir-s3-cdn-cf.behance.net/projects/808/790552178702661.Y3JvcCwxMzgwLDEwODAsMjcwLDA.png" alt="" loading="lazy" decoding="async" width="808" height="632"></span></a>
-          <a class="rc" href="#surface-phone" data-title="Surface Phone" data-kind="Case study" aria-label="Surface Phone case study"><span class="rc-face"><img src="https://mir-s3-cdn-cf.behance.net/projects/808/4c0428115227193.615973b7cd3fe.jpg" alt="" loading="lazy" decoding="async" width="808" height="632"></span></a>
+          <a class="rc" href="#surface-phone" data-title="Surface Phone" data-kind="Conceptual Design" aria-label="Surface Phone conceptual design"><span class="rc-face"><img src="https://mir-s3-cdn-cf.behance.net/projects/808/4c0428115227193.615973b7cd3fe.jpg" alt="" loading="lazy" decoding="async" width="808" height="632"></span></a>
           <a class="rc" href="#appetite" data-title="Appetite" data-kind="Case study" aria-label="Appetite case study"><span class="rc-face"><img src="https://mir-s3-cdn-cf.behance.net/projects/808/681bf5149361439.Y3JvcCwzNTc5LDI4MDAsMjEyLDA.png" alt="" loading="lazy" decoding="async" width="808" height="632"></span></a>
           <a class="rc" href="#onetouch" data-title="OneTouch" data-kind="Case study" aria-label="OneTouch case study"><span class="rc-face"><img src="https://mir-s3-cdn-cf.behance.net/projects/808/ad127996439145.Y3JvcCwzNTc5LDI4MDAsMjEyLDA.png" alt="" loading="lazy" decoding="async" width="808" height="632"></span></a>
           <a class="rc" href="https://www.behance.net/gallery/98472921/Porsche-Design-ENDURANCE-Watch-concept" target="_blank" rel="noopener" data-title="Porsche Endurance" data-kind="Behance" aria-label="Porsche Endurance on Behance"><span class="rc-face"><img src="https://mir-s3-cdn-cf.behance.net/projects/808/3a2be398472921.Y3JvcCwyODEyLDIyMDAsODg0LDA.png" alt="" loading="lazy" decoding="async" width="808" height="632"></span></a>
@@ -1533,7 +1533,7 @@ void main() {
       ringIdx.textContent = '0' + (f + 1);
       riKind.textContent = c.dataset.kind; riTitle.textContent = c.dataset.title;
       const ext = c.target === '_blank';
-      riCta.href = c.getAttribute('href'); riCtaTxt.textContent = ext ? 'View on Behance' : 'Open case study';
+      riCta.href = c.getAttribute('href'); riCtaTxt.textContent = ext ? 'View on Behance' : 'Open ' + c.dataset.kind.toLowerCase();   // Open case study / Open conceptual design
       if (ext) { riCta.target = '_blank'; riCta.rel = 'noopener'; } else { riCta.removeAttribute('target'); riCta.removeAttribute('rel'); }
       $('i', riCta).textContent = ext ? '↗' : '→';
       riText.classList.remove('swap'); void riText.offsetWidth; riText.classList.add('swap');
