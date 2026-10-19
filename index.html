@@ -243,7 +243,7 @@ html.menu-open .menu .dial, html.menu-open .menu .dial-info, html.menu-open .men
 .in .wi { transform: none; }
 .rv:not([data-words]) { opacity: 0; transform: translateY(22px); transition: opacity .9s var(--ease) calc(var(--d, 0) * 90ms), transform .9s var(--ease) calc(var(--d, 0) * 90ms); }
 .rv.in:not([data-words]) { opacity: 1; transform: none; }
-.ch { display: inline-block; will-change: transform; }
+.ch { display: inline-block; }   /* no layer per letter: Safari rasterises those separately and they shimmer when the hero zooms */
 .ci { display: inline-block; transform: translateY(115%); transition: transform 1.2s var(--ease) calc(var(--i) * 45ms), font-weight .6s var(--ease); }
 
 /* ==========================================================================
@@ -251,7 +251,7 @@ html.menu-open .menu .dial, html.menu-open .menu .dial-info, html.menu-open .men
    ========================================================================== */
 .hero { position: relative; height: 200vh; height: 200svh; }
 .hero-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: radial-gradient(circle, rgba(11, 12, 15, .13) 1px, transparent 1.3px) 0 0 / 24px 24px; }
-.frame { position: absolute; inset: calc(var(--bar) + 30px) var(--pad) clamp(28px, 5vh, 56px); display: grid; grid-template-columns: 1fr minmax(260px, 360px); grid-template-rows: auto 1fr auto; column-gap: 48px; transform-origin: 50% 40%; will-change: transform; }
+.frame { position: absolute; inset: calc(var(--bar) + 30px) var(--pad) clamp(28px, 5vh, 56px); display: grid; grid-template-columns: 1fr minmax(260px, 360px); grid-template-rows: auto 1fr auto; column-gap: 48px; transform-origin: 50% 40%; }   /* painted at each zoom step, so the name stays crisp while it scales */
 .frame-label { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; color: var(--ink3); font-size: 11px; }
 .frame-label i { width: 10px; height: 10px; border: 1.5px solid var(--ink3); border-radius: 2px; }
 .layer { position: relative; }
@@ -2651,7 +2651,20 @@ void main() {
       fitName(); select(heroName, true);
     }
     heroName.addEventListener('dblclick', e => { e.preventDefault(); rename(); });
-    heroName.addEventListener('pointerup', e => { if (e.pointerType === 'mouse') return; const n = performance.now(); if (n - lastTap < 330) rename(); lastTap = n; });
+    // touch: only a deliberate double-tap counts: two short, still taps close together while the page isn't moving
+    // (a tap that stops a flick mid-scroll must never open the editor)
+    let tapDown = null, tapAt = { t: -1e9, x: 0, y: 0 }, lastMove = -1e9;
+    addEventListener('scroll', () => { lastMove = performance.now(); }, { passive: true });
+    heroName.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') tapDown = { t: performance.now(), x: e.clientX, y: e.clientY }; });
+    heroName.addEventListener('pointercancel', () => { tapDown = null; tapAt.t = -1e9; });
+    heroName.addEventListener('pointerup', e => {
+      if (e.pointerType === 'mouse' || !tapDown) return;
+      const n = performance.now(), d = tapDown; tapDown = null;
+      const clean = n - d.t < 260 && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 10 && d.t - lastMove > 450;
+      if (!clean) { tapAt.t = -1e9; return; }
+      if (n - tapAt.t < 320 && Math.hypot(e.clientX - tapAt.x, e.clientY - tapAt.y) < 40) { tapAt.t = -1e9; rename(); }
+      else tapAt = { t: n, x: e.clientX, y: e.clientY };
+    });
     heroName.addEventListener('input', () => { if (!editing) return; if (heroName.textContent.length > 24) heroName.textContent = heroName.textContent.slice(0, 24); fitName(); select(heroName, true); selName.textContent = 'Text · Editing…'; });
     heroName.addEventListener('keydown', e => { if (editing && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); heroName.blur(); } });
     heroName.addEventListener('paste', e => { if (!editing) return; e.preventDefault(); const txt = ((e.clipboardData || window.clipboardData).getData('text') || '').replace(/\s+/g, ' ').slice(0, 24); document.execCommand('insertText', false, txt); });
