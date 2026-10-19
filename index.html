@@ -227,20 +227,42 @@ html.menu-open .menu { clip-path: circle(160vmax at var(--ox, 96%) var(--oy, 36p
 .dial-pointer::after { content: ''; position: absolute; left: -6px; top: -5px; width: 12px; height: 12px; border-radius: 50%; background: var(--neon); border: 2px solid var(--ink); }
 .menu-foot { position: absolute; z-index: 3; left: var(--pad); right: var(--pad); bottom: 26px; display: flex; justify-content: space-between; align-items: center; gap: 16px; color: var(--ink2); }
 .menu-foot > a { padding: 9px 14px; border-radius: 99px; background: var(--ink); color: var(--paper); }
-.menu-cheat { display: inline-flex; align-items: center; gap: 8px; margin-right: auto; padding: 8px 12px; border-radius: 99px; box-shadow: inset 0 0 0 1px var(--line2); color: var(--ink); transition: background .3s, box-shadow .3s; }
-.menu-cheat i { font-style: normal; color: var(--neon); }
-.menu-cheat b { padding: 2px 6px; border-radius: 99px; background: var(--ink); color: var(--paper); font-weight: 500; font-size: 10px; }
-.menu-cheat:hover { background: var(--paper); box-shadow: inset 0 0 0 1px var(--ink); }
+/* the cheat sheet button: bright, a little raised, a glint runs across it now and then */
+.menu-cheat { position: relative; display: inline-flex; align-items: center; gap: 7px; margin-right: auto; padding: 6px 0; color: var(--ink2); text-transform: inherit; letter-spacing: inherit; transition: color .3s; }
+.menu-cheat::after { content: ''; position: absolute; left: 0; right: 0; bottom: 2px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: 100% 50%; transition: transform .45s var(--ease); }
+.menu-cheat:hover { color: var(--ink); }
+.menu-cheat:hover::after { transform: scaleX(1); transform-origin: 0 50%; }
+.lk { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.lk-s { transition: transform .35s var(--spring); }
+.menu-cheat.open .lk-s, .cheat:not(.locked) .lk-s { transform: translate(3.5px, -1.5px) rotate(18deg); transform-origin: 11px 7px; }
 /* the cheat sheet */
 .cheat { position: fixed; inset: 0; z-index: 48; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; background: var(--bg); clip-path: inset(100% 0 0 0); visibility: hidden; transition: clip-path .7s var(--ease-io), visibility 0s .7s; }
 .cheat.on { clip-path: inset(0 0 0 0); visibility: visible; transition: clip-path .7s var(--ease-io); }
-.cheat-in { width: 100%; max-width: 1180px; margin: 0 auto; padding: calc(var(--bar) + 32px) var(--pad) 56px; }
+.cheat-in { position: relative; width: 100%; max-width: 1180px; margin: 0 auto; padding: calc(var(--bar) + 32px) var(--pad) 56px; }
+/* the lock */
+.cheat.locked .cheat-head, .cheat.locked .cheat-list { display: none; }
+.cheat-lock { display: none; min-height: calc(100vh - var(--bar) - 140px); min-height: calc(100svh - var(--bar) - 140px); align-content: center; justify-items: center; gap: 12px; text-align: center; }
+.cheat.locked .cheat-lock { display: grid; }
+.cheat-lock > .mono { display: inline-flex; align-items: center; gap: 8px; color: var(--ink3); }
+.code { position: relative; display: flex; gap: clamp(8px, 2vw, 14px); margin-top: 18px; cursor: text; }
+.code input { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; background: none; color: transparent; caret-color: transparent; font-size: 16px; }
+.code i { display: grid; place-items: center; width: clamp(56px, 15vw, 78px); aspect-ratio: 1; border-radius: 14px; background: var(--paper); box-shadow: 0 0 0 1.5px var(--ink), 0 5px 0 var(--ink); font-family: var(--fd); font-style: normal; font-weight: 600; font-size: clamp(26px, 7vw, 40px); color: var(--ink); transition: background .25s, color .25s, transform .3s var(--spring); }
+.code.focus i.cur::after { content: ''; width: 3px; height: 44%; background: var(--neon); animation: codeCaret 1s steps(2) infinite; }
+@keyframes codeCaret { 50% { opacity: 0; } }
+.code.bad { animation: codeShake .45s; }
+.code.bad i { background: var(--ink); color: var(--paper); }
+@keyframes codeShake { 20% { transform: translateX(-10px); } 40% { transform: translateX(9px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(4px); } }
+.code.good i { background: var(--neon); transform: translateY(-4px); }
+.code.good i:nth-child(3) { transition-delay: .06s; } .code.good i:nth-child(4) { transition-delay: .12s; } .code.good i:nth-child(5) { transition-delay: .18s; }
+.code-msg { min-height: 1.5em; margin-top: 6px; color: var(--ink2); }
+.code-hint { max-width: 34em; padding: 12px 16px; border-radius: 14px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line2); color: var(--ink2); line-height: 1.5; animation: tiIn .5s var(--ease) both; }
+.code-hint b { color: var(--ink); font-weight: 600; }
 .cheat-head { position: relative; display: grid; gap: 10px; padding-bottom: 28px; border-bottom: 1px solid var(--line2); }
 .cheat-head > .mono { color: var(--ink3); }
 .cheat-h { font-family: var(--fd); font-weight: 500; font-size: clamp(30px, 4.4vw, 64px); line-height: 1; letter-spacing: -.045em; }
 .cheat-h b { color: var(--neon); font-weight: 600; }
 .cheat-sub { color: var(--ink2); }
-.cheat-close { position: absolute; right: 0; top: 0; display: inline-flex; gap: 8px; padding: 9px 14px; border-radius: 99px; background: var(--ink); color: var(--paper); }
+.cheat-close { position: absolute; z-index: 2; right: var(--pad); top: calc(var(--bar) + 32px); display: inline-flex; gap: 8px; padding: 9px 14px; border-radius: 99px; background: var(--ink); color: var(--paper); }
 .cheat-close i { font-style: normal; color: var(--neon); }
 .cheat-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 40px; }
 .cheat-list li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 4px 14px; align-items: start; align-content: start; padding: 18px 0; border-bottom: 1px solid var(--line2); }
@@ -253,7 +275,7 @@ html.menu-open .menu { clip-path: circle(160vmax at var(--ox, 96%) var(--oy, 36p
 .cheat-list li.got .tick { background: var(--neon); box-shadow: inset 0 0 0 1.5px var(--ink); }
 .cheat-list li.got .tick::after { content: '✓'; display: grid; place-items: center; height: 100%; font-size: 13px; font-weight: 700; color: var(--ink); }
 .cheat-list .pad-go { grid-column: 2; justify-self: start; margin-top: 6px; display: inline-flex; gap: 8px; padding: 7px 12px; border-radius: 99px; background: var(--ink); color: var(--paper); font-size: 11px; }
-@media (max-width: 760px) { .cheat-list { grid-template-columns: minmax(0, 1fr); } .cheat-close { position: static; justify-self: start; } }
+@media (max-width: 760px) { .cheat-list { grid-template-columns: minmax(0, 1fr); } .cheat-close { position: static; margin-bottom: 22px; } .cheat-lock { min-height: 0; align-content: start; padding-top: 4vh; } }   /* phones: the code sits high, above the keyboard */
 /* the cheat pad: a little Game Boy */
 .cheat-pad { position: fixed; left: 50%; bottom: 18px; z-index: 8996; display: flex; align-items: center; gap: 22px; padding: 14px 44px 14px 16px; border-radius: 22px; background: var(--paper); box-shadow: 0 0 0 1px var(--line2), 0 30px 60px -30px rgba(11, 12, 15, .5); transform: translate(-50%, 140%); transition: transform .5s var(--spring); touch-action: manipulation; -webkit-user-select: none; user-select: none; }
 .cheat-pad.on { transform: translate(-50%, 0); }
@@ -639,7 +661,6 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
 }
 @media (max-width: 760px) and (orientation: portrait) {
   /* the index becomes a thumb wheel on the right edge: every section on it, one tap goes */
-  .menu-cheat { position: fixed; left: var(--pad); top: calc(var(--bar) + 14px); }
   .foot-panel { height: min(540px, calc(100svh - var(--bar) - 20px)); max-height: none; }
   .foot-panel.playing { height: min(94svh, 780px); }
   html.menu-open .bar-link { opacity: 1; pointer-events: auto; }
@@ -649,8 +670,8 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
   .dial-items a.here i::after { content: ''; display: inline-block; width: 7px; height: 7px; margin-left: 6px; background: var(--neon); box-shadow: 0 0 0 1px var(--ink); vertical-align: middle; }
   .menu-foot { bottom: 20px; }
   .menu-foot > a { display: none; }
-  .menu-foot { flex-wrap: wrap; row-gap: 14px; }
-  .menu-cheat { order: -1; margin-right: 0; }
+  .menu-foot { flex-wrap: wrap; row-gap: 6px; }
+  .menu-cheat { order: -1; margin-right: 0; font-size: 11px; }   /* phones: a quiet line just above the socials */
   .menu-soc { width: 100%; justify-content: space-between; gap: 10px; font-size: 11px; }
 }
 /* portrait tablets too wide for the phone rules (an iPad Pro upright): the hero stacks the same way */
@@ -731,11 +752,23 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
 <!-- the cheat sheet: every secret, how to find it, and which ones you have -->
 <section class="cheat" id="cheat" aria-hidden="true" aria-label="Cheat sheet">
   <div class="cheat-in">
+    <button class="cheat-close mono" id="cheatClose" data-cursor="Close"><span>Close</span><i>✕</i></button>
+    <!-- locked until you know the ghost's name -->
+    <div class="cheat-lock" id="cheatLock">
+      <p class="mono"><svg class="lk" viewBox="0 0 16 16" aria-hidden="true"><path class="lk-s" d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3" y="7" width="10" height="7" rx="1.5"/><path class="lk-k" d="M8 10v1.5"/></svg><span>Cheat sheet · locked</span></p>
+      <h2 class="cheat-h">Enter the code</h2>
+      <p class="cheat-sub">Four letters unlock every secret on this site.</p>
+      <label class="code" data-cursor="Type">
+        <input id="cheatCode" type="text" maxlength="4" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Four-letter code">
+        <i></i><i></i><i></i><i></i>
+      </label>
+      <p class="code-msg mono" id="codeMsg" aria-live="polite"></p>
+      <p class="code-hint" id="codeHint" aria-live="polite" hidden></p>
+    </div>
     <div class="cheat-head">
       <p class="mono">Cheat sheet</p>
       <h2 class="cheat-h"><b id="cheatFound">0</b> of 16 secrets found</h2>
       <p class="cheat-sub">Spoilers ahead. Ticks show the ones you've found on this device.</p>
-      <button class="cheat-close mono" id="cheatClose" data-cursor="Close"><span>Close</span><i>✕</i></button>
     </div>
     <ol class="cheat-list" id="cheatList"></ol>
   </div>
@@ -779,7 +812,7 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
   </div>
   <div class="menu-foot mono">
     <a href="mailto:pallavraj75@gmail.com">Hire Me</a>
-    <button class="menu-cheat" id="menuCheat" data-cursor="Open"><i aria-hidden="true">✦</i><span>Cheat sheet</span><b id="cheatCount">0/16</b></button>
+    <button class="menu-cheat" id="menuCheat" data-cursor="Unlock"><svg class="lk" viewBox="0 0 16 16" aria-hidden="true"><path class="lk-s" d="M5 7V5a3 3 0 0 1 6 0v2"/><rect x="3" y="7" width="10" height="7" rx="1.5"/><path class="lk-k" d="M8 10v1.5"/></svg><span>Cheat sheet</span></button>
     <span class="menu-soc"><a href="https://www.behance.net/pallavrajsingh" target="_blank" rel="noopener">Behance</a><a href="http://linkedin.com/in/pallav-raj-singh-chouhan-4abb98184/" target="_blank" rel="noopener">LinkedIn</a><a href="https://instagram.com/xero.verse" target="_blank" rel="noopener">Instagram</a><a href="https://www.youtube.com/@Xeropoint1" target="_blank" rel="noopener">YouTube</a></span>
   </div>
 </nav>
@@ -2916,17 +2949,56 @@ void main() {
       tab: ['Come back', 'Switch to another tab, then come back.', 'Switch to another app or tab, then come back.'],
       bottom: ['Past the bottom', 'Keep scrolling down at the very bottom of the page.', 'Keep pulling up at the very bottom.']
     };
-    const cheatEl = $('#cheat'), listEl = $('#cheatList'), countEl = $('#cheatCount'), foundEl = $('#cheatFound');
+    const cheatEl = $('#cheat'), listEl = $('#cheatList'), foundEl = $('#cheatFound');
     listEl.innerHTML = ALL.map((id, i) => {
       const [title, mouse, touch] = INFO[id];
       return '<li data-egg="' + id + '"><span class="n mono">' + String(i + 1).padStart(2, '0') + '</span><h3>' + title + '</h3><i class="tick" aria-hidden="true"></i><p class="how"><span><b>Mouse &amp; keys</b>' + mouse + '</span><span><b>Touch</b>' + (touch || 'Needs a keyboard.') + '</span></p>' + (id === 'konami' ? '<button class="pad-go mono" type="button">Open the pad</button>' : '') + '</li>';
     }).join('');
     function sheet() {
-      countEl.textContent = found.size + '/' + ALL.length; foundEl.textContent = found.size;
+      foundEl.textContent = found.size;
       $$('li', listEl).forEach(li => { const got = found.has(li.dataset.egg); li.classList.toggle('got', got); li.setAttribute('aria-label', (got ? 'Found: ' : 'Not found yet: ') + INFO[li.dataset.egg][0]); });
     }
     sheet();
-    function sheetOpen(on) { cheatEl.classList.toggle('on', on); cheatEl.setAttribute('aria-hidden', on ? 'false' : 'true'); if (on) { sheet(); cheatEl.scrollTop = 0; $('#cheatClose').focus({ preventScroll: true }); } }
+    // the sheet is locked behind a four-letter code: the ghost's name. Wrong three times and it starts dropping hints.
+    const ANSWER = 'XERO', cheatBtn = $('#menuCheat'), codeIn = $('#cheatCode'), codeBox = $('.code', cheatEl), cells = $$('i', codeBox), codeMsg = $('#codeMsg'), codeHint = $('#codeHint');
+    let unlocked = false, misses = 0;
+    try { unlocked = localStorage.getItem('pr.cheat') === '1'; } catch (e) { /* private mode */ }
+    function lockState() { cheatEl.classList.toggle('locked', !unlocked); cheatBtn.classList.toggle('open', unlocked); cheatBtn.dataset.cursor = unlocked ? 'Open' : 'Unlock'; }
+    function paintCode() { const v = codeIn.value; cells.forEach((c, i) => { c.textContent = v[i] || ''; c.classList.toggle('cur', v.length < 4 && i === v.length); }); }
+    function tryCode() {
+      const v = codeIn.value;
+      if (v.length < 4) { codeMsg.textContent = 'Four letters.'; return; }
+      if (v === ANSWER) {
+        unlocked = true; try { localStorage.setItem('pr.cheat', '1'); } catch (e) { /* fine */ }
+        codeBox.classList.add('good'); codeMsg.textContent = 'Unlocked!'; codeIn.blur();
+        setTimeout(() => { lockState(); sheet(); cheatEl.scrollTop = 0; codeBox.classList.remove('good'); toast('Cheat sheet unlocked · Xero says hi'); $('#cheatClose').focus({ preventScroll: true }); }, 750);
+        return;
+      }
+      misses++;
+      codeBox.classList.remove('bad'); void codeBox.offsetWidth; codeBox.classList.add('bad');
+      if (navigator.vibrate) navigator.vibrate(60);
+      codeMsg.textContent = ['Not quite. Try again.', 'Nope. One more go?', 'Still not it.'][Math.min(2, misses - 1)];
+      if (misses > 2) {
+        codeHint.hidden = false;
+        codeHint.innerHTML = misses < 5 ? '<b>Hint:</b> it’s the name of the little ghost. Press and hold the ghost logo up top and it’ll introduce itself.' : '<b>Hint:</b> the ghost’s name has four letters and starts with <b>X</b>.';
+      }
+      setTimeout(() => { codeIn.value = ''; paintCode(); codeBox.classList.remove('bad'); if (cheatEl.classList.contains('on')) codeIn.focus({ preventScroll: true }); }, 520);
+    }
+    codeIn.addEventListener('input', () => {
+      codeIn.value = codeIn.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4);
+      codeBox.classList.remove('bad'); codeMsg.textContent = ''; paintCode();
+      if (codeIn.value.length === 4) setTimeout(tryCode, 140);
+    });
+    codeIn.addEventListener('focus', () => codeBox.classList.add('focus'));
+    codeIn.addEventListener('blur', () => codeBox.classList.remove('focus'));
+    lockState(); paintCode();
+    function sheetOpen(on) {
+      cheatEl.classList.toggle('on', on); cheatEl.setAttribute('aria-hidden', on ? 'false' : 'true');
+      if (!on) { codeIn.blur(); return; }
+      sheet(); cheatEl.scrollTop = 0;
+      if (unlocked) $('#cheatClose').focus({ preventScroll: true });
+      else { codeIn.value = ''; codeMsg.textContent = ''; paintCode(); codeIn.focus({ preventScroll: true }); }   // in the tap itself, so phones bring up the keyboard
+    }
     $('#menuCheat').addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); sheetOpen(true); });
     $('#cheatClose').addEventListener('click', () => sheetOpen(false));
     $('.pad-go', listEl).addEventListener('click', () => { sheetOpen(false); setMenu(false); setTimeout(() => padOpen(true), 500); });
@@ -2934,7 +3006,7 @@ void main() {
     addEventListener('keydown', e => {
       if (!cheatEl.classList.contains('on')) return;
       if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); sheetOpen(false); }
-      else if (/^Arrow|^Enter$|^Home$|^End$/.test(e.key)) e.stopImmediatePropagation();
+      else if (/^Arrow|^Enter$|^Home$|^End$/.test(e.key)) { e.stopImmediatePropagation(); if (e.key === 'Enter' && !unlocked && document.activeElement === codeIn) { e.preventDefault(); tryCode(); } }
     }, true);
     cheatEl.addEventListener('wheel', e => e.stopPropagation(), { passive: true });
     menuBtn.addEventListener('click', () => { if (cheatEl.classList.contains('on')) sheetOpen(false); });   // closing the Index closes the sheet too
