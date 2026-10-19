@@ -139,7 +139,7 @@ html.boo .g-body { animation: gSpook .6s cubic-bezier(.36, .07, .19, .97) 2; }
 .egg-toast b { flex: none; padding: 3px 6px; background: var(--neon); color: var(--ink); font-size: 10px; font-weight: 500; }
 .egg-toast b:empty { display: none; }
 /* the header ghost: says hello, falls asleep */
-.brand { position: relative; }
+.brand { position: relative; -webkit-touch-callout: none; }   /* long-press says hello (no link preview) */
 .egg-say { position: absolute; left: 20px; top: calc(100% + 2px); padding: 5px 9px; border-radius: 2px 10px 10px 10px; background: var(--neon); color: var(--ink); font-size: 12px; font-weight: 500; white-space: nowrap; transform: scale(0); transform-origin: 0 0; transition: transform .35s var(--spring); pointer-events: none; }
 .egg-say.on { transform: scale(1); }
 .egg-zz { position: absolute; left: 30px; top: -6px; display: flex; gap: 1px; font-family: var(--fm); font-size: 11px; font-weight: 500; color: var(--ink2); opacity: 0; transition: opacity .6s; pointer-events: none; }
@@ -227,6 +227,45 @@ html.menu-open .menu { clip-path: circle(160vmax at var(--ox, 96%) var(--oy, 36p
 .dial-pointer::after { content: ''; position: absolute; left: -6px; top: -5px; width: 12px; height: 12px; border-radius: 50%; background: var(--neon); border: 2px solid var(--ink); }
 .menu-foot { position: absolute; z-index: 3; left: var(--pad); right: var(--pad); bottom: 26px; display: flex; justify-content: space-between; align-items: center; gap: 16px; color: var(--ink2); }
 .menu-foot > a { padding: 9px 14px; border-radius: 99px; background: var(--ink); color: var(--paper); }
+.menu-cheat { display: inline-flex; align-items: center; gap: 8px; margin-right: auto; padding: 8px 12px; border-radius: 99px; box-shadow: inset 0 0 0 1px var(--line2); color: var(--ink); transition: background .3s, box-shadow .3s; }
+.menu-cheat i { font-style: normal; color: var(--neon); }
+.menu-cheat b { padding: 2px 6px; border-radius: 99px; background: var(--ink); color: var(--paper); font-weight: 500; font-size: 10px; }
+.menu-cheat:hover { background: var(--paper); box-shadow: inset 0 0 0 1px var(--ink); }
+/* the cheat sheet */
+.cheat { position: fixed; inset: 0; z-index: 48; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; background: var(--bg); clip-path: inset(100% 0 0 0); visibility: hidden; transition: clip-path .7s var(--ease-io), visibility 0s .7s; }
+.cheat.on { clip-path: inset(0 0 0 0); visibility: visible; transition: clip-path .7s var(--ease-io); }
+.cheat-in { width: 100%; max-width: 1180px; margin: 0 auto; padding: calc(var(--bar) + 32px) var(--pad) 56px; }
+.cheat-head { position: relative; display: grid; gap: 10px; padding-bottom: 28px; border-bottom: 1px solid var(--line2); }
+.cheat-head > .mono { color: var(--ink3); }
+.cheat-h { font-family: var(--fd); font-weight: 500; font-size: clamp(30px, 4.4vw, 64px); line-height: 1; letter-spacing: -.045em; }
+.cheat-h b { color: var(--neon); font-weight: 600; }
+.cheat-sub { color: var(--ink2); }
+.cheat-close { position: absolute; right: 0; top: 0; display: inline-flex; gap: 8px; padding: 9px 14px; border-radius: 99px; background: var(--ink); color: var(--paper); }
+.cheat-close i { font-style: normal; color: var(--neon); }
+.cheat-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 40px; }
+.cheat-list li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 4px 14px; align-items: start; align-content: start; padding: 18px 0; border-bottom: 1px solid var(--line2); }
+.cheat-list .n { color: var(--ink3); padding-top: 3px; }
+.cheat-list h3 { font-family: var(--fd); font-weight: 500; font-size: 19px; letter-spacing: -.03em; }
+.cheat-list .how { grid-column: 2; display: grid; gap: 3px; font-size: 14px; line-height: 1.45; color: var(--ink2); }
+.cheat-list .how span b { font-family: var(--fm); font-size: 10px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--ink3); margin-right: 6px; }
+.cheat-list .how kbd { font-family: var(--fm); font-size: 12px; padding: 1px 5px; border-radius: 4px; background: var(--paper); box-shadow: 0 0 0 1px var(--line2); }
+.cheat-list .tick { grid-column: 3; grid-row: 1; width: 22px; height: 22px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--line2); }
+.cheat-list li.got .tick { background: var(--neon); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.cheat-list li.got .tick::after { content: '✓'; display: grid; place-items: center; height: 100%; font-size: 13px; font-weight: 700; color: var(--ink); }
+.cheat-list .pad-go { grid-column: 2; justify-self: start; margin-top: 6px; display: inline-flex; gap: 8px; padding: 7px 12px; border-radius: 99px; background: var(--ink); color: var(--paper); font-size: 11px; }
+@media (max-width: 760px) { .cheat-list { grid-template-columns: minmax(0, 1fr); } .cheat-close { position: static; justify-self: start; } }
+/* the cheat pad: a little Game Boy */
+.cheat-pad { position: fixed; left: 50%; bottom: 18px; z-index: 8996; display: flex; align-items: center; gap: 22px; padding: 14px 44px 14px 16px; border-radius: 22px; background: var(--paper); box-shadow: 0 0 0 1px var(--line2), 0 30px 60px -30px rgba(11, 12, 15, .5); transform: translate(-50%, 140%); transition: transform .5s var(--spring); touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.cheat-pad.on { transform: translate(-50%, 0); }
+.cp-dpad { display: grid; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); gap: 3px; }
+.cp-dpad button, .cp-ab button { display: grid; place-items: center; background: var(--ink); color: var(--neon); font-size: 17px; font-weight: 600; -webkit-tap-highlight-color: transparent; transition: transform .1s, background .1s; }
+.cp-dpad button { border-radius: 8px; }
+.cp-dpad [data-k="arrowup"] { grid-column: 2; grid-row: 1; } .cp-dpad [data-k="arrowleft"] { grid-column: 1; grid-row: 2; } .cp-dpad [data-k="arrowright"] { grid-column: 3; grid-row: 2; } .cp-dpad [data-k="arrowdown"] { grid-column: 2; grid-row: 3; }
+.cp-ab { display: flex; gap: 12px; transform: rotate(-18deg); }
+.cp-ab button { width: 50px; height: 50px; border-radius: 50%; background: var(--neon); color: var(--ink); font-family: var(--fd); }
+.cp-dpad button.on, .cp-ab button.on { transform: scale(.9); }
+.cp-x { position: absolute; right: 10px; top: 10px; width: 26px; height: 26px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line2); color: var(--ink2); font-size: 11px; }
+html.pad-open .egg-keys { bottom: 196px; }
 .menu-soc { display: flex; gap: 18px; flex-wrap: wrap; }
 .menu-soc a:hover { color: var(--ink); }
 .menu .dial, .menu .dial-info, .menu .menu-foot { opacity: 0; transition: opacity .4s; }
@@ -260,7 +299,7 @@ html.menu-open .menu .dial, html.menu-open .menu .dial-info, html.menu-open .men
 .hero-tag span::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--neon); box-shadow: 0 0 0 1px var(--ink); }
 .hero-desc { grid-column: 2; grid-row: 2; align-self: end; margin-bottom: clamp(24px, 5vh, 56px); font-size: clamp(17px, 1.3vw, 20px); line-height: 1.5; color: var(--ink2); }
 .hero-name { grid-column: 1 / -1; grid-row: 3; justify-self: start; font-family: var(--fd); font-weight: 760; font-size: 15vw; line-height: .8; letter-spacing: -.06em; white-space: nowrap; padding: .08em .02em .12em; }
-.hn-l { display: inline-block; padding-bottom: .12em; margin-bottom: -.12em; overflow: hidden; }
+.hn-l { display: inline-block; padding-bottom: .12em; margin-bottom: -.12em; overflow: hidden; white-space: nowrap; }   /* a word never splits between its letters */
 .settled .hn-l { overflow: visible; }
 .hn-l + .hn-l { margin-left: .22em; }
 html.ready .hero .ci { transform: none; }
@@ -600,6 +639,7 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
 }
 @media (max-width: 760px) and (orientation: portrait) {
   /* the index becomes a thumb wheel on the right edge: every section on it, one tap goes */
+  .menu-cheat { position: fixed; left: var(--pad); top: calc(var(--bar) + 14px); }
   .foot-panel { height: min(540px, calc(100svh - var(--bar) - 20px)); max-height: none; }
   .foot-panel.playing { height: min(94svh, 780px); }
   html.menu-open .bar-link { opacity: 1; pointer-events: auto; }
@@ -609,6 +649,8 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
   .dial-items a.here i::after { content: ''; display: inline-block; width: 7px; height: 7px; margin-left: 6px; background: var(--neon); box-shadow: 0 0 0 1px var(--ink); vertical-align: middle; }
   .menu-foot { bottom: 20px; }
   .menu-foot > a { display: none; }
+  .menu-foot { flex-wrap: wrap; row-gap: 14px; }
+  .menu-cheat { order: -1; margin-right: 0; }
   .menu-soc { width: 100%; justify-content: space-between; gap: 10px; font-size: 11px; }
 }
 /* portrait tablets too wide for the phone rules (an iPad Pro upright): the hero stacks the same way */
@@ -685,12 +727,30 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
 <canvas id="eggPaint" aria-hidden="true"></canvas>
 <div class="egg-flash" id="eggFlash" aria-hidden="true"></div>
 <div class="egg-flock" id="eggFlock" aria-hidden="true"></div>
-<div class="egg-peek" id="eggPeek" aria-hidden="true"><em>Nothing more down here. Boo.</em><span class="egg-pg"><svg class="ghost" viewBox="10 14 48 44" aria-hidden="true" focusable="false"><g class="g-body"><g class="g-tail"><path class="g-shape" d="M52.7249 38.8825C52.3911 38.6689 52.0283 38.4968 51.6676 38.331C51.1244 38.0801 50.5792 37.8334 50.0236 37.6178C46.0078 36.0609 42.9084 33.4756 40.6673 29.7522C39.4048 27.6542 37.9847 25.5768 36.2867 23.8292C32.6545 20.0954 26.9181 19.1811 22.0275 21.3331C16.8839 23.597 14.4251 27.6625 14.3049 31.5372C14.2406 37.6116 16.0215 41.2459 19.0939 44.2623C23.9949 49.0762 30.0216 51.5018 36.7573 52.3249C37.2673 52.3871 37.8064 52.3332 38.3164 52.242C39.0834 52.1031 39.2908 51.6656 39.0254 50.9297C38.731 50.1128 38.8761 49.9055 39.7655 50.032C40.7005 50.1667 41.621 50.3968 42.5519 50.5503C43.2858 50.6705 44.0362 50.8384 44.7639 50.7887C45.1765 50.7597 45.7632 50.4134 45.9042 50.0631C46.0845 49.6111 45.8358 49.1301 45.6139 48.7134C45.4025 48.3154 44.9256 47.5815 43.9077 46.9657C44.3265 46.9429 44.9588 46.9284 45.7259 46.9761C45.9933 46.9927 46.9221 47.1233 48.307 47.3348C49.3622 47.4965 50.4154 47.7494 51.4748 47.7847C51.8915 47.7971 52.4388 47.4156 52.7208 47.0528C53.096 46.5719 52.8887 45.9686 52.4637 45.5664C51.9993 45.1248 51.4686 44.7454 50.9337 44.3909C50.0878 43.8332 49.6483 43.5803 49.0844 43.2755C48.4645 42.9397 47.9172 42.6784 47.4902 42.4856C47.8861 42.2679 48.4853 41.9901 49.2648 41.8015C49.4327 41.76 49.5571 41.7351 49.5923 41.731C50.4548 41.6336 51.3338 41.6854 52.1963 41.5942C52.8555 41.5237 53.3862 41.1754 53.5065 40.456C53.6226 39.7615 53.2867 39.2473 52.7228 38.8845L52.7249 38.8825Z"/></g><g class="g-look"><g class="g-eyes"><path class="g-whites" d="M28.0004 28.3706C27.2088 27.3305 26.1792 26.8022 24.9847 27.0682C23.7964 27.3342 23.1086 28.232 22.8278 29.4993C22.785 29.6914 22.7525 29.8891 22.6935 30.2069C22.433 29.891 22.2478 29.6453 22.0444 29.4236C20.3615 27.5929 17.8464 28.1637 17.1668 30.5301C16.8982 31.4686 16.9653 32.4126 17.2868 33.3492C17.82 34.9047 19.2342 36.05 20.5304 35.9983C21.9182 35.9429 22.8746 34.9453 23.2164 33.2051C23.2388 33.0943 23.2917 32.9927 23.3385 32.8597C23.6275 33.1866 23.8615 33.4933 24.1342 33.7519C25.8394 35.3721 28.1388 34.7828 28.7981 32.5382C29.2356 31.0474 28.9588 29.6305 28.0004 28.3706Z"/><path class="g-pupil" d="M21.9356 31.913C22.1261 32.582 21.8816 33.2424 21.3671 33.446C20.8479 33.6495 20.2589 33.2595 20.0636 32.5834C19.8683 31.903 20.1366 31.2326 20.6812 31.0447C21.202 30.8654 21.7434 31.2397 21.9356 31.913Z"/><path class="g-pupil" d="M25.9272 30.8711C26.1379 31.5471 25.8745 32.2688 25.3524 32.4531C24.8302 32.6375 24.273 32.263 24.0718 31.5942C23.869 30.9197 24.1085 30.2623 24.6322 30.0565C25.1512 29.8536 25.7228 30.2137 25.9272 30.8711Z"/></g></g></g></svg></span></div>
+<div class="egg-peek" id="eggPeek" aria-hidden="true"><em>Nothing more down here. Boo!</em><span class="egg-pg"><svg class="ghost" viewBox="10 14 48 44" aria-hidden="true" focusable="false"><g class="g-body"><g class="g-tail"><path class="g-shape" d="M52.7249 38.8825C52.3911 38.6689 52.0283 38.4968 51.6676 38.331C51.1244 38.0801 50.5792 37.8334 50.0236 37.6178C46.0078 36.0609 42.9084 33.4756 40.6673 29.7522C39.4048 27.6542 37.9847 25.5768 36.2867 23.8292C32.6545 20.0954 26.9181 19.1811 22.0275 21.3331C16.8839 23.597 14.4251 27.6625 14.3049 31.5372C14.2406 37.6116 16.0215 41.2459 19.0939 44.2623C23.9949 49.0762 30.0216 51.5018 36.7573 52.3249C37.2673 52.3871 37.8064 52.3332 38.3164 52.242C39.0834 52.1031 39.2908 51.6656 39.0254 50.9297C38.731 50.1128 38.8761 49.9055 39.7655 50.032C40.7005 50.1667 41.621 50.3968 42.5519 50.5503C43.2858 50.6705 44.0362 50.8384 44.7639 50.7887C45.1765 50.7597 45.7632 50.4134 45.9042 50.0631C46.0845 49.6111 45.8358 49.1301 45.6139 48.7134C45.4025 48.3154 44.9256 47.5815 43.9077 46.9657C44.3265 46.9429 44.9588 46.9284 45.7259 46.9761C45.9933 46.9927 46.9221 47.1233 48.307 47.3348C49.3622 47.4965 50.4154 47.7494 51.4748 47.7847C51.8915 47.7971 52.4388 47.4156 52.7208 47.0528C53.096 46.5719 52.8887 45.9686 52.4637 45.5664C51.9993 45.1248 51.4686 44.7454 50.9337 44.3909C50.0878 43.8332 49.6483 43.5803 49.0844 43.2755C48.4645 42.9397 47.9172 42.6784 47.4902 42.4856C47.8861 42.2679 48.4853 41.9901 49.2648 41.8015C49.4327 41.76 49.5571 41.7351 49.5923 41.731C50.4548 41.6336 51.3338 41.6854 52.1963 41.5942C52.8555 41.5237 53.3862 41.1754 53.5065 40.456C53.6226 39.7615 53.2867 39.2473 52.7228 38.8845L52.7249 38.8825Z"/></g><g class="g-look"><g class="g-eyes"><path class="g-whites" d="M28.0004 28.3706C27.2088 27.3305 26.1792 26.8022 24.9847 27.0682C23.7964 27.3342 23.1086 28.232 22.8278 29.4993C22.785 29.6914 22.7525 29.8891 22.6935 30.2069C22.433 29.891 22.2478 29.6453 22.0444 29.4236C20.3615 27.5929 17.8464 28.1637 17.1668 30.5301C16.8982 31.4686 16.9653 32.4126 17.2868 33.3492C17.82 34.9047 19.2342 36.05 20.5304 35.9983C21.9182 35.9429 22.8746 34.9453 23.2164 33.2051C23.2388 33.0943 23.2917 32.9927 23.3385 32.8597C23.6275 33.1866 23.8615 33.4933 24.1342 33.7519C25.8394 35.3721 28.1388 34.7828 28.7981 32.5382C29.2356 31.0474 28.9588 29.6305 28.0004 28.3706Z"/><path class="g-pupil" d="M21.9356 31.913C22.1261 32.582 21.8816 33.2424 21.3671 33.446C20.8479 33.6495 20.2589 33.2595 20.0636 32.5834C19.8683 31.903 20.1366 31.2326 20.6812 31.0447C21.202 30.8654 21.7434 31.2397 21.9356 31.913Z"/><path class="g-pupil" d="M25.9272 30.8711C26.1379 31.5471 25.8745 32.2688 25.3524 32.4531C24.8302 32.6375 24.273 32.263 24.0718 31.5942C23.869 30.9197 24.1085 30.2623 24.6322 30.0565C25.1512 29.8536 25.7228 30.2137 25.9272 30.8711Z"/></g></g></g></svg></span></div>
+<!-- the cheat sheet: every secret, how to find it, and which ones you have -->
+<section class="cheat" id="cheat" aria-hidden="true" aria-label="Cheat sheet">
+  <div class="cheat-in">
+    <div class="cheat-head">
+      <p class="mono">Cheat sheet</p>
+      <h2 class="cheat-h"><b id="cheatFound">0</b> of 16 secrets found</h2>
+      <p class="cheat-sub">Spoilers ahead. Ticks show the ones you've found on this device.</p>
+      <button class="cheat-close mono" id="cheatClose" data-cursor="Close"><span>Close</span><i>✕</i></button>
+    </div>
+    <ol class="cheat-list" id="cheatList"></ol>
+  </div>
+</section>
+<!-- the cheat pad: the Konami code by tapping, for touch screens (opens from "Thanks for scrolling" or the cheat sheet) -->
+<div class="cheat-pad" id="cheatPad" aria-hidden="true" role="group" aria-label="Cheat pad">
+  <div class="cp-dpad"><button data-k="arrowup" aria-label="Up">↑</button><button data-k="arrowleft" aria-label="Left">←</button><button data-k="arrowright" aria-label="Right">→</button><button data-k="arrowdown" aria-label="Down">↓</button></div>
+  <div class="cp-ab"><button data-k="b" aria-label="B">B</button><button data-k="a" aria-label="A">A</button></div>
+  <button class="cp-x mono" id="cheatPadClose" aria-label="Close the pad">✕</button>
+</div>
 <div class="egg-keys mono" id="eggKeys" aria-hidden="true"><i>↑</i><i>↑</i><i>↓</i><i>↓</i><i>←</i><i>→</i><i>←</i><i>→</i><i>B</i><i>A</i></div>
 <div class="egg-toast" id="eggToast" role="status" aria-live="polite"><span class="egg-g"><svg class="ghost" viewBox="10 14 48 44" aria-hidden="true" focusable="false"><g class="g-body"><g class="g-tail"><path class="g-shape" d="M52.7249 38.8825C52.3911 38.6689 52.0283 38.4968 51.6676 38.331C51.1244 38.0801 50.5792 37.8334 50.0236 37.6178C46.0078 36.0609 42.9084 33.4756 40.6673 29.7522C39.4048 27.6542 37.9847 25.5768 36.2867 23.8292C32.6545 20.0954 26.9181 19.1811 22.0275 21.3331C16.8839 23.597 14.4251 27.6625 14.3049 31.5372C14.2406 37.6116 16.0215 41.2459 19.0939 44.2623C23.9949 49.0762 30.0216 51.5018 36.7573 52.3249C37.2673 52.3871 37.8064 52.3332 38.3164 52.242C39.0834 52.1031 39.2908 51.6656 39.0254 50.9297C38.731 50.1128 38.8761 49.9055 39.7655 50.032C40.7005 50.1667 41.621 50.3968 42.5519 50.5503C43.2858 50.6705 44.0362 50.8384 44.7639 50.7887C45.1765 50.7597 45.7632 50.4134 45.9042 50.0631C46.0845 49.6111 45.8358 49.1301 45.6139 48.7134C45.4025 48.3154 44.9256 47.5815 43.9077 46.9657C44.3265 46.9429 44.9588 46.9284 45.7259 46.9761C45.9933 46.9927 46.9221 47.1233 48.307 47.3348C49.3622 47.4965 50.4154 47.7494 51.4748 47.7847C51.8915 47.7971 52.4388 47.4156 52.7208 47.0528C53.096 46.5719 52.8887 45.9686 52.4637 45.5664C51.9993 45.1248 51.4686 44.7454 50.9337 44.3909C50.0878 43.8332 49.6483 43.5803 49.0844 43.2755C48.4645 42.9397 47.9172 42.6784 47.4902 42.4856C47.8861 42.2679 48.4853 41.9901 49.2648 41.8015C49.4327 41.76 49.5571 41.7351 49.5923 41.731C50.4548 41.6336 51.3338 41.6854 52.1963 41.5942C52.8555 41.5237 53.3862 41.1754 53.5065 40.456C53.6226 39.7615 53.2867 39.2473 52.7228 38.8845L52.7249 38.8825Z"/></g><g class="g-look"><g class="g-eyes"><path class="g-whites" d="M28.0004 28.3706C27.2088 27.3305 26.1792 26.8022 24.9847 27.0682C23.7964 27.3342 23.1086 28.232 22.8278 29.4993C22.785 29.6914 22.7525 29.8891 22.6935 30.2069C22.433 29.891 22.2478 29.6453 22.0444 29.4236C20.3615 27.5929 17.8464 28.1637 17.1668 30.5301C16.8982 31.4686 16.9653 32.4126 17.2868 33.3492C17.82 34.9047 19.2342 36.05 20.5304 35.9983C21.9182 35.9429 22.8746 34.9453 23.2164 33.2051C23.2388 33.0943 23.2917 32.9927 23.3385 32.8597C23.6275 33.1866 23.8615 33.4933 24.1342 33.7519C25.8394 35.3721 28.1388 34.7828 28.7981 32.5382C29.2356 31.0474 28.9588 29.6305 28.0004 28.3706Z"/><path class="g-pupil" d="M21.9356 31.913C22.1261 32.582 21.8816 33.2424 21.3671 33.446C20.8479 33.6495 20.2589 33.2595 20.0636 32.5834C19.8683 31.903 20.1366 31.2326 20.6812 31.0447C21.202 30.8654 21.7434 31.2397 21.9356 31.913Z"/><path class="g-pupil" d="M25.9272 30.8711C26.1379 31.5471 25.8745 32.2688 25.3524 32.4531C24.8302 32.6375 24.273 32.263 24.0718 31.5942C23.869 30.9197 24.1085 30.2623 24.6322 30.0565C25.1512 29.8536 25.7228 30.2137 25.9272 30.8711Z"/></g></g></g></svg></span><span id="eggMsg"></span><b class="mono" id="eggCount"></b></div>
 
 <header class="bar" id="bar">
-  <a class="brand" href="#top" data-cursor="Top" aria-label="Pallav Raj, back to top"><span class="brand-mark"><svg class="ghost" viewBox="10 14 48 44" aria-hidden="true" focusable="false"><g class="g-body"><g class="g-tail"><path class="g-shape" d="M52.7249 38.8825C52.3911 38.6689 52.0283 38.4968 51.6676 38.331C51.1244 38.0801 50.5792 37.8334 50.0236 37.6178C46.0078 36.0609 42.9084 33.4756 40.6673 29.7522C39.4048 27.6542 37.9847 25.5768 36.2867 23.8292C32.6545 20.0954 26.9181 19.1811 22.0275 21.3331C16.8839 23.597 14.4251 27.6625 14.3049 31.5372C14.2406 37.6116 16.0215 41.2459 19.0939 44.2623C23.9949 49.0762 30.0216 51.5018 36.7573 52.3249C37.2673 52.3871 37.8064 52.3332 38.3164 52.242C39.0834 52.1031 39.2908 51.6656 39.0254 50.9297C38.731 50.1128 38.8761 49.9055 39.7655 50.032C40.7005 50.1667 41.621 50.3968 42.5519 50.5503C43.2858 50.6705 44.0362 50.8384 44.7639 50.7887C45.1765 50.7597 45.7632 50.4134 45.9042 50.0631C46.0845 49.6111 45.8358 49.1301 45.6139 48.7134C45.4025 48.3154 44.9256 47.5815 43.9077 46.9657C44.3265 46.9429 44.9588 46.9284 45.7259 46.9761C45.9933 46.9927 46.9221 47.1233 48.307 47.3348C49.3622 47.4965 50.4154 47.7494 51.4748 47.7847C51.8915 47.7971 52.4388 47.4156 52.7208 47.0528C53.096 46.5719 52.8887 45.9686 52.4637 45.5664C51.9993 45.1248 51.4686 44.7454 50.9337 44.3909C50.0878 43.8332 49.6483 43.5803 49.0844 43.2755C48.4645 42.9397 47.9172 42.6784 47.4902 42.4856C47.8861 42.2679 48.4853 41.9901 49.2648 41.8015C49.4327 41.76 49.5571 41.7351 49.5923 41.731C50.4548 41.6336 51.3338 41.6854 52.1963 41.5942C52.8555 41.5237 53.3862 41.1754 53.5065 40.456C53.6226 39.7615 53.2867 39.2473 52.7228 38.8845L52.7249 38.8825Z"/></g><g class="g-look"><g class="g-eyes"><path class="g-whites" d="M28.0004 28.3706C27.2088 27.3305 26.1792 26.8022 24.9847 27.0682C23.7964 27.3342 23.1086 28.232 22.8278 29.4993C22.785 29.6914 22.7525 29.8891 22.6935 30.2069C22.433 29.891 22.2478 29.6453 22.0444 29.4236C20.3615 27.5929 17.8464 28.1637 17.1668 30.5301C16.8982 31.4686 16.9653 32.4126 17.2868 33.3492C17.82 34.9047 19.2342 36.05 20.5304 35.9983C21.9182 35.9429 22.8746 34.9453 23.2164 33.2051C23.2388 33.0943 23.2917 32.9927 23.3385 32.8597C23.6275 33.1866 23.8615 33.4933 24.1342 33.7519C25.8394 35.3721 28.1388 34.7828 28.7981 32.5382C29.2356 31.0474 28.9588 29.6305 28.0004 28.3706Z"/><path class="g-pupil" d="M21.9356 31.913C22.1261 32.582 21.8816 33.2424 21.3671 33.446C20.8479 33.6495 20.2589 33.2595 20.0636 32.5834C19.8683 31.903 20.1366 31.2326 20.6812 31.0447C21.202 30.8654 21.7434 31.2397 21.9356 31.913Z"/><path class="g-pupil" d="M25.9272 30.8711C26.1379 31.5471 25.8745 32.2688 25.3524 32.4531C24.8302 32.6375 24.273 32.263 24.0718 31.5942C23.869 30.9197 24.1085 30.2623 24.6322 30.0565C25.1512 29.8536 25.7228 30.2137 25.9272 30.8711Z"/></g></g></g></svg></span><span class="brand-name">Pallav Raj</span><span class="egg-zz" aria-hidden="true"><i style="--i:0">z</i><i style="--i:1">z</i><i style="--i:2">Z</i></span><span class="egg-say" id="eggSay" aria-hidden="true">Hi there!</span></a>
+  <a class="brand" href="#top" data-cursor="Top" aria-label="Pallav Raj, back to top"><span class="brand-mark"><svg class="ghost" viewBox="10 14 48 44" aria-hidden="true" focusable="false"><g class="g-body"><g class="g-tail"><path class="g-shape" d="M52.7249 38.8825C52.3911 38.6689 52.0283 38.4968 51.6676 38.331C51.1244 38.0801 50.5792 37.8334 50.0236 37.6178C46.0078 36.0609 42.9084 33.4756 40.6673 29.7522C39.4048 27.6542 37.9847 25.5768 36.2867 23.8292C32.6545 20.0954 26.9181 19.1811 22.0275 21.3331C16.8839 23.597 14.4251 27.6625 14.3049 31.5372C14.2406 37.6116 16.0215 41.2459 19.0939 44.2623C23.9949 49.0762 30.0216 51.5018 36.7573 52.3249C37.2673 52.3871 37.8064 52.3332 38.3164 52.242C39.0834 52.1031 39.2908 51.6656 39.0254 50.9297C38.731 50.1128 38.8761 49.9055 39.7655 50.032C40.7005 50.1667 41.621 50.3968 42.5519 50.5503C43.2858 50.6705 44.0362 50.8384 44.7639 50.7887C45.1765 50.7597 45.7632 50.4134 45.9042 50.0631C46.0845 49.6111 45.8358 49.1301 45.6139 48.7134C45.4025 48.3154 44.9256 47.5815 43.9077 46.9657C44.3265 46.9429 44.9588 46.9284 45.7259 46.9761C45.9933 46.9927 46.9221 47.1233 48.307 47.3348C49.3622 47.4965 50.4154 47.7494 51.4748 47.7847C51.8915 47.7971 52.4388 47.4156 52.7208 47.0528C53.096 46.5719 52.8887 45.9686 52.4637 45.5664C51.9993 45.1248 51.4686 44.7454 50.9337 44.3909C50.0878 43.8332 49.6483 43.5803 49.0844 43.2755C48.4645 42.9397 47.9172 42.6784 47.4902 42.4856C47.8861 42.2679 48.4853 41.9901 49.2648 41.8015C49.4327 41.76 49.5571 41.7351 49.5923 41.731C50.4548 41.6336 51.3338 41.6854 52.1963 41.5942C52.8555 41.5237 53.3862 41.1754 53.5065 40.456C53.6226 39.7615 53.2867 39.2473 52.7228 38.8845L52.7249 38.8825Z"/></g><g class="g-look"><g class="g-eyes"><path class="g-whites" d="M28.0004 28.3706C27.2088 27.3305 26.1792 26.8022 24.9847 27.0682C23.7964 27.3342 23.1086 28.232 22.8278 29.4993C22.785 29.6914 22.7525 29.8891 22.6935 30.2069C22.433 29.891 22.2478 29.6453 22.0444 29.4236C20.3615 27.5929 17.8464 28.1637 17.1668 30.5301C16.8982 31.4686 16.9653 32.4126 17.2868 33.3492C17.82 34.9047 19.2342 36.05 20.5304 35.9983C21.9182 35.9429 22.8746 34.9453 23.2164 33.2051C23.2388 33.0943 23.2917 32.9927 23.3385 32.8597C23.6275 33.1866 23.8615 33.4933 24.1342 33.7519C25.8394 35.3721 28.1388 34.7828 28.7981 32.5382C29.2356 31.0474 28.9588 29.6305 28.0004 28.3706Z"/><path class="g-pupil" d="M21.9356 31.913C22.1261 32.582 21.8816 33.2424 21.3671 33.446C20.8479 33.6495 20.2589 33.2595 20.0636 32.5834C19.8683 31.903 20.1366 31.2326 20.6812 31.0447C21.202 30.8654 21.7434 31.2397 21.9356 31.913Z"/><path class="g-pupil" d="M25.9272 30.8711C26.1379 31.5471 25.8745 32.2688 25.3524 32.4531C24.8302 32.6375 24.273 32.263 24.0718 31.5942C23.869 30.9197 24.1085 30.2623 24.6322 30.0565C25.1512 29.8536 25.7228 30.2137 25.9272 30.8711Z"/></g></g></g></svg></span><span class="brand-name">Pallav Raj</span><span class="egg-zz" aria-hidden="true"><i style="--i:0">z</i><i style="--i:1">z</i><i style="--i:2">Z</i></span><span class="egg-say" id="eggSay" aria-hidden="true">Hi, I'm Xero!</span></a>
   <div class="bar-right">
     <a class="bar-link" href="mailto:pallavraj75@gmail.com" data-cursor="Mail">Hire Me</a>
     <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menu" aria-label="Index" data-cursor="Index"><i></i></button>
@@ -719,6 +779,7 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
   </div>
   <div class="menu-foot mono">
     <a href="mailto:pallavraj75@gmail.com">Hire Me</a>
+    <button class="menu-cheat" id="menuCheat" data-cursor="Open"><i aria-hidden="true">✦</i><span>Cheat sheet</span><b id="cheatCount">0/16</b></button>
     <span class="menu-soc"><a href="https://www.behance.net/pallavrajsingh" target="_blank" rel="noopener">Behance</a><a href="http://linkedin.com/in/pallav-raj-singh-chouhan-4abb98184/" target="_blank" rel="noopener">LinkedIn</a><a href="https://instagram.com/xero.verse" target="_blank" rel="noopener">Instagram</a><a href="https://www.youtube.com/@Xeropoint1" target="_blank" rel="noopener">YouTube</a></span>
   </div>
 </nav>
@@ -1143,14 +1204,22 @@ w.__csPause=function(on){on=!!on;if(on===paused)return;paused=on;if(!on){var h=h
   bandX.style.cssText = 'position:absolute;top:0;bottom:0;background:rgba(13,153,255,.14)';
   bandY.style.cssText = 'position:absolute;left:0;right:0;background:rgba(13,153,255,.14)';
   let heroP = 0;
+  // the name fills the frame. Measured with offsetWidth: the layout size, which ignores the hero's zoom, so a refit
+  // while you're scrolled away (a reload that restores the scroll, Safari's bars sliding) can't make it too big
+  let fitW = -1, fitH = -1;
   function fitName() {
     heroName.style.fontSize = '100px';
     heroName.style.width = 'max-content';
-    const w = heroName.getBoundingClientRect().width;
+    const w = heroName.offsetWidth;
     heroName.style.width = '';
     const avail = frame.clientWidth;
-    heroName.style.fontSize = Math.min(100 * avail / w * .985, MOBILE.matches && VH > VW ? 9999 : VH * .38).toFixed(1) + 'px';
+    fitW = avail; fitH = VH;
+    if (!w || !avail) return;
+    heroName.style.fontSize = Math.min(100 * avail / w * .975, MOBILE.matches && VH > VW ? 9999 : VH * .38).toFixed(1) + 'px';
   }
+  const editing = () => heroName.hasAttribute('contenteditable');
+  // and it refits whenever the frame's width actually changes, however that happens
+  if (window.ResizeObserver) new ResizeObserver(() => { if (frame.clientWidth !== fitW && !editing()) requestAnimationFrame(() => { fitName(); if (selEl) select(selEl, true); }); }).observe(frame);
   // the selection eases to whichever layer is picked
   const box = { x: 0, y: 0, w: 0, h: 0 }, goal = { x: 0, y: 0, w: 0, h: 0 };
   let selEl = null, selRaf = 0, userPick = 0;
@@ -1856,9 +1925,19 @@ void main() {
     }
 
     /* ================= GAME: Ship it! ================= */
-    const MAP = ['###################', '#........#........#', '#.##.###.#.###.##.#', '#o...............o#', '#.##.#.#####.#.##.#', '#....#...#...#....#', '####.#       #.####', '####.# ##-## #.####', '    .  #BBB#  .    ', '####.# ##### #.####', '####.#       #.####', '#........#........#', '#.##.###.#.###.##.#', '#o.......G.......o#', '###################'];
+    // one maze per release, each tighter than the last (fewer junctions to escape through, fewer select tools);
+    // after v1.3 they come round again, but the bugs keep getting faster
+    const MAPS = [
+      ["###################", "#........#........#", "#.##.###.#.###.##.#", "#o...............o#", "#.##.#.#####.#.##.#", "#....#...#...#....#", "####.#       #.####", "####.# ##-## #.####", "    .  #BBB#  .    ", "####.# ##### #.####", "####.#       #.####", "#........#........#", "#.##.###.#.###.##.#", "#o.......G.......o#", "###################"],
+       ["###################", "#........#........#", "#.######.#.######.#", "#o...............o#", "#.##.#.#####.#.##.#", "#....#...#...#....#", "####.#       #.####", "####.# ##-## #.####", "    .  #BBB#  .    ", "####.# ##### #.####", "####.#       #.####", "#........#........#", "#.######.#.######.#", "#o.......G.......o#", "###################"],
+       ["###################", "#........#........#", "#.##.###.#.###.##.#", "#.##.#.......#.##.#", "#....#.#####.#....#", "####.#...#...#.####", "####.#       #.####", "####.# ##-## #.####", "    .  #BBB#  .    ", "####.# ##### #.####", "####.#       #.####", "#....#...#...#....#", "#o##.#.#####.#.##o#", "#........G........#", "###################"],
+       ["###################", "#...#.........#...#", "#.#.#.#######.#.#.#", "#.#.............#.#", "#.###.#.###.#.###.#", "#.....#..#..#.....#", "####.#       #.####", "####.# ##-## #.####", "    .  #BBB#  .    ", "####.# ##### #.####", "####.#       #.####", "#.......#.#.......#", "#.#####.#.#.#####.#", "#o.......G.......o#", "###################"]];
+    const mazeFor = lv => lv < MAPS.length ? lv : 1 + (lv - 1) % (MAPS.length - 1);
     const DIRS = [[0, -1], [-1, 0], [0, 1], [1, 0]];
-    const SCHEDULE = [7, 20, 7, 20, 5, 1e9];                                 // scatter, chase, scatter, chase …
+    // scatter, chase, scatter, chase …: the breathers between chases shrink every release
+    const scheduleFor = lv => [Math.max(1.5, 7 - lv * 1.1), 20 + lv * 2, Math.max(1, 7 - lv * 1.3), 20 + lv * 2, Math.max(.5, 5 - lv), 1e9];
+    // what changed, shown on the READY card of each new release
+    const NEWS = ['', 'NEW MAZE - FASTER BUGS', 'ONLY 2 SELECT TOOLS', 'FEWER ESCAPE ROUTES'];
     const ORANGE = '#FF6A00';
     // bonus items, one kind per release: a coffee, a sticky note, the pen tool
     const BONUS = [
@@ -1915,6 +1994,7 @@ void main() {
     const bugs = [0, 1, 2, 3].map(i => ({ i, x: 0, y: 0, dx: 0, dy: 0, st: 'house', rel: 0 }));
     const pops = [];                                                        // floating score numbers
     function buildMap() {
+      const MAP = MAPS[mazeFor(level)];
       const src2 = portrait ? MAP[0].split('').map((_, c) => MAP.map(r => r[c]).join('')) : MAP;   // phones in portrait get the maze turned on its side
       grid = src2.map(r => r.split('')); gr = grid.length; gc = grid[0].length; dots = 0; startB = []; powers = [];
       for (let r = 0; r < gr; r++) for (let c = 0; c < gc; c++) {
@@ -1972,7 +2052,7 @@ void main() {
       }
     }
     // bugs leave the house one by one; later releases let them out sooner
-    const relAt = i => [0, 3, 7, 11][i] * Math.max(.35, 1 - level * .14);
+    const relAt = i => [0, 3, 7, 11][i] * Math.max(.12, 1 - level * .22);
     function resetActors() {
       Object.assign(player, { x: startP[0], y: startP[1], dx: 0, dy: 0, nx: 0, ny: 0 });
       const spots = [exit, startB[1], startB[0], startB[2]];
@@ -1996,9 +2076,12 @@ void main() {
       if (s2 === 'board') $('span', goBtn).textContent = 'Play again';
       help.textContent = !FINE ? '' : s2 === 'entry' ? 'Type your initials · ↑ ↓ to change a letter · Enter to save' : s2 === 'board' ? 'Enter to play again · Esc to quit' : 'Arrow keys or WASD to move · P to pause · M for sound · Esc to quit';
     }
-    const speedP = () => 6.2 + Math.min(level, 6) * .12;
-    const speedB = () => 4.5 + Math.min(level, 8) * .22;
-    const frightFor = () => Math.max(3.5, 8 - level * .6);
+    // the difficulty curve: every release the bugs get faster (from v1.6 they outrun Xero), the select tool works for
+    // less time, scared bugs flee smarter, and they leave the house sooner
+    const speedP = () => 6.2 + Math.min(level, 6) * .1;
+    const speedB = () => 4.5 + Math.min(level, 10) * .32;
+    const frightFor = () => Math.max(1.2, 8 - level * 1.3);
+    const fleeSmart = () => Math.min(.92, .65 + level * .06);
     function steerTo(d) {
       player.nx = d[0]; player.ny = d[1];
       if ((player.dx || player.dy) && d[0] === -player.dx && d[1] === -player.dy) { player.dx = d[0]; player.dy = d[1]; }
@@ -2016,7 +2099,7 @@ void main() {
       if (!opts.length) return;
       if (a.st === 'fright') {
         // scared bugs mostly flee, sometimes dither, so they can be caught
-        if (Math.random() < .65) { let bo = opts[0], bdist = -1; opts.forEach(o => { const d = (a.x + o[0] - player.x) ** 2 + (a.y + o[1] - player.y) ** 2; if (d > bdist) { bdist = d; bo = o; } }); a.dx = bo[0]; a.dy = bo[1]; }
+        if (Math.random() < fleeSmart()) { let bo = opts[0], bdist = -1; opts.forEach(o => { const d = (a.x + o[0] - player.x) ** 2 + (a.y + o[1] - player.y) ** 2; if (d > bdist) { bdist = d; bo = o; } }); a.dx = bo[0]; a.dy = bo[1]; }
         else { const o = opts[Math.floor(Math.random() * opts.length)]; a.dx = o[0]; a.dy = o[1]; }
         return;
       }
@@ -2078,7 +2161,7 @@ void main() {
     }
     function update(dt) {
       stT += dt;
-      if (state === 'ready') { if (stT > (intro ? 4.2 : 2)) { if (intro) { intro = false; try { localStorage.setItem('shipit.seen', '1'); } catch (e) { /* fine */ } } setState('play'); } return; }
+      if (state === 'ready') { if (stT > (intro ? 4.2 : level ? 2.6 : 2)) { if (intro) { intro = false; try { localStorage.setItem('shipit.seen', '1'); } catch (e) { /* fine */ } } setState('play'); } return; }
       if (state === 'dying') { if (stT > 1.7) { if (--lives <= 0) setState('over'); else { resetActors(); restorePowers(); inv = 2.2; setState('ready'); } } return; }
       if (state === 'clear') { flash = stT; if (stT > 2.4) { level++; eaten = 0; bonus = null; buildMap(); gameLayout(); resetActors(); setState('ready'); } return; }
       if (state === 'over') { if (stT > 1.8) setState(qualifies() ? 'entry' : 'board'); return; }
@@ -2087,7 +2170,7 @@ void main() {
       if (cue > 0) cue -= dt;
       if (bonus && (bonus.t -= dt) <= 0) bonus = null;
       if (fright > 0) { fright -= dt; if (fright <= 0) bugs.forEach(b => { if (b.st === 'fright') b.st = 'roam'; }); }
-      else { phaseT += dt; if (phaseT > SCHEDULE[phaseI]) { phaseT = 0; phaseI = Math.min(phaseI + 1, SCHEDULE.length - 1); bugs.forEach(b => { if (b.st === 'roam') { b.dx = -b.dx; b.dy = -b.dy; } }); } }
+      else { const SCH = scheduleFor(level); phaseT += dt; if (phaseT > SCH[phaseI]) { phaseT = 0; phaseI = Math.min(phaseI + 1, SCH.length - 1); bugs.forEach(b => { if (b.st === 'roam') { b.dx = -b.dx; b.dy = -b.dy; } }); } }
       move(player, speedP() * dt);
       if (state !== 'play') return;
       if (bonus && Math.hypot(player.x - bonus.x, player.y - bonus.y) < .7) {
@@ -2097,7 +2180,8 @@ void main() {
       }
       bugs.forEach(b => {
         if (b.st === 'house') { b.rel -= dt; if (b.rel <= 0) b.st = 'leave'; return; }
-        const sp = b.st === 'eaten' ? 12 : b.st === 'fright' ? 2.8 : b.st === 'leave' ? 3.2 : speedB();
+        const rush = level && b.i === 0 ? (dots < 12 ? 1.18 : dots < 25 ? 1.1 : 1) : 1;   // Scope Creep rushes the last pixels
+        const sp = b.st === 'eaten' ? 12 : b.st === 'fright' ? 2.8 : b.st === 'leave' ? 3.2 : speedB() * rush;
         move(b, sp * dt);
         if (state !== 'play') return;
         const d = Math.hypot(b.x - player.x, b.y - player.y);
@@ -2178,7 +2262,7 @@ void main() {
       const mx2 = ox + gc * T / 2, my2 = oy + gr * T / 2, ms = Math.max(2, Math.round(T / 5));
       if (state === 'ready' && intro) {
         const sm = Math.max(1.5, ms * .55);
-        plaque([{ t: 'HOW TO PLAY', c: ORANGE, gap: ms * 4 },
+        plaque([{ t: 'MEET XERO', c: ORANGE, gap: ms * 4 },
           { t: 'COLLECT THE PIXELS', s: sm, icon: (x, y, k) => { ctx.fillStyle = WHITE; ctx.fillRect(x + k * 3, y + k * 2, k * 3, k * 3); } },
           { t: 'GRAB A SELECT TOOL', s: sm, icon: (x, y, k) => { ctx.strokeStyle = WHITE; ctx.lineWidth = Math.max(1, k * .6); ctx.strokeRect(x + k, y, k * 7, k * 7); } },
           { t: 'THEN FIX THE BUGS', s: sm, icon: (x, y, k) => sprite(BUG[0], x, y - k * .5, k * .9, { k: WHITE, w: DIM }), gap: 0 }], mx2, my2, ms, ms * 4);
@@ -2194,8 +2278,9 @@ void main() {
         const r = plaque([{ t: score && newRow < 0 ? 'SCORE ' + String(score).padStart(6, '0') : 'HIGH SCORES', c: ORANGE, gap: ms * 5 }].concat(rows), mx2, my2, ms, ms * 5);
         placeGo(r.bottom);
       } else {
-        const msg = state === 'ready' ? (level ? 'V1.' + level + ' READY!' : 'READY!') : state === 'clear' ? 'SHIPPED!' : state === 'over' ? 'GAME OVER' : paused ? 'PAUSED' : '';
-        if (msg) plaque([{ t: msg, c: state === 'over' ? WHITE : ORANGE, gap: 0 }], mx2, my2, ms, ms * 4);
+        const msg = state === 'ready' ? (level ? 'V1.' + level + ' READY!' : 'GO XERO!') : state === 'clear' ? 'SHIPPED!' : state === 'over' ? 'GAME OVER' : paused ? 'PAUSED' : '';
+        const news = state === 'ready' && level ? (NEWS[level] || 'HARDER - BUGS FASTER') : state === 'clear' ? 'NEXT: V1.' + (level + 1) : '';
+        if (msg) plaque(news ? [{ t: msg, c: state === 'over' ? WHITE : ORANGE, gap: ms * 3 }, { t: news, s: Math.max(1.5, ms * .55), c: 'rgba(255, 255, 255, .7)', gap: 0 }] : [{ t: msg, c: state === 'over' ? WHITE : ORANGE, gap: 0 }], mx2, my2, ms, ms * 4);
         if (state === 'play' && cue > 0 && Math.floor(cue * 6) % 2 === 0) plaque([{ t: 'FIX THE BUGS!', s: Math.max(1.5, ms * .7), c: ORANGE, gap: 0 }], mx2, oy + T * 1.2, ms, ms * 2.5);
       }
     }
@@ -2334,6 +2419,7 @@ void main() {
         let nx = G.x, ny = G.y;
         for (let i = 0; i < 16; i++) { nx = lerp(minX, maxX, Math.random()); ny = lerp(minY, maxY, Math.random()); if (Math.hypot(nx - G.x, ny - G.y) > Math.max(maxX - minX, maxY - minY) * .4) break; }
         G.x = G.tx = nx; G.y = G.ty = ny; G.vx = G.vy = 0; G.until = now + 1400; G.shy = 0;
+        dispatchEvent(new CustomEvent('xero:boo'));                          // a secret: tapping Xero counts as saying boo
         curSay('Come here');
       } else { G.tx = x; G.ty = y; G.until = now + 1800; }
     });
@@ -2543,11 +2629,12 @@ void main() {
       const fresh = !found.has(id);
       if (fresh) { found.add(id); try { localStorage.setItem(KEY, JSON.stringify([...found])); } catch (e) { /* fine */ } }
       if (fresh || always) toast(msg, found.size + ' / ' + ALL.length);
+      if (fresh) sheet();
       if (fresh && found.size === ALL.length) setTimeout(() => { flock(24, 24, 80); toast('All ' + ALL.length + ' found. Hire me before someone else does', '★'); }, 3500);
     }
     try {
       console.log('%c👻', 'font-size: 42px');
-      console.log('%cHey, curious one. ' + ALL.length + ' secrets hide on this page.\nStart with ↑ ↑ ↓ ↓ ← → ← → B A, then try typing "boo".\nLike what you see? pallavraj75@gmail.com', 'font: 13px/1.7 monospace; color: #FF6A00');
+      console.log('%cHey, curious one. ' + ALL.length + ' secrets hide on this page.\nStart with ↑ ↑ ↓ ↓ ← → ← → B A, then try typing "boo". Stuck? The Index has a cheat sheet.\nLike what you see? pallavraj75@gmail.com', 'font: 13px/1.7 monospace; color: #FF6A00');
     } catch (e) { /* no console */ }
 
     /* ---- a flock of ghosts flies across ---- */
@@ -2572,9 +2659,17 @@ void main() {
       root.classList.remove('boo'); void root.offsetWidth; root.classList.add('boo');
       setTimeout(() => root.classList.remove('boo'), 1300);
       flock(1, 180, 220);
-      egg('boo', 'Boo! You found the ghost', true);
+      egg('boo', 'Boo! You found Xero', true);
     }
     function hello() { sayEl.classList.add('on'); setTimeout(() => sayEl.classList.remove('on'), 2600); egg('hello', 'Hello to you too'); }
+    let pressT = 0, pressed = false;
+    const brandEl = $('.brand');
+    brandEl.addEventListener('pointerdown', () => { pressed = false; clearTimeout(pressT); pressT = setTimeout(() => { pressed = true; hello(); }, 550); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => brandEl.addEventListener(ev, () => clearTimeout(pressT)));
+    brandEl.addEventListener('click', e => { if (pressed) { e.preventDefault(); e.stopImmediatePropagation(); pressed = false; } }, true);   // a long-press is not a click
+    brandEl.addEventListener('contextmenu', e => { if (!FINE) e.preventDefault(); });
+    // boo: tapping Xero in the footer counts too
+    addEventListener('xero:boo', () => egg('boo', 'Boo! You found Xero'));
     const playing = () => $('#footPanel').classList.contains('playing');
     // the code shows itself as keycaps once you start it (↑ ↑), each key lighting as you press it
     const keysEl = $('#eggKeys'), caps = $$('i', keysEl);
@@ -2583,21 +2678,35 @@ void main() {
       caps.forEach((c, i) => c.classList.toggle('lit', i < n));
       keysEl.classList.toggle('miss', !!miss);
       keysEl.classList.add('on');
-      clearTimeout(keysT); keysT = setTimeout(() => { keysEl.classList.remove('on', 'miss'); }, miss ? 700 : n >= KON.length ? 1100 : 2400);
+      clearTimeout(keysT); keysT = setTimeout(() => { keysEl.classList.toggle('miss', false); if (!pad.classList.contains('on')) keysEl.classList.remove('on'); }, miss ? 700 : n >= KON.length ? 1100 : 2400);
     }
+    function feed(k, fromPad) {
+      if (k === KON[kpos]) {
+        kpos++;
+        if ((kpos >= 2 || fromPad) && !playing()) keysShow(kpos);
+        if (kpos === KON.length) { kpos = 0; Arcade.cheat(); flock(16, 26, 70); egg('konami', 'Cheat code accepted · 30 lives in Ship it!', true); if (fromPad) setTimeout(() => padOpen(false), 900); }
+      } else if (kpos || fromPad) {
+        if ((kpos >= 2 || fromPad) && !playing()) keysShow(kpos, true);
+        kpos = k === KON[0] ? 1 : 0;
+      }
+    }
+    // the pad: the same code by tapping (a little Game Boy that slides up)
+    const pad = $('#cheatPad');
+    function padOpen(on) {
+      pad.classList.toggle('on', on); pad.setAttribute('aria-hidden', on ? 'false' : 'true'); root.classList.toggle('pad-open', on);
+      if (on) { kpos = 0; keysShow(0); } else keysEl.classList.remove('on');
+    }
+    $$('button[data-k]', pad).forEach(b => {
+      b.addEventListener('pointerdown', e => { e.preventDefault(); b.classList.add('on'); if (navigator.vibrate) navigator.vibrate(6); feed(b.dataset.k, true); });
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => b.classList.remove('on')));
+    });
+    $('#cheatPadClose').addEventListener('click', () => padOpen(false));
     addEventListener('keydown', e => {
       const t = e.target;
       if (t && t.closest && t.closest('input, textarea, select, [contenteditable]')) return;
       if ($('#footPanel').classList.contains('entry')) return;                // typing initials in Ship it!
       const k = (e.key || '').toLowerCase();
-      if (k === KON[kpos]) {
-        kpos++;
-        if (kpos >= 2 && !playing()) keysShow(kpos);
-        if (kpos === KON.length) { kpos = 0; Arcade.cheat(); flock(16, 26, 70); egg('konami', 'Cheat code accepted · 30 lives in Ship it!', true); }
-      } else if (kpos) {
-        if (kpos >= 2 && !playing()) keysShow(kpos, true);
-        kpos = k === KON[0] ? 1 : 0;
-      }
+      feed(k, false);
       if (k.length === 1 && k >= 'a' && k <= 'z' && !e.metaKey && !e.ctrlKey) {
         typed = (typed + k).slice(-8);
         if (typed.endsWith('boo')) { typed = ''; boo(); }
@@ -2685,7 +2794,7 @@ void main() {
     });
     let idleT = 0, napping = false;
     function wake() {
-      if (napping) { napping = false; root.classList.remove('nap'); egg('nap', 'You woke the ghost'); }
+      if (napping) { napping = false; root.classList.remove('nap'); egg('nap', 'You woke Xero'); }
       clearTimeout(idleT); idleT = setTimeout(() => { napping = true; root.classList.add('nap'); }, 25000);
     }
     ['pointermove', 'pointerdown', 'keydown', 'scroll', 'wheel', 'touchstart'].forEach(ev => addEventListener(ev, wake, { passive: true }));
@@ -2768,7 +2877,7 @@ void main() {
     let hiddenAt = 0;
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) { hiddenAt = Date.now(); document.title = 'Boo! Come back 👻'; }
-      else { document.title = title; if (hiddenAt && Date.now() - hiddenAt > 1500) setTimeout(() => egg('tab', 'Welcome back · the ghost missed you'), 400); hiddenAt = 0; }
+      else { document.title = title; if (hiddenAt && Date.now() - hiddenAt > 1500) setTimeout(() => egg('tab', 'Welcome back · Xero missed you'), 400); hiddenAt = 0; }
     });
 
     /* ---- keep scrolling past the very bottom and a ghost peeks up ---- */
@@ -2781,12 +2890,54 @@ void main() {
     addEventListener('touchmove', e => { if (!playing() && atBottom() && tY - e.touches[0].clientY > 110) { tY = 1e9; peekUp(); } }, { passive: true });
 
     /* ---- little ones: copying, and the footer's whisper ---- */
-    document.addEventListener('copy', () => toast('Copied · credit the ghost'));
+    document.addEventListener('copy', () => toast('Copied · credit Xero'));
     const fid = $('.foot-id'), fidTxt = fid.textContent;
     const whisper = () => { fid.textContent = 'psst… ' + found.size + ' of ' + ALL.length + ' secrets found · try ↑↑↓↓←→←→BA'; };
     const hush = () => { fid.textContent = fidTxt; };
     fid.addEventListener('mouseenter', whisper); fid.addEventListener('mouseleave', hush);
-    fid.addEventListener('click', () => { if (!FINE) { whisper(); setTimeout(hush, 2800); } });
+    fid.addEventListener('click', e => { e.stopPropagation(); if (!FINE) { whisper(); setTimeout(hush, 2800); } padOpen(!pad.classList.contains('on')); });
+    /* ---- the cheat sheet, in the Index: every secret, how to do it with a mouse and keyboard, and with touch ---- */
+    const K = s2 => s2.split(' ').map(x => '<kbd>' + x + '</kbd>').join(' ');
+    const INFO = {
+      konami: ['The Konami code', 'Press ' + K('↑ ↑ ↓ ↓ ← → ← → B A') + '. Ship it! starts with 30 lives.', 'Tap “Thanks for scrolling” in the footer and enter it on the pad.'],
+      boo: ['Boo!', 'Type ' + K('b o o') + ' anywhere.', 'Tap Xero, the pixel ghost in the footer.'],
+      hello: ['Say hello', 'Type ' + K('h e l l o') + ', or press and hold the ghost logo.', 'Press and hold the ghost logo in the header.'],
+      paint: ['Pixel paint', 'Hold ' + K('Shift') + ' and move the mouse. ' + K('Esc') + ' clears it.', ''],
+      rename: ['Make the name yours', 'Double-click “Pallav Raj” in the hero and type.', 'Double-tap the name in the hero.'],
+      chat: ['Cursor chat', 'Catch the moving “Pallav” cursor in the hero.', 'Tap the moving “Pallav” cursor.'],
+      ghostmode: ['Ghost mode', 'Click the ghost logo five times, quickly.', 'Tap the ghost logo five times, quickly.'],
+      nap: ['Let Xero nap', 'Leave the site alone for 25 seconds, then move.', 'Leave it alone for 25 seconds, then touch.'],
+      intent: ['A word that won’t sit still', 'Hover “intent” in the About heading.', 'Tap “intent” in the About heading.'],
+      warp: ['Punch it', 'Press and hold anywhere in the light-speed section.', 'Press and hold in the light-speed section.'],
+      timetravel: ['Time travel', 'Grab the ruler in Education and drag it sideways.', 'Drag the ruler in Education sideways.'],
+      odometer: ['Count it up', 'Hover the big numbers in Work Experience.', 'Tap the big numbers in Work Experience.'],
+      tile: ['Spin the tile', 'Click the big tool tile in Tools & Skills.', 'Tap the big tool tile.'],
+      ringkeys: ['Turn the ring', 'Press ' + K('←') + ' or ' + K('→') + ' while Selected Work is on screen.', ''],
+      tab: ['Come back', 'Switch to another tab, then come back.', 'Switch to another app or tab, then come back.'],
+      bottom: ['Past the bottom', 'Keep scrolling down at the very bottom of the page.', 'Keep pulling up at the very bottom.']
+    };
+    const cheatEl = $('#cheat'), listEl = $('#cheatList'), countEl = $('#cheatCount'), foundEl = $('#cheatFound');
+    listEl.innerHTML = ALL.map((id, i) => {
+      const [title, mouse, touch] = INFO[id];
+      return '<li data-egg="' + id + '"><span class="n mono">' + String(i + 1).padStart(2, '0') + '</span><h3>' + title + '</h3><i class="tick" aria-hidden="true"></i><p class="how"><span><b>Mouse &amp; keys</b>' + mouse + '</span><span><b>Touch</b>' + (touch || 'Needs a keyboard.') + '</span></p>' + (id === 'konami' ? '<button class="pad-go mono" type="button">Open the pad</button>' : '') + '</li>';
+    }).join('');
+    function sheet() {
+      countEl.textContent = found.size + '/' + ALL.length; foundEl.textContent = found.size;
+      $$('li', listEl).forEach(li => { const got = found.has(li.dataset.egg); li.classList.toggle('got', got); li.setAttribute('aria-label', (got ? 'Found: ' : 'Not found yet: ') + INFO[li.dataset.egg][0]); });
+    }
+    sheet();
+    function sheetOpen(on) { cheatEl.classList.toggle('on', on); cheatEl.setAttribute('aria-hidden', on ? 'false' : 'true'); if (on) { sheet(); cheatEl.scrollTop = 0; $('#cheatClose').focus({ preventScroll: true }); } }
+    $('#menuCheat').addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); sheetOpen(true); });
+    $('#cheatClose').addEventListener('click', () => sheetOpen(false));
+    $('.pad-go', listEl).addEventListener('click', () => { sheetOpen(false); setMenu(false); setTimeout(() => padOpen(true), 500); });
+    // while the sheet is open, Esc closes it (not the Index under it) and the arrows don't turn the dial
+    addEventListener('keydown', e => {
+      if (!cheatEl.classList.contains('on')) return;
+      if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); sheetOpen(false); }
+      else if (/^Arrow|^Enter$|^Home$|^End$/.test(e.key)) e.stopImmediatePropagation();
+    }, true);
+    cheatEl.addEventListener('wheel', e => e.stopPropagation(), { passive: true });
+    menuBtn.addEventListener('click', () => { if (cheatEl.classList.contains('on')) sheetOpen(false); });   // closing the Index closes the sheet too
     return { count: () => found.size, total: ALL.length };
   })();
 
