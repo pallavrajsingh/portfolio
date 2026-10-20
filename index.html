@@ -102,6 +102,8 @@ html.on-dark #cur { --cf: #fff; }
 .c-label { position: absolute; left: 14px; top: -6px; padding: 5px 9px 5px 8px; background: var(--ink); color: var(--neon); font-family: var(--fm); font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; clip-path: inset(0 100% 0 0); transition: clip-path .35s steps(6), left .2s; }
 #cur.btn .c-label, #cur.link .c-label { left: 24px; top: -11px; }
 #cur.hov .c-label:not(:empty) { clip-path: inset(0 0 0 0); }
+#cur.link.quiet .c-ico { clip-path: inset(50%); }
+#cur.link.quiet .px { transform: scale(.45); }
 #trail i { position: fixed; left: 0; top: 0; z-index: 8999; width: 14px; height: 14px; background: var(--neon); pointer-events: none; opacity: 0; }
 #trail i.go { animation: pxFade .7s steps(5) forwards; }
 @keyframes pxFade { 0% { opacity: .85; } 100% { opacity: 0; } }
@@ -171,6 +173,17 @@ html.on-dark:not(.menu-open) .menu-btn i { background: #fff; }
 html.on-dark:not(.menu-open) .menu-btn i::before, html.on-dark:not(.menu-open) .menu-btn i::after { background: var(--ink); }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 500; font-size: 15px; letter-spacing: -.01em; }
 .brand-mark { display: block; width: 40px; height: 36px; }
+/* the wordmark reads XERO; hover and it glitches into the name. An orange copy, sliced, shows through while it does */
+.brand-name { position: relative; display: inline-grid; }
+.bn-face { grid-area: 1 / 1; display: inline-grid; align-items: center; justify-items: start; }
+.bn-face > * { grid-area: 1 / 1; }
+.bn-xero { display: block; height: 12px; width: auto; }
+.bn-real { white-space: nowrap; visibility: hidden; }
+.brand-name.real .bn-real { visibility: visible; }
+.brand-name.real .bn-xero { visibility: hidden; }
+.bn-face.bn-copy { color: var(--neon); opacity: 0; pointer-events: none; }
+.brand-name.gl .bn-face { transform: translateX(var(--gx, 0)); }
+.brand-name.gl .bn-copy { opacity: 1; clip-path: var(--gc); transform: translateX(calc(var(--gx, 0px) * -1.8)); }
 .brand:hover .g-body { animation: gSpook .6s cubic-bezier(.36, .07, .19, .97) forwards; }
 .bar-right { display: flex; align-items: center; gap: 22px; }
 .bar-link { position: relative; font-size: 14px; font-weight: 500; }
@@ -197,14 +210,9 @@ html.menu-open .bar-link { opacity: 0; pointer-events: none; }
 html.menu-open, html.menu-open body { overflow: hidden; }
 .menu { position: fixed; inset: 0; z-index: 45; overflow: hidden; background: var(--bg); clip-path: circle(0 at var(--ox, 96%) var(--oy, 36px)); visibility: hidden; transition: clip-path .9s var(--ease-io), visibility 0s .9s; touch-action: none; overscroll-behavior: contain; }
 html.menu-open .menu { clip-path: circle(160vmax at var(--ox, 96%) var(--oy, 36px)); visibility: visible; transition: clip-path .9s var(--ease-io); }
-.dial-info { position: absolute; z-index: 3; left: var(--pad); top: 50%; width: min(46vw, 620px); transform: translateY(-50%); }
-.dial-num { display: flex; align-items: baseline; gap: 8px; color: var(--ink2); }
-.dial-num b { font-family: var(--fd); font-size: 20px; font-weight: 500; color: var(--ink); }
-.dial-name { margin-top: 8px; font-family: var(--fd); font-weight: 600; font-size: clamp(52px, 8.4vw, 144px); line-height: .95; letter-spacing: -.055em; }
-.dial-note { margin-top: 14px; font-size: clamp(16px, 1.4vw, 21px); color: var(--ink2); }
-.dial-name.swap, .dial-note.swap { animation: dialIn .6s var(--ease); }
+.dial-info { position: absolute; z-index: 3; left: var(--pad); top: 50%; transform: translateY(-50%); }   /* just the Go button, level with the highlighted label (main.js sets top) */
 @keyframes dialIn { from { opacity: 0; transform: translateY(18px); } }
-.dial-go { display: inline-flex; align-items: center; gap: 12px; margin-top: clamp(24px, 4vh, 40px); height: 48px; padding: 0 22px; border-radius: 99px; background: var(--ink); color: var(--paper); font-size: 15px; font-weight: 500; transition: background .3s, color .3s; }
+.dial-go { display: inline-flex; align-items: center; gap: 12px; height: 48px; padding: 0 22px; border-radius: 99px; background: var(--ink); color: var(--paper); font-size: 15px; font-weight: 500; transition: background .3s, color .3s; }
 .dial-go:hover { background: var(--neon); color: var(--ink); }
 .dial-go i { font-style: normal; }
 .dial { position: absolute; z-index: 2; left: 0; top: 0; width: var(--D, 900px); height: var(--D, 900px); touch-action: none; }
@@ -219,16 +227,17 @@ html.menu-open .menu { clip-path: circle(160vmax at var(--ox, 96%) var(--oy, 36p
   mask: radial-gradient(circle closest-side, transparent calc(100% - 24px), #000 calc(100% - 23px), #000 99.5%, transparent 100%); }
 .dial-items { position: absolute; inset: 0; }
 .dial-items li { position: absolute; left: 0; top: 0; }
-.dial-items a { position: absolute; left: 0; top: 0; display: flex; align-items: baseline; gap: 12px; white-space: nowrap; font-family: var(--fd); font-weight: 500; font-size: clamp(20px, 2.1vw, 34px); letter-spacing: -.035em; color: var(--ink); transform-origin: 100% 50%; will-change: transform, opacity; }
+.dial-items a { position: absolute; left: 0; top: 0; display: flex; align-items: baseline; gap: 12px; white-space: nowrap; font-family: var(--fd); font-weight: 500; font-size: clamp(20px, 2.1vw, 34px); letter-spacing: -.035em; color: var(--ink); transform-origin: 100% 50%; }   /* no layer: the highlighted label stays crisp when scaled up */
 .dial-items a i { font-style: normal; color: var(--ink3); }
 .dial-items a.on span { background: linear-gradient(var(--neon), var(--neon)) no-repeat 0 88% / 100% .4em; }
-.dial-items a.here i::after { content: ' · You are here'; }
+.dial-items a.here i::after { content: ''; display: inline-block; width: 7px; height: 7px; margin-left: 6px; background: var(--neon); box-shadow: 0 0 0 1px var(--ink); vertical-align: middle; }   /* the section you're in */
 .dial-pointer { position: absolute; z-index: 3; left: 0; top: -1px; width: 58px; height: 2px; background: var(--ink); }
 .dial-pointer::after { content: ''; position: absolute; left: -6px; top: -5px; width: 12px; height: 12px; border-radius: 50%; background: var(--neon); border: 2px solid var(--ink); }
-.menu-foot { position: absolute; z-index: 3; left: var(--pad); right: var(--pad); bottom: 26px; display: flex; justify-content: space-between; align-items: center; gap: 16px; color: var(--ink2); }
+.menu-foot { position: absolute; z-index: 3; left: var(--pad); right: var(--pad); bottom: 26px; display: flex; justify-content: flex-start; align-items: center; gap: 22px; color: var(--ink2); pointer-events: none; }   /* one tidy cluster, bottom left: the dial keeps the right */
+.menu-foot > * { pointer-events: auto; }
 .menu-foot > a { padding: 9px 14px; border-radius: 99px; background: var(--ink); color: var(--paper); }
 /* the cheat sheet button: bright, a little raised, a glint runs across it now and then */
-.menu-cheat { position: relative; display: inline-flex; align-items: center; gap: 7px; margin-right: auto; padding: 6px 0; color: var(--ink2); text-transform: inherit; letter-spacing: inherit; transition: color .3s; }
+.menu-cheat { position: relative; display: inline-flex; align-items: center; gap: 7px; padding: 6px 0; color: var(--ink2); text-transform: inherit; letter-spacing: inherit; transition: color .3s; }
 .menu-cheat::after { content: ''; position: absolute; left: 0; right: 0; bottom: 2px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: 100% 50%; transition: transform .45s var(--ease); }
 .menu-cheat:hover { color: var(--ink); }
 .menu-cheat:hover::after { transform: scaleX(1); transform-origin: 0 50%; }
@@ -288,7 +297,7 @@ html.menu-open .menu { clip-path: circle(160vmax at var(--ox, 96%) var(--oy, 36p
 .cp-dpad button.on, .cp-ab button.on { transform: scale(.9); }
 .cp-x { position: absolute; right: 10px; top: 10px; width: 26px; height: 26px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line2); color: var(--ink2); font-size: 11px; }
 html.pad-open .egg-keys { bottom: 196px; }
-.menu-soc { display: flex; gap: 18px; flex-wrap: wrap; }
+.menu-soc { display: flex; gap: 18px; flex-wrap: wrap; padding-left: 22px; border-left: 1px solid var(--line2); }
 .menu-soc a:hover { color: var(--ink); }
 .menu .dial, .menu .dial-info, .menu .menu-foot { opacity: 0; transition: opacity .4s; }
 html.menu-open .menu .dial, html.menu-open .menu .dial-info, html.menu-open .menu .menu-foot { opacity: 1; transition: opacity .6s .25s; }
@@ -517,6 +526,7 @@ html.ready .ruler, html.ready .r-corner { opacity: 1; }
 .rc img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); -webkit-user-drag: none; user-select: none; }
 .rc.front .rc-face { box-shadow: 0 0 0 1.5px var(--ink), 0 50px 70px -40px rgba(11, 12, 15, .55); }
 .rc.front:hover img { transform: scale(1.05); }
+.rc-px { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; }   /* the pixel reveal (main.js) */
 .ring-info { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: clamp(12px, 2vw, 24px); margin-top: clamp(16px, 3vh, 34px); padding-bottom: clamp(16px, 3vh, 30px); border-bottom: 1px solid var(--line2); }
 .ri-text { min-width: 0; grid-column: 2; grid-row: 1; }
 .ri-k { color: var(--ink3); }
@@ -667,12 +677,11 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
   .dial-info { display: none; }
   .dial-items a { gap: 10px; font-size: clamp(25px, 7.4vw, 32px); }
   .dial-items a i { font-size: 10px; }
-  .dial-items a.here i::after { content: ''; display: inline-block; width: 7px; height: 7px; margin-left: 6px; background: var(--neon); box-shadow: 0 0 0 1px var(--ink); vertical-align: middle; }
   .menu-foot { bottom: 20px; }
   .menu-foot > a { display: none; }
   .menu-foot { flex-wrap: wrap; row-gap: 6px; }
   .menu-cheat { order: -1; margin-right: 0; font-size: 11px; }   /* phones: a quiet line just above the socials */
-  .menu-soc { width: 100%; justify-content: space-between; gap: 10px; font-size: 11px; }
+  .menu-soc { width: 100%; justify-content: space-between; gap: 10px; font-size: 11px; padding-left: 0; border-left: 0; }
 }
 /* portrait tablets too wide for the phone rules (an iPad Pro upright): the hero stacks the same way */
 @media (min-width: 901px) and (max-width: 1100px) and (orientation: portrait) {
@@ -719,9 +728,7 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
   .ring-arrow, .ri-cta { height: 40px; }
   .ring-arrow { width: 40px; }
   .warp-ph { font-size: clamp(28px, 8vh + 3vw, 72px); }
-  .dial-info { top: calc(var(--bar) + 8px); transform: none; }
-  .dial-name { font-size: clamp(36px, 12vh, 64px); }
-  .dial-num { margin-top: 0; } .dial-go { margin-top: 12px; height: 40px; }
+  .dial-go { height: 40px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -783,7 +790,7 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
 <div class="egg-toast" id="eggToast" role="status" aria-live="polite"><span class="egg-g"><svg class="ghost" viewBox="10 14 48 44" aria-hidden="true" focusable="false"><g class="g-body"><g class="g-tail"><path class="g-shape" d="M52.7249 38.8825C52.3911 38.6689 52.0283 38.4968 51.6676 38.331C51.1244 38.0801 50.5792 37.8334 50.0236 37.6178C46.0078 36.0609 42.9084 33.4756 40.6673 29.7522C39.4048 27.6542 37.9847 25.5768 36.2867 23.8292C32.6545 20.0954 26.9181 19.1811 22.0275 21.3331C16.8839 23.597 14.4251 27.6625 14.3049 31.5372C14.2406 37.6116 16.0215 41.2459 19.0939 44.2623C23.9949 49.0762 30.0216 51.5018 36.7573 52.3249C37.2673 52.3871 37.8064 52.3332 38.3164 52.242C39.0834 52.1031 39.2908 51.6656 39.0254 50.9297C38.731 50.1128 38.8761 49.9055 39.7655 50.032C40.7005 50.1667 41.621 50.3968 42.5519 50.5503C43.2858 50.6705 44.0362 50.8384 44.7639 50.7887C45.1765 50.7597 45.7632 50.4134 45.9042 50.0631C46.0845 49.6111 45.8358 49.1301 45.6139 48.7134C45.4025 48.3154 44.9256 47.5815 43.9077 46.9657C44.3265 46.9429 44.9588 46.9284 45.7259 46.9761C45.9933 46.9927 46.9221 47.1233 48.307 47.3348C49.3622 47.4965 50.4154 47.7494 51.4748 47.7847C51.8915 47.7971 52.4388 47.4156 52.7208 47.0528C53.096 46.5719 52.8887 45.9686 52.4637 45.5664C51.9993 45.1248 51.4686 44.7454 50.9337 44.3909C50.0878 43.8332 49.6483 43.5803 49.0844 43.2755C48.4645 42.9397 47.9172 42.6784 47.4902 42.4856C47.8861 42.2679 48.4853 41.9901 49.2648 41.8015C49.4327 41.76 49.5571 41.7351 49.5923 41.731C50.4548 41.6336 51.3338 41.6854 52.1963 41.5942C52.8555 41.5237 53.3862 41.1754 53.5065 40.456C53.6226 39.7615 53.2867 39.2473 52.7228 38.8845L52.7249 38.8825Z"/></g><g class="g-look"><g class="g-eyes"><path class="g-whites" d="M28.0004 28.3706C27.2088 27.3305 26.1792 26.8022 24.9847 27.0682C23.7964 27.3342 23.1086 28.232 22.8278 29.4993C22.785 29.6914 22.7525 29.8891 22.6935 30.2069C22.433 29.891 22.2478 29.6453 22.0444 29.4236C20.3615 27.5929 17.8464 28.1637 17.1668 30.5301C16.8982 31.4686 16.9653 32.4126 17.2868 33.3492C17.82 34.9047 19.2342 36.05 20.5304 35.9983C21.9182 35.9429 22.8746 34.9453 23.2164 33.2051C23.2388 33.0943 23.2917 32.9927 23.3385 32.8597C23.6275 33.1866 23.8615 33.4933 24.1342 33.7519C25.8394 35.3721 28.1388 34.7828 28.7981 32.5382C29.2356 31.0474 28.9588 29.6305 28.0004 28.3706Z"/><path class="g-pupil" d="M21.9356 31.913C22.1261 32.582 21.8816 33.2424 21.3671 33.446C20.8479 33.6495 20.2589 33.2595 20.0636 32.5834C19.8683 31.903 20.1366 31.2326 20.6812 31.0447C21.202 30.8654 21.7434 31.2397 21.9356 31.913Z"/><path class="g-pupil" d="M25.9272 30.8711C26.1379 31.5471 25.8745 32.2688 25.3524 32.4531C24.8302 32.6375 24.273 32.263 24.0718 31.5942C23.869 30.9197 24.1085 30.2623 24.6322 30.0565C25.1512 29.8536 25.7228 30.2137 25.9272 30.8711Z"/></g></g></g></svg></span><span id="eggMsg"></span><b class="mono" id="eggCount"></b></div>
 
 <header class="bar" id="bar">
-  <a class="brand" href="#top" data-cursor="Top" aria-label="Pallav Raj, back to top"><span class="brand-mark"><svg class="ghost" viewBox="10 14 48 44" aria-hidden="true" focusable="false"><g class="g-body"><g class="g-tail"><path class="g-shape" d="M52.7249 38.8825C52.3911 38.6689 52.0283 38.4968 51.6676 38.331C51.1244 38.0801 50.5792 37.8334 50.0236 37.6178C46.0078 36.0609 42.9084 33.4756 40.6673 29.7522C39.4048 27.6542 37.9847 25.5768 36.2867 23.8292C32.6545 20.0954 26.9181 19.1811 22.0275 21.3331C16.8839 23.597 14.4251 27.6625 14.3049 31.5372C14.2406 37.6116 16.0215 41.2459 19.0939 44.2623C23.9949 49.0762 30.0216 51.5018 36.7573 52.3249C37.2673 52.3871 37.8064 52.3332 38.3164 52.242C39.0834 52.1031 39.2908 51.6656 39.0254 50.9297C38.731 50.1128 38.8761 49.9055 39.7655 50.032C40.7005 50.1667 41.621 50.3968 42.5519 50.5503C43.2858 50.6705 44.0362 50.8384 44.7639 50.7887C45.1765 50.7597 45.7632 50.4134 45.9042 50.0631C46.0845 49.6111 45.8358 49.1301 45.6139 48.7134C45.4025 48.3154 44.9256 47.5815 43.9077 46.9657C44.3265 46.9429 44.9588 46.9284 45.7259 46.9761C45.9933 46.9927 46.9221 47.1233 48.307 47.3348C49.3622 47.4965 50.4154 47.7494 51.4748 47.7847C51.8915 47.7971 52.4388 47.4156 52.7208 47.0528C53.096 46.5719 52.8887 45.9686 52.4637 45.5664C51.9993 45.1248 51.4686 44.7454 50.9337 44.3909C50.0878 43.8332 49.6483 43.5803 49.0844 43.2755C48.4645 42.9397 47.9172 42.6784 47.4902 42.4856C47.8861 42.2679 48.4853 41.9901 49.2648 41.8015C49.4327 41.76 49.5571 41.7351 49.5923 41.731C50.4548 41.6336 51.3338 41.6854 52.1963 41.5942C52.8555 41.5237 53.3862 41.1754 53.5065 40.456C53.6226 39.7615 53.2867 39.2473 52.7228 38.8845L52.7249 38.8825Z"/></g><g class="g-look"><g class="g-eyes"><path class="g-whites" d="M28.0004 28.3706C27.2088 27.3305 26.1792 26.8022 24.9847 27.0682C23.7964 27.3342 23.1086 28.232 22.8278 29.4993C22.785 29.6914 22.7525 29.8891 22.6935 30.2069C22.433 29.891 22.2478 29.6453 22.0444 29.4236C20.3615 27.5929 17.8464 28.1637 17.1668 30.5301C16.8982 31.4686 16.9653 32.4126 17.2868 33.3492C17.82 34.9047 19.2342 36.05 20.5304 35.9983C21.9182 35.9429 22.8746 34.9453 23.2164 33.2051C23.2388 33.0943 23.2917 32.9927 23.3385 32.8597C23.6275 33.1866 23.8615 33.4933 24.1342 33.7519C25.8394 35.3721 28.1388 34.7828 28.7981 32.5382C29.2356 31.0474 28.9588 29.6305 28.0004 28.3706Z"/><path class="g-pupil" d="M21.9356 31.913C22.1261 32.582 21.8816 33.2424 21.3671 33.446C20.8479 33.6495 20.2589 33.2595 20.0636 32.5834C19.8683 31.903 20.1366 31.2326 20.6812 31.0447C21.202 30.8654 21.7434 31.2397 21.9356 31.913Z"/><path class="g-pupil" d="M25.9272 30.8711C26.1379 31.5471 25.8745 32.2688 25.3524 32.4531C24.8302 32.6375 24.273 32.263 24.0718 31.5942C23.869 30.9197 24.1085 30.2623 24.6322 30.0565C25.1512 29.8536 25.7228 30.2137 25.9272 30.8711Z"/></g></g></g></svg></span><span class="brand-name">Pallav Raj</span><span class="egg-zz" aria-hidden="true"><i style="--i:0">z</i><i style="--i:1">z</i><i style="--i:2">Z</i></span><span class="egg-say" id="eggSay" aria-hidden="true">Hi, I'm Xero!</span></a>
+  <a class="brand" href="#top" data-cursor="Top" aria-label="Pallav Raj, back to top"><span class="brand-mark"><svg class="ghost" viewBox="10 14 48 44" aria-hidden="true" focusable="false"><g class="g-body"><g class="g-tail"><path class="g-shape" d="M52.7249 38.8825C52.3911 38.6689 52.0283 38.4968 51.6676 38.331C51.1244 38.0801 50.5792 37.8334 50.0236 37.6178C46.0078 36.0609 42.9084 33.4756 40.6673 29.7522C39.4048 27.6542 37.9847 25.5768 36.2867 23.8292C32.6545 20.0954 26.9181 19.1811 22.0275 21.3331C16.8839 23.597 14.4251 27.6625 14.3049 31.5372C14.2406 37.6116 16.0215 41.2459 19.0939 44.2623C23.9949 49.0762 30.0216 51.5018 36.7573 52.3249C37.2673 52.3871 37.8064 52.3332 38.3164 52.242C39.0834 52.1031 39.2908 51.6656 39.0254 50.9297C38.731 50.1128 38.8761 49.9055 39.7655 50.032C40.7005 50.1667 41.621 50.3968 42.5519 50.5503C43.2858 50.6705 44.0362 50.8384 44.7639 50.7887C45.1765 50.7597 45.7632 50.4134 45.9042 50.0631C46.0845 49.6111 45.8358 49.1301 45.6139 48.7134C45.4025 48.3154 44.9256 47.5815 43.9077 46.9657C44.3265 46.9429 44.9588 46.9284 45.7259 46.9761C45.9933 46.9927 46.9221 47.1233 48.307 47.3348C49.3622 47.4965 50.4154 47.7494 51.4748 47.7847C51.8915 47.7971 52.4388 47.4156 52.7208 47.0528C53.096 46.5719 52.8887 45.9686 52.4637 45.5664C51.9993 45.1248 51.4686 44.7454 50.9337 44.3909C50.0878 43.8332 49.6483 43.5803 49.0844 43.2755C48.4645 42.9397 47.9172 42.6784 47.4902 42.4856C47.8861 42.2679 48.4853 41.9901 49.2648 41.8015C49.4327 41.76 49.5571 41.7351 49.5923 41.731C50.4548 41.6336 51.3338 41.6854 52.1963 41.5942C52.8555 41.5237 53.3862 41.1754 53.5065 40.456C53.6226 39.7615 53.2867 39.2473 52.7228 38.8845L52.7249 38.8825Z"/></g><g class="g-look"><g class="g-eyes"><path class="g-whites" d="M28.0004 28.3706C27.2088 27.3305 26.1792 26.8022 24.9847 27.0682C23.7964 27.3342 23.1086 28.232 22.8278 29.4993C22.785 29.6914 22.7525 29.8891 22.6935 30.2069C22.433 29.891 22.2478 29.6453 22.0444 29.4236C20.3615 27.5929 17.8464 28.1637 17.1668 30.5301C16.8982 31.4686 16.9653 32.4126 17.2868 33.3492C17.82 34.9047 19.2342 36.05 20.5304 35.9983C21.9182 35.9429 22.8746 34.9453 23.2164 33.2051C23.2388 33.0943 23.2917 32.9927 23.3385 32.8597C23.6275 33.1866 23.8615 33.4933 24.1342 33.7519C25.8394 35.3721 28.1388 34.7828 28.7981 32.5382C29.2356 31.0474 28.9588 29.6305 28.0004 28.3706Z"/><path class="g-pupil" d="M21.9356 31.913C22.1261 32.582 21.8816 33.2424 21.3671 33.446C20.8479 33.6495 20.2589 33.2595 20.0636 32.5834C19.8683 31.903 20.1366 31.2326 20.6812 31.0447C21.202 30.8654 21.7434 31.2397 21.9356 31.913Z"/><path class="g-pupil" d="M25.9272 30.8711C26.1379 31.5471 25.8745 32.2688 25.3524 32.4531C24.8302 32.6375 24.273 32.263 24.0718 31.5942C23.869 30.9197 24.1085 30.2623 24.6322 30.0565C25.1512 29.8536 25.7228 30.2137 25.9272 30.8711Z"/></g></g></g></svg></span><span class="brand-name"><span class="bn-face"><svg class="bn-xero" viewBox="0 0 836 171" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M832 2L835 6L836 15L836 158L830 166L656 167L652 161L652 8L655 2L777 0L830 0ZM439 12L447 8L600 9L604 14L604 39L600 44L490 45L481 46L478 51L479 63L486 87L491 93L497 94L516 74L530 68L595 67L604 74L604 97L600 103L537 107L475 168L461 170L445 154L447 144L462 130L463 121L454 109L445 89L440 68L437 26ZM72 11L101 11L105 16L107 20L106 64L110 71L166 72L172 74L175 80L175 103L171 108L166 110L114 110L109 114L108 166L100 171L75 171L68 167L67 115L64 112L60 110L8 110L0 105L0 79L3 74L61 73L66 70L67 18ZM216 14L220 11L390 12L394 17L390 77L387 92L374 120L348 146L316 160L271 167L237 167L232 160L231 154L232 141L236 134L272 128L288 128L293 125L293 122L275 102L217 48L212 33L213 18ZM697 40L693 47L693 118L697 127L790 127L794 120L794 46L789 39ZM281 49L281 56L302 73L328 100L338 100L340 98L345 89L352 63L352 52L350 50L345 48Z"/></svg><span class="bn-real">Pallav Raj</span></span></span><span class="egg-zz" aria-hidden="true"><i style="--i:0">z</i><i style="--i:1">z</i><i style="--i:2">Z</i></span><span class="egg-say" id="eggSay" aria-hidden="true">Hi, I'm Xero!</span></a>
   <div class="bar-right">
     <a class="bar-link" href="mailto:pallavraj75@gmail.com" data-cursor="Mail">Hire Me</a>
     <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menu" aria-label="Index" data-cursor="Index"><i></i></button>
@@ -793,20 +800,17 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
 <!-- INDEX · a rotary dial: turn it (wheel, drag, swipe, arrow keys), tap a label to go -->
 <nav class="menu" id="menu" aria-label="Sections" aria-hidden="true">
   <div class="dial-info">
-    <p class="dial-num mono"><b id="dialNum">01</b><span>/ 06</span></p>
-    <p class="dial-name" id="dialName">About</p>
-    <p class="dial-note" id="dialNote">Designing with intent</p>
     <a class="dial-go" id="dialGo" href="#about" data-cursor="Go"><span>Go to section</span><i>→</i></a>
   </div>
   <div class="dial" id="dial">
     <div class="dial-face" id="dialFace"></div>
     <ol class="dial-items" id="dialItems">
-      <li><a href="#about" data-note="Designing with intent"><i class="mono">01</i><span>About</span></a></li>
-      <li><a href="#education" data-note="2002 — 2020"><i class="mono">02</i><span>Education</span></a></li>
-      <li><a href="#skills" data-note="Six tools, one at a time"><i class="mono">03</i><span>Skills</span></a></li>
-      <li><a href="#experience" data-note="Four roles on a timeline"><i class="mono">04</i><span>Work</span></a></li>
-      <li><a href="#projects" data-note="Six projects on a ring"><i class="mono">05</i><span>Projects</span></a></li>
-      <li><a href="#contact" data-note="Got a project? Let's talk."><i class="mono">06</i><span>Contact</span></a></li>
+      <li><a href="#about"><i class="mono">01</i><span>About</span></a></li>
+      <li><a href="#education"><i class="mono">02</i><span>Education</span></a></li>
+      <li><a href="#skills"><i class="mono">03</i><span>Skills</span></a></li>
+      <li><a href="#experience"><i class="mono">04</i><span>Experience</span></a></li>
+      <li><a href="#projects"><i class="mono">05</i><span>Projects</span></a></li>
+      <li><a href="#contact"><i class="mono">06</i><span>Contact</span></a></li>
     </ol>
     <i class="dial-pointer"></i>
   </div>
@@ -944,9 +948,9 @@ html:not(.fine) .foot-panel.playing .arc-pad { opacity: 1; visibility: visible; 
   </section>
 
   <!-- 04 · WORK EXPERIENCE · a timeline -->
-  <section class="sec work" id="experience" data-name="Work">
+  <section class="sec work" id="experience" data-name="Experience">
     <div class="wrap">
-      <p class="sh mono rv">04 — Work</p>
+      <p class="sh mono rv">04 — Experience</p>
       <h2 class="h2 rv" data-words>Work Experience</h2>
       <div class="tl" id="tl">
         <div class="tl-spine" aria-hidden="true"><i class="tl-fill" id="tlFill"></i></div>
@@ -1148,6 +1152,41 @@ w.__csPause=function(on){on=!!on;if(on===paused)return;paused=on;if(!on){var h=h
   $$('.rv, .contact').forEach(el => io.observe(el));
 
   /* ---------------------------------------------------------------
+     Header wordmark: XERO, until you point at it. Then it tears for a few frames, the two flicker, and it settles
+     on the name; leave and it tears back
+  --------------------------------------------------------------- */
+  (() => {
+    const bn = $('.brand-name'), brand = $('.brand');
+    if (!bn) return;
+    const copy = bn.querySelector('.bn-face').cloneNode(true);
+    copy.classList.add('bn-copy'); copy.setAttribute('aria-hidden', 'true');
+    bn.appendChild(copy);
+    let run = 0, want = false;
+    function glitchTo(real) {
+      if (want === real) return;
+      want = real;
+      const id = ++run;
+      if (RM) { bn.classList.toggle('real', real); return; }
+      let f = 0; const N = 8;
+      const step = () => {
+        if (id !== run) return;
+        if (++f >= N) { bn.classList.toggle('real', real); bn.classList.remove('gl'); return; }
+        bn.classList.toggle('real', Math.random() < (f / N) * 1.15 ? real : !real);   // flickers between the two, leaning toward where it's going
+        const y = Math.random() * 70, h = 14 + Math.random() * 34;
+        bn.style.setProperty('--gx', ((Math.random() < .5 ? -1 : 1) * (1 + Math.random() * 3)).toFixed(1) + 'px');
+        bn.style.setProperty('--gc', 'inset(' + y.toFixed(0) + '% -8px ' + Math.max(0, 100 - y - h).toFixed(0) + '% -8px)');
+        bn.classList.add('gl');
+        setTimeout(step, 38 + Math.random() * 34);
+      };
+      step();
+    }
+    brand.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') glitchTo(true); });
+    brand.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') glitchTo(false); });
+    brand.addEventListener('focus', () => { if (brand.matches(':focus-visible')) glitchTo(true); });
+    brand.addEventListener('blur', () => glitchTo(false));
+  })();
+
+  /* ---------------------------------------------------------------
      Scroll scenes: pin = progress through a sticky section, view = progress while it crosses the screen
   --------------------------------------------------------------- */
   const scenes = [];
@@ -1176,13 +1215,13 @@ w.__csPause=function(on){on=!!on;if(on===paused)return;paused=on;if(!on){var h=h
     const cur = $('#cur'), label = $('#curLabel'), ico = $('#curIco'), trail = $('#trail'), pool = [];
     for (let i = 0; i < 24; i++) { const p = document.createElement('i'); trail.appendChild(p); pool.push(p); }
     const G = 14;
-    let x = -100, y = -100, lx = -1e4, ly = -1e4, pi = 0, seen = false, raf = 0;
+    let x = -100, y = -100, lx = -1e4, ly = -1e4, pi = 0, seen = false, raf = 0, quiet = false;
     const draw = () => { raf = 0; cur.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)'; };
     addEventListener('mousemove', e => {
       x = e.clientX; y = e.clientY;
       if (!seen) { seen = true; cur.classList.add('on'); lx = x; ly = y; }
       if (!raf) raf = requestAnimationFrame(draw);
-      if (!RM && Math.hypot(x - lx, y - ly) > G * 1.5) {
+      if (!RM && !quiet && Math.hypot(x - lx, y - ly) > G * 1.5) {
         // drop a pixel on the grid behind the cursor; it fades in a few hard steps
         lx = x; ly = y;
         const p = pool[pi++ % pool.length];
@@ -1195,8 +1234,10 @@ w.__csPause=function(on){on=!!on;if(on===paused)return;paused=on;if(!on){var h=h
       const t = e.target.closest('a[href], button, [data-cursor], [role="button"], input, select, textarea, label');
       const link = !!t && t.matches('a[href]'), href = link ? t.getAttribute('href') : '';
       cur.classList.toggle('hov', !!t); cur.classList.toggle('link', link); cur.classList.toggle('btn', !!t && !link);
+      quiet = !!t && t.classList.contains('brand');   // over the wordmark it shrinks to a lone pixel, no chip, label or trail, so the glitch has the stage
+      cur.classList.toggle('quiet', quiet);
       ico.textContent = !link ? '' : /^mailto:/.test(href) ? '@' : t.target === '_blank' || /^https?:/.test(href) ? '↗' : '→';
-      label.textContent = t ? (t.dataset.cursor || '') : '';
+      label.textContent = t && !quiet ? (t.dataset.cursor || '') : '';
     });
     curSay = txt => { if (label.textContent !== txt) label.textContent = txt; };
     addEventListener('mousedown', () => cur.classList.add('down'));
@@ -1732,6 +1773,7 @@ void main() {
       riText.classList.remove('swap'); void riText.offsetWidth; riText.classList.add('swap');
     }
   }
+  let RingHover = null;
   function ringLayout() {
     // cards keep the thumbnails' own landscape shape, as wide as the view allows
     const vr = ringView.getBoundingClientRect(), mob = MOBILE.matches, AR = 808 / 632, M = clamp(vr.height * .07, 12, mob ? 18 : 40);   // margin above and below the ring
@@ -1759,7 +1801,126 @@ void main() {
     let low = 0;
     for (let i = 0; i < 2; i++) { const u = sweep(); low += ((u.t - vr.top) - (vr.bottom - u.b)) / 2; ringEl.style.top = 'calc(50% - ' + low.toFixed(1) + 'px)'; }
     setRing(ringPos, true);
+    if (RingHover) RingHover.size();
   }
+  // hover a tile: like haoqi.design, it breaks into a grid of pixels that grow out from the middle and reveal the other side:
+  // a plain white note. The number and kind up top, the project's one line set large and typed in behind an orange caret,
+  // the action at the foot. Leave, and the pixels shrink back the way they came.
+  const RING_ART = {"Interactive Resume": "My résumé, but you can click around in it.", "Surface Phone": "A Surface phone, the way I'd design it.", "Appetite": "Order a kathi roll the way you'd ask at the counter.", "OneTouch": "Bills, schemes and papers, without the office visit.", "Porsche Endurance": "A watch that reads like a rev counter.", "iPhone 12 Pro": "How I pictured the iPhone 12 Pro."};
+  RingHover = (() => {
+    const cards = rcs.map((c, n) => {
+      const cv = document.createElement('canvas'); cv.className = 'rc-px'; cv.setAttribute('aria-hidden', 'true');
+      $('.rc-face', c).appendChild(cv);
+      const line = RING_ART[c.dataset.title], ext = /^https?:/.test(c.getAttribute('href') || ''), kind = c.dataset.kind || '';
+      const info = line && { line, kind, cta: ext ? 'View on Behance' : 'Open ' + kind.toLowerCase(), arrow: ext ? '↗' : '→',
+                             label: String(n + 1).padStart(2, '0') + ' / ' + String(rcs.length).padStart(2, '0') };
+      return { c, cv, ctx: cv.getContext('2d'), art: null, p: 0, to: 0, raf: 0, last: 0, jit: null, info, typed: line ? line.length : 0, caret: true, tT: 0, bT: 0 };
+    });
+    let W = 0, H = 0, dpr = 1, cell = 12;
+    const FT = '"Geist", system-ui, -apple-system, "Segoe UI", sans-serif', FM = '"Geist Mono", ui-monospace, "SF Mono", Menlo, monospace';
+    function paintNote(g, st) {
+      const n = st.info;
+      g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, W, H);
+      const pad = Math.round(W * .056), ms = clamp(W / dpr * .0235, 8.5, 11.5) * dpr, hair = Math.max(1, dpr);
+      const mono = (txt, x, y, color, align) => {                         // letter-spaced mono caps
+        g.font = '500 ' + ms.toFixed(1) + 'px ' + FM; g.fillStyle = color; g.textBaseline = 'alphabetic';
+        const chars = [...txt.toUpperCase()], ws = chars.map(ch => g.measureText(ch).width + ms * .06), tw = ws.reduce((a, b) => a + b, 0);
+        let xx = align === 'right' ? x - tw : x; chars.forEach((ch, i) => { g.fillText(ch, xx, y); xx += ws[i]; });
+      };
+      const ty = pad + ms * .8;
+      mono(n.label, pad, ty, '#FF6A00');
+      mono(n.kind, W - pad, ty, '#8E9198', 'right');
+      g.fillStyle = 'rgba(11, 12, 15, .1)'; g.fillRect(pad, ty + ms * 1.1, W - pad * 2, hair);
+      // the line, as large as three lines allow
+      const room = W - pad * 2; let fs = W * .09, lines;
+      const wrap = (f, wd = room) => { g.font = '500 ' + f.toFixed(1) + 'px ' + FT; const out = []; let cur = ''; for (const w of n.line.split(' ')) { const t = cur ? cur + ' ' + w : w; if (g.measureText(t).width > wd && cur) { out.push(cur); cur = w; } else cur = t; } out.push(cur); return out; };
+      while ((lines = wrap(fs)).length > 3 && fs > 10) fs *= .94;
+      for (let wd = room * .98; wd > room * .55; wd -= room * .02) { const l2 = wrap(fs, wd); if (l2.length > lines.length) break; lines = l2; }   // balance the lines, so none is left with one word
+      g.font = '500 ' + fs.toFixed(1) + 'px ' + FT; g.fillStyle = '#0B0C0F';
+      if ('letterSpacing' in g) g.letterSpacing = (-fs * .025).toFixed(2) + 'px';
+      const lh = fs * 1.08, y0 = ty + ms * 1.1 + H * .19;
+      let left = st.typed, cx = pad, cy = y0;
+      lines.forEach((ln, i) => {
+        const show = ln.slice(0, Math.max(0, left)); left -= ln.length + 1;
+        const y = y0 + i * lh; g.fillText(show, pad, y);
+        if (show.length || i === 0) { cx = pad + g.measureText(show).width; cy = y; }
+      });
+      if ('letterSpacing' in g) g.letterSpacing = '0px';
+      if (st.caret) { g.fillStyle = '#FF6A00'; g.fillRect(cx + fs * .06, cy - fs * .74, Math.max(2 * dpr, fs * .07), fs * .86); }
+      const by = H - pad;                                                  // the foot
+      g.fillStyle = 'rgba(11, 12, 15, .1)'; g.fillRect(pad, by - ms * 1.9, W - pad * 2, hair);
+      mono(n.cta, pad, by, '#0B0C0F');
+      mono(n.arrow, W - pad, by, '#0B0C0F', 'right');
+    }
+    function paintArt(st) {
+      if (!st.info || !W) return;
+      const a = st.art || (st.art = document.createElement('canvas'));
+      if (a.width !== W || a.height !== H) { a.width = W; a.height = H; }
+      paintNote(a.getContext('2d'), st);
+      if (st.p > 0) draw(st);
+    }
+    // on the way in the line types itself out, then the caret blinks; reduced motion shows it whole
+    function type(st, on) {
+      clearInterval(st.tT); clearInterval(st.bT); st.tT = st.bT = 0;
+      if (!st.info) return;
+      const full = st.info.line.length;
+      if (!on) { st.typed = full; st.caret = false; return; }
+      st.caret = true;
+      if (RM) { st.typed = full; paintArt(st); return; }
+      st.typed = 0; paintArt(st);
+      const blink = () => { st.bT = setInterval(() => { st.caret = !st.caret; paintArt(st); }, 530); };
+      setTimeout(() => {
+        if (st.to !== 1) return;
+        st.tT = setInterval(() => {
+          st.typed = Math.min(full, st.typed + 1); paintArt(st);
+          if (st.typed >= full) { clearInterval(st.tT); st.tT = 0; blink(); }
+        }, 26);
+      }, 220);
+    }
+    function size() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = Math.round(CW * dpr); H = Math.round(CW / (808 / 632) * dpr);
+      cell = Math.max(7, Math.round(CW / 34)) * dpr;                       // about 34 pixels across, whatever the card size
+      const cols = Math.ceil(W / cell), rows = Math.ceil(H / cell);
+      cards.forEach(st => {
+        st.cv.width = W; st.cv.height = H;
+        st.jit = Float32Array.from({ length: cols * rows }, (_, i) => { const v = Math.sin(i * 12.9898 + st.c.dataset.title.length * 78.233) * 43758.5453; return v - Math.floor(v); });
+        paintArt(st);
+        if (!st.p) st.ctx.clearRect(0, 0, W, H);
+      });
+    }
+    function draw(st) {
+      const g = st.ctx, cols = Math.ceil(W / cell), rows = Math.ceil(H / cell), cx = W / 2, cy = H / 2, maxR = Math.hypot(cx, cy), band = maxR * .42;
+      const R = st.p * (maxR + band + cell * 1.4);
+      g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H);
+      if (st.p <= 0 || !st.art) return;
+      g.beginPath();
+      for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+        const mx = (i + .5) * cell, my = (j + .5) * cell, d = Math.hypot(mx - cx, my - cy) + st.jit[j * cols + i] * cell * 1.4;
+        let k = (R - d) / band; if (k <= 0) continue; k = k >= 1 ? 1 : k * k * (3 - 2 * k);
+        const sz = k >= .995 ? cell + 1 : k * cell;
+        g.rect(mx - sz / 2, my - sz / 2, sz, sz);
+      }
+      g.fillStyle = '#000'; g.fill();
+      g.globalCompositeOperation = 'source-in'; g.drawImage(st.art, 0, 0);
+      g.globalCompositeOperation = 'source-over';
+    }
+    function tick(st, now) {
+      st.raf = 0;
+      const dt = st.last ? Math.min(.05, (now - st.last) / 1000) : 1 / 60; st.last = now;
+      const speed = st.to > st.p ? 1 / .75 : 1 / .5;                       // in a little slower than out
+      st.p = st.to > st.p ? Math.min(st.to, st.p + dt * speed) : Math.max(st.to, st.p - dt * speed);
+      draw(st);
+      if (st.p !== st.to) st.raf = requestAnimationFrame(n => tick(st, n)); else st.last = 0;
+    }
+    const aim = (st, to) => { st.to = to; if (RM) { st.p = to; draw(st); return; } if (!st.raf) { st.last = 0; st.raf = requestAnimationFrame(n => tick(st, n)); } };
+    if (FINE) cards.forEach(st => {
+      st.c.addEventListener('mouseenter', () => { aim(st, 1); type(st, true); });
+      st.c.addEventListener('mouseleave', () => { type(st, false); aim(st, 0); });
+    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => cards.forEach(paintArt));
+    return { size };
+  })();
   const ringP = k => .05 + k / (NR - 1) * .9;
   pin(ringSec, p => {
     const raw = seg(p, .05, .95) * (NR - 1), i = Math.floor(raw), f = raw - i;
@@ -2506,7 +2667,8 @@ void main() {
   const SECTIONS = ['about', 'education', 'skills', 'experience', 'projects', 'contact'];
   const Dial = (() => {
     const dial = $('#dial'), face = $('#dialFace'), links = $$('#dialItems a'), ptr = $('.dial-pointer');
-    const nameEl = $('#dialName'), noteEl = $('#dialNote'), numEl = $('#dialNum'), goEl = $('#dialGo');
+    const goEl = $('#dialGo'), info = $('.dial-info');
+    let cx = 0, cy = 0, FS = 1.5, labW = [], labH = 30, obstacles = [];
     const N = links.length;
     let D = 900, base = Math.PI, STEP = .36, ang = 0, tgt = 0, raf = 0, focus = -1, open = false, wheelT = 0, gesture = null, thumb = false;
     function render() {
@@ -2516,10 +2678,18 @@ void main() {
       links.forEach((a, i) => {
         const dl = i - ang, th = base + dir * dl * STEP, ad = Math.abs(dl);
         const x = D / 2 + Math.cos(th) * Rr, y = D / 2 + Math.sin(th) * Rr;
-        const s = 1 + Math.max(0, 1 - ad) * (thumb ? .14 : .5);
+        const s = 1 + Math.max(0, 1 - ad) * (thumb ? .14 : FS - 1);
         a.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) translate(-100%,-50%) scale(' + s.toFixed(3) + ')';
-        a.style.opacity = (thumb ? Math.max(.38, 1 - ad * .16) : Math.max(0, 1 - ad * .4)).toFixed(3);
-        a.style.pointerEvents = thumb || ad < 2.6 ? '' : 'none';
+        let op = thumb ? Math.max(.38, 1 - ad * .16) : Math.max(0, 1 - ad * .4);
+        if (!thumb && op > 0 && obstacles.length) {
+          // a label that would touch the title, the footer links or the header fades out instead of overlapping
+          const ax = cx - D / 2 + x, ay = cy - D / 2 + y, L = ax - labW[i] * s, R = ax, T = ay - labH * s / 2, B = ay + labH * s / 2;
+          let sep = 1e9;
+          obstacles.forEach(o => { sep = Math.min(sep, Math.max(o.t - B, T - o.b, o.l - R, L - o.r)); });
+          op *= clamp(sep / 24, 0, 1);
+        }
+        a.style.opacity = op.toFixed(3);
+        a.style.pointerEvents = (thumb || ad < 2.6) && op > .15 ? '' : 'none';
       });
       const px = D / 2 + Math.cos(base) * (D / 2), py = D / 2 + Math.sin(base) * (D / 2);
       ptr.style.transform = 'translate(' + px.toFixed(1) + 'px,' + py.toFixed(1) + 'px)';
@@ -2528,15 +2698,31 @@ void main() {
         focus = f;
         links.forEach((a, i) => a.classList.toggle('on', i === f));
         const a = links[f];
-        numEl.textContent = '0' + (f + 1);
-        nameEl.textContent = $('span', a).textContent; noteEl.textContent = a.dataset.note;
         goEl.href = a.getAttribute('href');
-        [nameEl, noteEl].forEach(x => { x.classList.remove('swap'); void x.offsetWidth; x.classList.add('swap'); });
+        goEl.setAttribute('aria-label', 'Go to ' + $('span', a).textContent);
       }
     }
     function geo() {
       thumb = VW <= 760 && VH >= VW;
-      if (!thumb) { D = clamp(Math.min(VH * 1.3, VW * .9), 620, 1250); STEP = .36; dial.style.left = (VW + D * .1 - D / 2).toFixed(0) + 'px'; dial.style.top = (VH * .52 - D / 2).toFixed(0) + 'px'; }
+      obstacles = [];
+      if (!thumb) {
+        // desktop: just the Go button on the left, the dial on the right. The highlighted label grows into the free space:
+        // as big as fits between the button and the arc (the dial slides right on narrow screens to give it room)
+        D = clamp(Math.min(VH * 1.3, VW * .9), 620, 1250); STEP = .36;
+        labW = links.map(a => a.offsetWidth + 14); labH = links[0].offsetHeight || 30;
+        const Rr = D / 2 + 22, wBase = Math.max(...labW), pad = parseFloat(getComputedStyle(info).left) || 40, gap = 48, btnW = goEl.offsetWidth || 180;
+        const FSmin = VH <= 560 ? 1.6 : 1.8, FSmax = Math.min(3.2, (2 * STEP * Rr / labH - 1) * .8);
+        cy = VH * .52;
+        cx = clamp(Math.max(VW + D * .1, pad + btnW + gap + wBase * FSmin + Rr), 0, VW - 24 + Rr);
+        FS = clamp((cx - Rr - pad - btnW - gap) / wBase, 1.3, Math.max(1.3, FSmax));
+        info.style.top = cy.toFixed(0) + 'px';
+        dial.style.left = (cx - D / 2).toFixed(0) + 'px'; dial.style.top = (cy - D / 2).toFixed(0) + 'px';
+        // what the labels must keep clear of
+        const ib = info.getBoundingClientRect(), fs = $$('.menu-foot > *', menu).filter(e => e.offsetWidth && getComputedStyle(e).display !== 'none').map(e => e.getBoundingClientRect());
+        obstacles.push({ l: ib.left, r: ib.right, t: ib.top, b: ib.bottom });
+        if (fs.length) obstacles.push({ l: Math.min(...fs.map(r => r.left)), r: Math.max(...fs.map(r => r.right)), t: Math.min(...fs.map(r => r.top)), b: Math.max(...fs.map(r => r.bottom)) });
+        obstacles.push({ l: 0, r: VW, t: -1e4, b: $('#bar').offsetHeight + 4 });
+      }
       else {
         // a big, gently curved wheel: only a sliver shows at the edge, and all six labels fit along it whichever one is in front
         D = Math.max(VH * 1.5, 900);
@@ -3559,6 +3745,21 @@ function buildEnv(kind){
     const u=document.createElement('canvas');u.width=W;u.height=H;const y=u.getContext('2d');y.imageSmoothingQuality='high';y.drawImage(d,0,0,W,H);return u};
   ENV[kind]=[c,down(c,64,32),down(down(c,32,16),8,4)];
 }
+/* the back carries the four-square Microsoft logo, monochrome as on Surface hardware: the model's round badge ('mark')
+   is swapped for four flat squares at the same centre and depth, so it keeps the mark finish in every scene */
+function markToLogo(head){
+  const g=head.g.find(x=>x.n==='mark');if(!g)return;
+  const q=head.q,S=32767;let mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];
+  for(let i=0;i<g.P.length;i+=3)for(let k=0;k<3;k++){const v=g.P[i+k]/S*q[k];mn[k]=Math.min(mn[k],v);mx[k]=Math.max(mx[k],v)}
+  const cx=(mn[0]+mx[0])/2,cy=(mn[1]+mx[1])/2,z=(mn[2]+mx[2])/2,tot=head.size[0]*.22,gap=tot*.06,sq=(tot-gap)/2;   // sized as on the cover render: 22% of the phone's width
+  const n=[g.N[0],g.N[1],g.N[2]],P=[],N=[],I=[];
+  for(const [ix,iy] of [[0,0],[1,0],[0,1],[1,1]]){
+    const x0=cx-tot/2+ix*(sq+gap),y0=cy-tot/2+iy*(sq+gap),b=P.length/3;
+    for(const [x,y] of [[x0,y0],[x0+sq,y0],[x0+sq,y0+sq],[x0,y0+sq]]){P.push(Math.round(x/q[0]*S),Math.round(y/q[1]*S),Math.round(z/q[2]*S));N.push(...n)}
+    I.push(b,b+1,b+2,b,b+2,b+3);
+  }
+  g.P=new Int16Array(P);g.N=new Int16Array(N);g.I=new Uint16Array(I);g.v=P.length/3;g.i=I.length;
+}
 async function loadModel(){
   const bin=Uint8Array.from(atob(MODEL_B64),c=>c.charCodeAt(0));
   const stream=new Blob([bin]).stream().pipeThrough(new DecompressionStream('gzip'));
@@ -3571,7 +3772,7 @@ async function loadModel(){
     g.N=new Int16Array(buf,base+g.no,g.v*3);
     g.I=new Uint16Array(buf,base+g.ix,g.i);
   });
-  MODEL=head;
+  markToLogo(head);MODEL=head;
 }
 
 /* screen texture: light wallpaper with the dunes, plus a clock */
@@ -4258,7 +4459,7 @@ const FIN={ /* sampled from the reference render: backs are near-neutral glass t
   gold:{back:{c:hex('#80776f'),m:.05,r:.3},frame:{c:hex('#d2b69f'),m:.55,r:.38}},
   platinum:{back:{c:hex('#b6b6b6'),m:.05,r:.34},frame:{c:hex('#d9d9d9'),m:.5,r:.38}},
   black:{back:{c:hex('#2a2a2a'),m:.05,r:.3},frame:{c:hex('#323236'),m:.55,r:.38}},
-  bw:{back:{c:hex('#d4d4d4'),m:.05,r:.36},frame:{c:hex('#262627'),m:.55,r:.38},visor:{c:hex('#5e5e5e'),m:0,r:.34}},
+  bw:{back:{c:hex('#d4d4d4'),m:.05,r:.36},frame:{c:hex('#262627'),m:.55,r:.38},visor:{c:hex('#5e5e5e'),m:0,r:.34},mark:{c:hex('#161617'),m:.1,r:.5}},   /* panda: white back, black frame, black logo */
   rose:{back:{c:hex('#4b4545'),m:.05,r:.3},frame:{c:hex('#cf9196'),m:.55,r:.38}}};
 const DARK_VISOR={visor:{c:hex('#141414'),m:.2,r:.32}};
 const SCREEN_OFF={display:{c:hex('#060606'),m:0,r:.42,sh:0},front:{c:hex('#050505'),m:0,r:.42,sh:0}};
@@ -4446,7 +4647,7 @@ function frame(t){
         M=M4.mul(M4.trans(0,y,0),M);
         ph._y=y;ph._k=k;ph._R=M4.mul(M4.axis('y',-.16),M4.mul(M4.axis('z',(ph.rz||0)*k),M4.mul(M4.axis('x',(ph.tilt||0)*k),M4.axis('y',(ph.yaw||0)*k))));
         const fr=FIN[ph.f].frame,bk=FIN[ph.f].back;
-        return{model:M,mat:Object.assign({},DARK_VISOR,FIN[ph.f],{keys:{c:fr.c.map(v=>v*.82),m:fr.m,r:fr.r},mark:{c:bk.c.map(v=>v*.86),m:bk.m,r:Math.min(1,bk.r+.35)}},ph.face?SCREEN_OFF:null)}; /* keys in the frame's own finish */
+        return{model:M,mat:Object.assign({},DARK_VISOR,FIN[ph.f],{keys:{c:fr.c.map(v=>v*.82),m:fr.m,r:fr.r},mark:FIN[ph.f].mark||{c:bk.c.map(v=>v*.86),m:bk.m,r:Math.min(1,bk.r+.35)}},ph.face?SCREEN_OFF:null)}; /* keys in the frame's own finish */
       });
       // shadows: each phone darkens the top of the phone beneath it; tighter and darker when close, softer as the gap opens
       STACK.forEach((ph,i)=>{if(!ph.sh)return;const below=STACK[i-1],gap=Math.max(0,ph._y-below._y-T);
