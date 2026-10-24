@@ -1514,28 +1514,37 @@ void main() {
   gl_FragColor = outc;
 }`;
     let gl = null, U = {};
-    try {
-      gl = cv.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: true, depth: false, stencil: false });
-      if (gl) {
-        const hasD = !!gl.getExtension('OES_standard_derivatives');
-        const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
-        const pr = gl.createProgram();
-        gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main() { gl_Position = vec4(p, 0., 1.); }'));
-        gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, (hasD ? '#extension GL_OES_standard_derivatives : enable\n#define HAS_D 1\n' : '') + FS));
-        gl.linkProgram(pr);
-        if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
-        gl.useProgram(pr);
-        gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-        const loc = gl.getAttribLocation(pr, 'p');
-        gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-        ['uRes', 'uC', 'uO', 'uAx', 'uV0', 'uV1', 'uV2', 'uV3', 'uRing', 'uTime', 'uT', 'uVel', 'uReveal', 'uScale', 'uSpin', 'uFull', 'uThick', 'uPix'].forEach(n => { U[n] = gl.getUniformLocation(pr, n); });
-        ARROW.forEach((v, i) => gl.uniform2f(U['uV' + i], v[0], v[1]));
-        gl.uniform2f(U.uAx, AX[0], AX[1]); gl.uniform1f(U.uThick, THICK);
-        cv.addEventListener('webglcontextlost', e => { e.preventDefault(); gl = null; sec.classList.add('nogl'); });
-      }
-    } catch (err) { gl = null; }
-    if (!gl) sec.classList.add('nogl');
+    // set up (and, if the browser drops the context, set up again: Safari can throw it away while the page sits in its
+    // back-forward cache, or when a heavy case study takes the GPU) so the section never stays on its fallback
+    function initGL() {
+      gl = null; U = {};
+      try {
+        gl = cv.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: true, depth: false, stencil: false });
+        if (gl && gl.isContextLost()) gl = null;
+        if (gl) {
+          const hasD = !!gl.getExtension('OES_standard_derivatives');
+          const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
+          const pr = gl.createProgram();
+          gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main() { gl_Position = vec4(p, 0., 1.); }'));
+          gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, (hasD ? '#extension GL_OES_standard_derivatives : enable\n#define HAS_D 1\n' : '') + FS));
+          gl.linkProgram(pr);
+          if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
+          gl.useProgram(pr);
+          gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+          const loc = gl.getAttribLocation(pr, 'p');
+          gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+          ['uRes', 'uC', 'uO', 'uAx', 'uV0', 'uV1', 'uV2', 'uV3', 'uRing', 'uTime', 'uT', 'uVel', 'uReveal', 'uScale', 'uSpin', 'uFull', 'uThick', 'uPix'].forEach(n => { U[n] = gl.getUniformLocation(pr, n); });
+          ARROW.forEach((v, i) => gl.uniform2f(U['uV' + i], v[0], v[1]));
+          gl.uniform2f(U.uAx, AX[0], AX[1]); gl.uniform1f(U.uThick, THICK);
+        }
+      } catch (err) { gl = null; }
+      sec.classList.toggle('nogl', !gl);
+      return !!gl;
+    }
+    initGL();
+    cv.addEventListener('webglcontextlost', e => { e.preventDefault(); gl = null; sec.classList.add('nogl'); });
+    cv.addEventListener('webglcontextrestored', () => { if (initGL() && W) resize(); });
 
     let W = 0, H = 0, dpr = 1, HS = 1, on = false, raf = 0, last = 0;
     let clock = 0, shown = 0, vel = 0, sp = 0, phase = -2, extra = 0, punch = 0;          // the scroll clock, the eased value the rays see, and its speed
@@ -3515,7 +3524,7 @@ canvas.gl{display:block;touch-action:pan-y}
 
 <div class="loader" id="loader"><span>Loading the model</span></div>
 <div class="cursor"></div><div class="cursor-dot"></div>
-<a id="backPortfolio" href="../Website V2(latest)/index.html" data-hover aria-label="Back to portfolio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
+<a id="backPortfolio" href="../Website V3 (Latest)/index.html" data-hover aria-label="Back to portfolio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
 <div class="progress"></div>
 
 
@@ -4706,7 +4715,10 @@ function frame(t){
 <script>
 /* back to the portfolio: inside the portfolio's viewer it asks the parent page to close; opened on its own the link goes to the portfolio */
 document.getElementById('backPortfolio').addEventListener('click',function(e){
-  if(window.parent&&window.parent!==window){e.preventDefault();window.parent.postMessage('surface-phone:close','*');}
+  if(window.parent&&window.parent!==window){e.preventDefault();window.parent.postMessage('surface-phone:close','*');return;}
+  // opened on its own: if the visitor came from the portfolio, step back so it returns exactly where they left it
+  var ref=document.referrer;
+  if(ref&&location.origin!=='null'&&ref.indexOf(location.origin)===0&&history.length>1){e.preventDefault();history.back();}
 });
 <\/script>
 </body>
@@ -6053,7 +6065,7 @@ html { scroll-snap-type: y proximity; }
 </head>
 <body>
   <a class="skip" href="#about">Skip to content</a>
-  <a class="back-pf" id="backPortfolio" href="../Website V2(latest)/index.html" aria-label="Back to portfolio" hidden=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></a>
+  <a class="back-pf" id="backPortfolio" href="../Website V3 (Latest)/index.html" aria-label="Back to portfolio" hidden=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></a>
 
 
   <main id="main">
@@ -8413,6 +8425,9 @@ window.__ASSETS = {"assets/art/chicken.png": "data:image/jpeg;base64,/9j/4AAQSkZ
   const backBtn = $('#backPortfolio');
   function backToPortfolio(e) {
     if (inPortfolio) { if (e) e.preventDefault(); window.parent.postMessage('appetite:close', '*'); return; }
+    // opened on its own: if the visitor came from the portfolio, step back so it returns exactly where they left it
+    const ref = document.referrer;
+    if (ref && location.origin !== 'null' && ref.indexOf(location.origin) === 0 && history.length > 1) { if (e) e.preventDefault(); history.back(); return; }
     if (e && e.currentTarget !== backBtn) location.href = backBtn.href; // the menu item has no href of its own
   }
   const canGoBack = true; // always offer a way back to the portfolio (falls back to index.html)
@@ -9359,7 +9374,7 @@ html[lang="hi"] .cr-t h3 { font-size: clamp(1.6rem, 1.1rem + 1.6vw, 2.5rem); }
   <a class="skip" href="#errands" data-hi="इंट्रो छोड़ें">Skip the intro</a>
 
   <header class="topbar" id="topbar">
-    <a class="round" id="backPortfolio" href="../Website V2(latest)/index.html" aria-label="Back to portfolio"><i data-i="arrow-l"></i></a>
+    <a class="round" id="backPortfolio" href="../Website V3 (Latest)/index.html" aria-label="Back to portfolio"><i data-i="arrow-l"></i></a>
     <button class="brandbtn" id="scanBtn" aria-expanded="false" aria-controls="scanPanel" aria-label="Sections">
       <span class="fpnav" id="fpNav"></span>
       <span class="brand"><b class="brandname">OneTouch</b><small id="scanSec">Start</small></span>
@@ -13549,7 +13564,10 @@ html[data-theme="dark"] .wave i { background: #fff; }
   --------------------------------------------------------------- */
   const inPortfolio = window.parent && window.parent !== window;
   function backToPortfolio(e) {
-    if (inPortfolio) { e.preventDefault(); window.parent.postMessage('onetouch:close', '*'); }
+    if (inPortfolio) { e.preventDefault(); window.parent.postMessage('onetouch:close', '*'); return; }
+    // opened on its own: if the visitor came from the portfolio, step back so it returns exactly where they left it
+    const ref = document.referrer;
+    if (ref && location.origin !== 'null' && ref.indexOf(location.origin) === 0 && history.length > 1) { e.preventDefault(); history.back(); }
   }
   $('#backPortfolio').addEventListener('click', backToPortfolio);
 
@@ -13595,11 +13613,22 @@ html[data-theme="dark"] .wave i { background: #fff; }
     P[v.getAttribute('data-cs')]={v:v,vl:v.querySelector('.vl'),f:null,url:null,dropT:0,
       min:+v.getAttribute('data-min')||1400,wait:v.getAttribute('data-wait')||'',allow:v.getAttribute('data-allow')||'fullscreen'};
   });
+  // runs first inside every case study, whatever its origin: the page can never add steps to the browser's history
+  // (so Back always lands on the portfolio in one press), links like "#about" scroll in place, and links that leave
+  // open in a new tab instead of inside the viewer
+  var GUARD='<scr'+'ipt>(function(){var H=history;try{H.pushState=function(s,t,u){H.replaceState(s,t,u)}}catch(e){}'+
+    'document.addEventListener("click",function(e){if(e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;'+
+    'var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href")||"";'+
+    'if(h.charAt(0)==="#"){e.preventDefault();var id=decodeURIComponent(h.slice(1)),t=id&&document.getElementById(id),rm=matchMedia("(prefers-reduced-motion: reduce)").matches;'+
+    'if(t){t.scrollIntoView({behavior:rm?"auto":"smooth",block:"start"});if(a.classList.contains("skip")){if(!t.hasAttribute("tabindex"))t.setAttribute("tabindex","-1");t.focus({preventScroll:true})}}'+
+    'else if(!id)scrollTo({top:0,behavior:rm?"auto":"smooth"});return}'+
+    'if(/^https?:/i.test(a.href)&&(!a.target||a.target==="_self")){a.target="_blank";a.rel="noopener"}})})()<\/scr'+'ipt>';
   // decode the embedded page once and serve it from a blob URL
   function source(n,p){
     if(p.url)return p.url;
     var s=document.getElementById('cs-src-'+n),html=s.textContent.replace(/<\\(\\|\/script|!--)/gi,'<$1');
     s.textContent='';
+    html=/<head[^>]*>/i.test(html)?html.replace(/<head[^>]*>/i,function(m){return m+GUARD}):GUARD+html;
     p.url=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));return p.url;
   }
   // hide the loader once the page (and its own loader, if it has one) is ready; never sooner than p.min so it doesn't flash
@@ -13612,34 +13641,36 @@ html[data-theme="dark"] .wave i { background: #fff; }
       setTimeout(function(){if(p.f===f)p.vl.classList.remove('on')},Math.max(0,p.min-(Date.now()-t0)));
     })();
   }
-  // links like "#about" inside a case study scroll in place instead of adding history entries,
-  // so the browser's Back always returns to the portfolio in one press
-  function keepInPage(f){
-    try{
-      var d=f.contentDocument;
-      d.addEventListener('click',function(e){
-        if(e.defaultPrevented||e.button)return;
-        var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;
-        var id=decodeURIComponent(a.getAttribute('href').slice(1)),t=id&&d.getElementById(id);if(!t)return;
-        e.preventDefault();
-        t.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
-        if(a.classList.contains('skip')){if(!t.hasAttribute('tabindex'))t.setAttribute('tabindex','-1');t.focus({preventScroll:true})}
+  // the frame is put in place empty and then pointed at the page with location.replace, which never adds a step to
+  // the browser's history (Safari can count a frame's first load as one, and then Back empties the viewer instead of closing it)
+  function load(n,p){
+    var f=document.createElement('iframe'),t0=Date.now();
+    f.title=p.v.getAttribute('aria-label');f.setAttribute('allow',p.allow);
+    p.f=f;p.vl.classList.add('on');
+    // let the loader paint first, then decode and load the page
+    setTimeout(function(){
+      if(p.f!==f)return;
+      var url=source(n,p);
+      p.v.insertBefore(f,p.vl);
+      f.addEventListener('load',function onLoad(){
+        var at='';try{at=f.contentWindow.location.href}catch(e){}
+        if(at==='about:blank')return;                                     // the frame's empty first page, not the case study
+        f.removeEventListener('load',onLoad);
+        if(p.f===f)whenReady(p,f,t0);
       });
-    }catch(e){}
+      try{f.contentWindow.location.replace(url)}catch(e){f.src=url}
+    },60);
+  }
+  // after the viewer closes, or the page comes back from the browser's cache, the portfolio re-measures and redraws
+  function nudge(){
+    setTimeout(function(){try{dispatchEvent(new Event('resize'));dispatchEvent(new Event('scroll'))}catch(e){}},60);
   }
   function open(n,fromHistory){
     var p=P[n];if(!p)return;
     if(cur===p)return;
     if(cur)close(true,true);
     clearTimeout(p.dropT);
-    if(!p.f){
-      var f=document.createElement('iframe'),t0=Date.now();
-      f.title=p.v.getAttribute('aria-label');f.setAttribute('allow',p.allow);
-      p.f=f;p.vl.classList.add('on');
-      f.addEventListener('load',function(){if(p.f!==f)return;keepInPage(f);whenReady(p,f,t0)},{once:true});
-      // let the loader paint first, then decode and load the page
-      setTimeout(function(){if(p.f!==f)return;f.src=source(n,p);p.v.insertBefore(f,p.vl)},60);
-    }
+    if(!p.f)load(n,p);
     cur=p;p.name=n;
     var pv=document.getElementById('pv');if(pv)pv.classList.remove('on');
     p.v.classList.add('on');p.v.setAttribute('aria-hidden','false');root.classList.add('cs-open');
@@ -13652,7 +13683,7 @@ html[data-theme="dark"] .wave i { background: #fff; }
     clearTimeout(coverT);if(window.__csPause)window.__csPause(false);
     p.v.classList.remove('on');p.v.setAttribute('aria-hidden','true');root.classList.remove('cs-open');
     // unload the case study once it has faded out, so nothing keeps running behind the portfolio
-    p.dropT=setTimeout(function(){if(cur===p)return;if(p.f){p.f.remove();p.f=null}p.vl.classList.remove('on')},instant?0:500);
+    p.dropT=setTimeout(function(){if(cur===p)return;if(p.f){p.f.remove();p.f=null}p.vl.classList.remove('on');nudge()},instant?0:500);
     if(!fromHistory&&location.hash==='#'+p.name){
       if(history.state&&history.state.cs===p.name)history.back();
       else history.replaceState(null,'',location.pathname+location.search);
@@ -13660,6 +13691,9 @@ html[data-theme="dark"] .wave i { background: #fff; }
     if(opener&&opener.focus&&document.contains(opener)){try{opener.focus({preventScroll:true})}catch(e){}}
     opener=null;
   }
+  // the address bar is the source of truth: whichever way the visitor got here (Back, Forward, a typed or shared link,
+  // the browser's back-forward cache), the viewer matches the hash
+  function sync(){var n=location.hash.slice(1);if(P[n])open(n,true);else if(cur)close(true)}
   // every link to a case study opens its viewer (captured before the page's own handlers open a new tab)
   document.addEventListener('click',function(e){
     var el=e.target.closest&&e.target.closest('[data-href^="#"],a[href^="#"]');if(!el)return;
@@ -13671,9 +13705,19 @@ html[data-theme="dark"] .wave i { background: #fff; }
     if(!cur||!cur.f||e.source!==cur.f.contentWindow)return;
     if(typeof e.data==='string'&&/:close$/.test(e.data))close(false);
   });
-  addEventListener('popstate',function(){var n=location.hash.slice(1);if(P[n])open(n,true);else if(cur)close(true)});
+  addEventListener('popstate',sync);
+  addEventListener('hashchange',sync);
+  addEventListener('pageshow',function(e){
+    if(!e.persisted)return;
+    sync();
+    if(!cur){root.classList.remove('cs-open');if(window.__csPause)window.__csPause(false);nudge();return}
+    // back in an open viewer: if the browser dropped the case study while the page sat in its cache, load it again
+    var f=cur.f,gone=!f;
+    try{gone=gone||!f.contentDocument||!f.contentDocument.body||!f.contentDocument.body.childElementCount}catch(e){}
+    if(gone){if(f)f.remove();load(cur.name,cur)}
+  });
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&cur)close(false)});
-  var n0=location.hash.slice(1);if(P[n0])open(n0,true);
+  sync();
 })();
 </script>
 <!-- Case studies: end -->
