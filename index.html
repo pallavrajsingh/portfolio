@@ -3328,24 +3328,15 @@ html.cs-open #cur,html.cs-open #pv{display:none}
       setTimeout(function(){if(p.f===f)p.vl.classList.remove('on')},Math.max(0,p.min-(Date.now()-t0)));
     })();
   }
-  // the frame is put in place empty and then pointed at the page with location.replace, which never adds a step to
-  // the browser's history (Safari can count a frame's first load as one, and then Back empties the viewer instead of closing it)
+  // the frame gets its address before it goes into the page, so its first load simply replaces its blank start: no extra
+  // step in the browser's history, and Safari can't let a late blank load cancel the case study (as it did when the frame
+  // was inserted empty and pointed at the page afterwards)
   function load(n,p){
     var f=document.createElement('iframe'),t0=Date.now();
     f.title=p.v.getAttribute('aria-label');f.setAttribute('allow',p.allow);
     p.f=f;p.vl.classList.add('on');
-    setTimeout(function(){
-      if(p.f!==f)return;
-      p.v.insertBefore(f,p.vl);
-      f.addEventListener('load',function onLoad(){
-        var at='';try{at=f.contentWindow.location.href}catch(e){}
-        if(at==='about:blank')return;                                     // the frame's empty first page, not the case study
-        f.removeEventListener('load',onLoad);
-        if(p.f===f)whenReady(p,f,t0);
-      });
-      var url=new URL(p.src,location.href).href;
-      try{f.contentWindow.location.replace(url)}catch(e){f.src=url}
-    },60);
+    f.addEventListener('load',function(){if(p.f===f)whenReady(p,f,t0)},{once:true});
+    setTimeout(function(){if(p.f!==f)return;f.src=new URL(p.src,location.href).href;p.v.insertBefore(f,p.vl)},60);
   }
   // after the viewer closes, or the page comes back from the browser's cache, the portfolio re-measures and redraws
   function nudge(){setTimeout(function(){try{dispatchEvent(new Event('resize'));dispatchEvent(new Event('scroll'))}catch(e){}},60)}
